@@ -14,13 +14,13 @@ public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
 
     public async Task<User> GetUserById(Guid id)
     {
-        var user = await Set.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception("User Id can not be null");
+        var user = await Set.FirstOrDefaultAsync(u => u.Id == id);
         return user;
     }
 
-    public async Task<User> GetUserByName(string name)
+    public async Task<User?> GetUserByName(string name)
     {
-        var user = await Set.FirstOrDefaultAsync(u => u.Name == name) ?? throw new Exception("User Id can not be null");
+        var user = await Set.FirstOrDefaultAsync(u => u.Name == name);
         return user;
     }
 }

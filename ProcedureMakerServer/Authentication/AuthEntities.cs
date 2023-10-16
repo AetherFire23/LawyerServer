@@ -1,4 +1,5 @@
 ﻿using EFCoreBase.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProcedureMakerServer.Authentication;
 
@@ -7,9 +8,10 @@ public class User : EntityBase
     public string Name { get; set; } = string.Empty;
     public string HashedPassword { get; set; } = string.Empty;
 
-    // email and shit
     public virtual ICollection<UserRole> UserRoles { get; set; }
-    public List<Role> Roles => UserRoles.Select(ur => ur.Role).ToList();
+
+    [NotMapped]
+    public List<Role> Roles => UserRoles is null? new List<Role>() : UserRoles.Select(ur => ur.Role).ToList();
 }
 
 public class Role : EntityBase

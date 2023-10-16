@@ -11,11 +11,12 @@ public class AuthManager : IAuthManager
     private readonly IUserRepository _userRepository;
     private readonly IJwtTokenManager _jwtTokenManager;
     private readonly ProcedureContext _context;
-    public AuthManager(IUserRepository userRepository, ProcedureContext context)
+
+    public AuthManager(IUserRepository userRepository, IJwtTokenManager jwtTokenManager, ProcedureContext context)
     {
         _userRepository = userRepository;
+        _jwtTokenManager = jwtTokenManager;
         _context = context;
-        Console.WriteLine("lol");
     }
 
     public async Task<OneOf<FailedLoginResult, SuccessLoginResult>> GenerateTokenIfCorrectCredentials(LoginRequest loginRequest)
@@ -35,7 +36,7 @@ public class AuthManager : IAuthManager
 
     public async Task<OneOf<FailedRegisterResult, SuccessRegisterResult>> TryRegister(RegisterRequest registerRequest)
     {
-        bool isUserExists = _userRepository.GetUserByName(registerRequest.Username) is not null;
+        bool isUserExists = await _userRepository.GetUserByName(registerRequest.Username) is not null;
         if (isUserExists) return new FailedRegisterResult();
 
         User user = new User()
@@ -55,10 +56,9 @@ public class AuthManager : IAuthManager
             UserId = user.Id,
         };
 
-        _context.UserRoles.Add(userRole);
-        _context.Users.Add(user);
-        _context.Roles.Add(role);
-
+        await _context.UserRoles.AddAsync(userRole);
+        await _context.Users.AddAsync(user);
+        await _context.Roles.AddAsync(role);
         await _context.SaveChangesAsync();
 
         return new SuccessRegisterResult(user);

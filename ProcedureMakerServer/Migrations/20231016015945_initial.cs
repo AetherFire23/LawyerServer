@@ -14,7 +14,7 @@ namespace ProcedureMakerServer.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Lawyers",
+                name: "Lawyer",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -35,59 +35,37 @@ namespace ProcedureMakerServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Lawyers", x => x.Id);
+                    table.PrimaryKey("PK_Lawyer", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserBase",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    Discriminator = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    HashedPassword = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserBase", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Files",
+                name: "Roles",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    LawyerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CourtNumber = table.Column<string>(type: "text", nullable: false),
-                    FileNumber = table.Column<string>(type: "text", nullable: false),
-                    CourtType = table.Column<int>(type: "integer", nullable: false)
+                    RoleType = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Files", x => x.Id);
+                    table.PrimaryKey("PK_Roles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Files_Lawyers_LawyerId",
-                        column: x => x.LawyerId,
-                        principalTable: "Lawyers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RoleBase",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    Discriminator = table.Column<string>(type: "text", nullable: false),
-                    UserBaseId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RoleBase", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RoleBase_UserBase_UserBaseId",
-                        column: x => x.UserBaseId,
-                        principalTable: "UserBase",
+                        name: "FK_Roles_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -96,28 +74,28 @@ namespace ProcedureMakerServer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uuid", nullable: false)
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserRoles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserRoles_RoleBase_RoleId",
+                        name: "FK_UserRoles_Roles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "RoleBase",
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRoles_UserBase_UserId",
+                        name: "FK_UserRoles_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "UserBase",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                table: "Lawyers",
+                table: "Lawyer",
                 columns: new[] { "Id", "Address", "City", "Country", "CourtRole", "DateOfBirth", "Email", "FirstName", "HasJuridicalAid", "HomePhoneNumber", "LastName", "MobilePhoneNumber", "PostalCode", "SocialSecurityNumber", "WorkPhoneNumber" },
                 values: new object[,]
                 {
@@ -126,14 +104,9 @@ namespace ProcedureMakerServer.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Files_LawyerId",
-                table: "Files",
-                column: "LawyerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RoleBase_UserBaseId",
-                table: "RoleBase",
-                column: "UserBaseId");
+                name: "IX_Roles_UserId",
+                table: "Roles",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",
@@ -150,19 +123,16 @@ namespace ProcedureMakerServer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Files");
+                name: "Lawyer");
 
             migrationBuilder.DropTable(
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "Lawyers");
+                name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "RoleBase");
-
-            migrationBuilder.DropTable(
-                name: "UserBase");
+                name: "Users");
         }
     }
 }

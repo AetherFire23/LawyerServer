@@ -35,5 +35,7 @@ public static class AppBuilderHelper
     {
         builder.Services.AddScoped<ILawyerRepository, LawyerRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IAuthManager, AuthManager>();
+        builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
     }
 }

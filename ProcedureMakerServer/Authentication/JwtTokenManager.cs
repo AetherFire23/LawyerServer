@@ -14,10 +14,11 @@ public class JwtTokenManager : IJwtTokenManager
     private readonly JwtConfig _config;
     private readonly JwtSecurityTokenHandler _tokenHandler;
 
-    public JwtTokenManager(IOptions<JwtConfig> config, JwtSecurityTokenHandler tokenHandler)
+    public JwtTokenManager(IOptions<JwtConfig> config)
     {
         _config = config.Value;
-        _tokenHandler = tokenHandler;
+        _tokenHandler = new JwtSecurityTokenHandler();
+
     }
     public async Task<string> GenerateToken(User user)
     {

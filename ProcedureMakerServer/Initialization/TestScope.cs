@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProcedureMakerServer.Authentication.AuthModels;
+using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository;
 
@@ -10,30 +12,29 @@ public static class TestScope
     {
         using (IServiceScope scope = app.Services.CreateScope())
         {
-            await Do(scope);
+            var provider = scope.ServiceProvider;
             var lawyerRepo = scope.ServiceProvider.GetRequiredService<ILawyerRepository>();
-            //var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-
-
             var context = scope.ServiceProvider.GetRequiredService<ProcedureContext>();
+            var auth = provider.GetRequiredService<IAuthManager>();
+
+            RegisterRequest req = new RegisterRequest()
+            {
+                Password = "password",
+                Role = Authentication.RoleTypes.Admin,
+                Username = "fred"
+            };
+
+            await auth.TryRegister(req);
 
 
-            // seed
 
-           // context.Roles.Add(Seeder.AdminRole);
-            //context.UserRoles.Add(Seeder.FredIsADmin);
-//context.Users.Add(Seeder.FredUser);
+            LoginRequest loginRequest = new LoginRequest()
+            {
+                Password = "password",
+                Username = "fred",
+            };
 
-          //  await context.SaveChangesAsync();
-
-
-          //  var user = await userRepo.GetUserById(Seeder.FredUser.Id);
-
+            await auth.GenerateTokenIfCorrectCredentials(loginRequest);
         }
-    }
-
-    private static async Task Do(IServiceScope scope)
-    {
-
     }
 }

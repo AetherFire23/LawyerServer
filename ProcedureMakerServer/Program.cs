@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Initialization;
 
 namespace ProcedureMakerServer;
@@ -13,7 +14,7 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
+        builder.ConfigureJwt();
         AppBuilderHelper.Configure(builder);
 
 

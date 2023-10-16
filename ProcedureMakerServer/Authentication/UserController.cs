@@ -15,9 +15,13 @@ public class UserController : Controller
         _authManager = authManager;
     }
 
+    [Route("crap")]
     public async Task<IActionResult> GenerateTokenIfValid(LoginRequest loginRequest)
-        => (await _authManager.GenerateTokenIfCorrectCredentials(loginRequest)).Match(Ok, Ok);
+    {
+        return (await _authManager.GenerateTokenIfCorrectCredentials(loginRequest)).Match(Ok, Ok);
+    }
 
+    [Route("shit")]
     public async Task<IActionResult> RegisterUser(RegisterRequest registerRequest)
     {
         var result = (await _authManager.TryRegister(registerRequest)).Match(Ok, Ok);

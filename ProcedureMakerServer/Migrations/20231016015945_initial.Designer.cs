@@ -12,7 +12,7 @@ using ProcedureMakerServer;
 namespace ProcedureMakerServer.Migrations
 {
     [DbContext(typeof(ProcedureContext))]
-    [Migration("20231008053836_initial")]
+    [Migration("20231016015945_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -25,84 +25,45 @@ namespace ProcedureMakerServer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("EFCoreBase.Entities.LawyerFile", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Authentication.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CourtNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("CourtType")
+                    b.Property<int>("RoleType")
                         .HasColumnType("integer");
 
-                    b.Property<string>("FileNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("LawyerId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LawyerId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("Files");
+                    b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("JWTAuth.Entities.RoleBase", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Authentication.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Discriminator")
+                    b.Property<string>("HashedPassword")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("UserBaseId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserBaseId");
-
-                    b.ToTable("RoleBase");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("RoleBase");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("JWTAuth.Entities.UserBase", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PasswordHash")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserBase");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("UserBase");
-
-                    b.UseTphMappingStrategy();
+                    b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("JWTAuth.Entities.UserRole", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Authentication.UserRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,7 +145,7 @@ namespace ProcedureMakerServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lawyers");
+                    b.ToTable("Lawyer");
 
                     b.HasData(
                         new
@@ -227,45 +188,20 @@ namespace ProcedureMakerServer.Migrations
 
             modelBuilder.Entity("ProcedureMakerServer.Authentication.Role", b =>
                 {
-                    b.HasBaseType("JWTAuth.Entities.RoleBase");
-
-                    b.HasDiscriminator().HasValue("Role");
-                });
-
-            modelBuilder.Entity("ProcedureMakerServer.Authentication.User", b =>
-                {
-                    b.HasBaseType("JWTAuth.Entities.UserBase");
-
-                    b.HasDiscriminator().HasValue("User");
-                });
-
-            modelBuilder.Entity("EFCoreBase.Entities.LawyerFile", b =>
-                {
-                    b.HasOne("ProcedureMakerServer.Entities.Lawyer", "Lawyer")
-                        .WithMany()
-                        .HasForeignKey("LawyerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lawyer");
-                });
-
-            modelBuilder.Entity("JWTAuth.Entities.RoleBase", b =>
-                {
-                    b.HasOne("JWTAuth.Entities.UserBase", null)
+                    b.HasOne("ProcedureMakerServer.Authentication.User", null)
                         .WithMany("Roles")
-                        .HasForeignKey("UserBaseId");
+                        .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("JWTAuth.Entities.UserRole", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Authentication.UserRole", b =>
                 {
-                    b.HasOne("JWTAuth.Entities.RoleBase", "Role")
+                    b.HasOne("ProcedureMakerServer.Authentication.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("JWTAuth.Entities.UserBase", "User")
+                    b.HasOne("ProcedureMakerServer.Authentication.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -276,12 +212,12 @@ namespace ProcedureMakerServer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("JWTAuth.Entities.RoleBase", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Authentication.Role", b =>
                 {
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("JWTAuth.Entities.UserBase", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Authentication.User", b =>
                 {
                     b.Navigation("Roles");
 
