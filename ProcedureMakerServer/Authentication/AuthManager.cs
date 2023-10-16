@@ -23,21 +23,23 @@ public class AuthManager : IAuthManager
     {
         var user = await _userRepository.GetUserByName(loginRequest.Username);
 
-        if (user is null) return new FailedLoginResult();
-        if (!Crypt.Verify(loginRequest.Password, user.HashedPassword)) return new FailedLoginResult();
+        if (user is null) return new FailedLoginResult("incorrect userName");
+        if (!Crypt.Verify(loginRequest.Password, user.HashedPassword)) return new FailedLoginResult("inccorect password");
 
         string token = await _jwtTokenManager.GenerateToken(user);
+        UserDto userDto = await _userRepository.MapUserDto(user.Id);
+
         return new SuccessLoginResult()
         {
             Token = token,
-            User = user,
+            User = userDto,
         };
     }
 
     public async Task<OneOf<FailedRegisterResult, SuccessRegisterResult>> TryRegister(RegisterRequest registerRequest)
     {
         bool isUserExists = await _userRepository.GetUserByName(registerRequest.Username) is not null;
-        if (isUserExists) return new FailedRegisterResult();
+        if (isUserExists) return new FailedRegisterResult("user exist");
 
         User user = new User()
         {
@@ -61,6 +63,7 @@ public class AuthManager : IAuthManager
         await _context.Roles.AddAsync(role);
         await _context.SaveChangesAsync();
 
-        return new SuccessRegisterResult(user);
+        var userDto = await _userRepository.MapUserDto(user.Id);
+        return new SuccessRegisterResult(userDto);
     }
 }

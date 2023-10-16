@@ -1,22 +1,28 @@
 ﻿using EFCoreBase.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ProcedureMakerServer.Authentication;
 
 public class User : EntityBase
 {
     public string Name { get; set; } = string.Empty;
+
     public string HashedPassword { get; set; } = string.Empty;
 
+   
     public virtual ICollection<UserRole> UserRoles { get; set; }
 
+
     [NotMapped]
-    public List<Role> Roles => UserRoles is null? new List<Role>() : UserRoles.Select(ur => ur.Role).ToList();
+    public List<RoleTypes> Roles => UserRoles is null || !UserRoles.Any()? new List<RoleTypes>() : UserRoles.Select(ur => ur.Role.RoleType).ToList();
 }
 
 public class Role : EntityBase
 {
     public RoleTypes RoleType { get; set; }
+
+    [JsonIgnore]
     public virtual ICollection<UserRole> UserRoles { get; set; }
 }
 

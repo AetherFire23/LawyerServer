@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ProcedureMakerServer.Authentication.AuthModels;
+﻿using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Interfaces;
-using ProcedureMakerServer.Repository;
+
+
 
 namespace ProcedureMakerServer.Initialization;
-
 public static class TestScope
 {
     public static async Task Run(WebApplication app)
@@ -23,6 +22,8 @@ public static class TestScope
                 Role = Authentication.RoleTypes.Admin,
                 Username = "fred"
             };
+
+            string serialized = Newtonsoft.Json.JsonConvert.SerializeObject(req);
 
             await auth.TryRegister(req);
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
 
@@ -15,16 +16,23 @@ public class UserController : Controller
         _authManager = authManager;
     }
 
-    [Route("crap")]
-    public async Task<IActionResult> GenerateTokenIfValid(LoginRequest loginRequest)
+    [HttpPut("token")]
+    public async Task<IActionResult> GenerateTokenIfValid([FromBody] LoginRequest loginRequest)
     {
         return (await _authManager.GenerateTokenIfCorrectCredentials(loginRequest)).Match(Ok, Ok);
     }
 
-    [Route("shit")]
-    public async Task<IActionResult> RegisterUser(RegisterRequest registerRequest)
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest registerRequest)
     {
         var result = (await _authManager.TryRegister(registerRequest)).Match(Ok, Ok);
         return result;
+    }
+
+    [HttpGet("test")]
+    [Authorize(Roles = nameof(RoleTypes.Admin))]
+    public async Task<IActionResult> AuthorizedTest()
+    {
+        return Ok();
     }
 }

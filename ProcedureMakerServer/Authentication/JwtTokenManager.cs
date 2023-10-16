@@ -23,7 +23,9 @@ public class JwtTokenManager : IJwtTokenManager
     public async Task<string> GenerateToken(User user)
     {
 
-        var roleClaims = user.Roles.Select(x => new Claim(ClaimTypes.Role, x.RoleType.ToString()));
+        var roles = user.UserRoles.Select(x => x.Role.RoleType).ToList();
+
+        var roleClaims = user.Roles.Select(x => new Claim(ClaimTypes.Role, x.ToString()));
         var claims = new List<Claim>(roleClaims)
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),

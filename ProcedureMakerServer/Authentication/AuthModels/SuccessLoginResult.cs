@@ -2,6 +2,6 @@
 
 public class SuccessLoginResult
 {
-    public User User { get; set; }
+    public UserDto User { get; set; }
     public string Token { get; set; } = string.Empty;
 }
