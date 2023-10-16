@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcedureMakerServer", "ProcedureMakerServer\ProcedureMakerServer.csproj", "{15730BAF-2507-422C-90D2-AAEDFA65167D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCoreBase", "EFCoreBase\EFCoreBase.csproj", "{56AD34E2-9B71-4281-ACB5-B6BB384244ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15730BAF-2507-422C-90D2-AAEDFA65167D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15730BAF-2507-422C-90D2-AAEDFA65167D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15730BAF-2507-422C-90D2-AAEDFA65167D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15730BAF-2507-422C-90D2-AAEDFA65167D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56AD34E2-9B71-4281-ACB5-B6BB384244ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56AD34E2-9B71-4281-ACB5-B6BB384244ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56AD34E2-9B71-4281-ACB5-B6BB384244ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56AD34E2-9B71-4281-ACB5-B6BB384244ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {94EDF29B-02BE-4F25-83D1-CCF80E7E8758}
+	EndGlobalSection
+EndGlobal
