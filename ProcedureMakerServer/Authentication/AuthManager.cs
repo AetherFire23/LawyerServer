@@ -15,6 +15,7 @@ public class AuthManager : IAuthManager
     {
         _userRepository = userRepository;
         _context = context;
+        Console.WriteLine("lol");
     }
 
     public async Task<OneOf<FailedLoginResult, SuccessLoginResult>> GenerateTokenIfCorrectCredentials(LoginRequest loginRequest)
