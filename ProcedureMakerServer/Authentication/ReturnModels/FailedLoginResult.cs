@@ -8,10 +8,10 @@ public class FailedLoginResult : IMessageResult
 
     public FailedLoginResult()
     {
-        
+
     }
     public FailedLoginResult(string message)
     {
-        Message = message;  
+        Message = message;
     }
 }

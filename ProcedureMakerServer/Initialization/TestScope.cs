@@ -36,6 +36,11 @@ public static class TestScope
             };
 
             await auth.GenerateTokenIfCorrectCredentials(loginRequest);
+
+
+            // now test crud capabilities
+
+
         }
     }
 }

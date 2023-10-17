@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace ProcedureMakerServer.Extensions;
+﻿namespace ProcedureMakerServer.Extensions;
 
 public static class FormFileExtensions
 {

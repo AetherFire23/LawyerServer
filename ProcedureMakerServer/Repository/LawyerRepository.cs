@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EFCoreBase.Repositories;
+using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository.ProcedureRepo;
@@ -13,12 +13,22 @@ public class LawyerRepository : ProcedureCrudBase<Lawyer>, ILawyerRepository
 
     }
 
+    public override async Task<Lawyer> GetEntityById(Guid id)
+    {
+        var lawyer = await base.Set
+            .Include(l => l.Cases)
+            .Include(l => l.Clients)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        return lawyer;
+    }
+
     public async Task ModifyLawyer(Lawyer lawyer)
     {
         var entity = await GetEntityById(lawyer.Id);
         // Do i really need a profile - yep
         // proceduralement creer les profiles?
-        _mapper.Map(lawyer, entity);
+        Mapper.Map(lawyer, entity); // new goes into the old
         // _mapper.Map<Lawyer>(entity);
         // can also already pass the existing object
         await Context.SaveChangesAsync();

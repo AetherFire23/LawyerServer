@@ -2,6 +2,6 @@
 
 public enum RoleTypes
 {
-    Admin, 
+    Admin,
     Normal
 }

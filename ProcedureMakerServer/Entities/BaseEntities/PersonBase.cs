@@ -1,6 +1,6 @@
 ﻿using EFCoreBase.Entities;
 
-namespace ProcedureMakerServer.Entities;
+namespace ProcedureMakerServer.Entities.BaseEntities;
 
 public abstract class PersonBase : EntityBase
 {

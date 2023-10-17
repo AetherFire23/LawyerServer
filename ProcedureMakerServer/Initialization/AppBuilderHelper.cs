@@ -5,13 +5,14 @@ using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository;
 using System.Reflection;
-
 namespace ProcedureMakerServer.Initialization;
 
 public static class AppBuilderHelper
 {
+    private static WebApplicationBuilder _builder;
     public static void Configure(WebApplicationBuilder builder)
     {
+        _builder = builder;
         ConfigureNpgsql(builder);
         ConfigureServices(builder);
         ConfigureAutoMapper(builder);
@@ -20,7 +21,7 @@ public static class AppBuilderHelper
 
     private static void ConfigureAutoMapper(WebApplicationBuilder builder)
     {
-        builder.Services.AddAutoMapper(x=>
+        builder.Services.AddAutoMapper(x =>
         {
             x.AddMaps(Assembly.GetExecutingAssembly());
         });
@@ -52,5 +53,9 @@ public static class AppBuilderHelper
             logging.RequestBodyLogLimit = 4096;
             logging.ResponseBodyLogLimit = 4096;
         });
+    }
+
+    private static void ConfigureDeserialization()
+    {
     }
 }

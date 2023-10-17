@@ -3,10 +3,11 @@ using ProcedureMakerServer.Entities;
 
 namespace ProcedureMakerServer.AutoMapper;
 
-public class ClientProfile : Profile
+public class CasePartProfile : Profile
 {
-    public ClientProfile()
+
+    public CasePartProfile()
     {
-        CreateMap<Client, Client>();
+        CreateMap<CasePart, CasePart>();
     }
 }

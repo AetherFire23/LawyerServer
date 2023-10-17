@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EFCoreBase.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace ProcedureMakerServer.Repository.ProcedureRepo;
 

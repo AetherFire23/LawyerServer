@@ -3,7 +3,6 @@ using ProcedureMakerServer.Constants;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Extensions;
 using ProcedureMakerServer.Interfaces;
-using System.Runtime.CompilerServices;
 
 namespace ProcedureMakerServer.Controllers;
 
@@ -26,7 +25,7 @@ public class FileController : ControllerBase
     [HttpPost("addlawyer")]
     public async Task AddLawyer([FromBody] Lawyer lawyer)
     {
-        await _lawyerRepository.Add(lawyer);
+        await _lawyerRepository.Create(lawyer);
     }
 
     [HttpPut("modlawyer")]
@@ -42,7 +41,7 @@ public class FileController : ControllerBase
     [HttpPost("addclient")]
     public async Task<IActionResult> AddClient([FromBody] Client client) // create and init locally
     {
-        await _clientRepository.Add(client);
+        await _clientRepository.Create(client);
         return Ok();
     }
 
@@ -67,5 +66,5 @@ public class FileController : ControllerBase
         return Ok("File uploaded successfully!");
     }
 
-    
+
 }

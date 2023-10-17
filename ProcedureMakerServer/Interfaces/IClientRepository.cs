@@ -2,7 +2,7 @@
 
 namespace ProcedureMakerServer.Interfaces;
 
-internal interface IClientRepository : IProcedureRepositoryBase<Client>
+public interface IClientRepository : IProcedureCrudRepositoryBase<Client>
 {
     Task ModifyClient(Client client);
 }

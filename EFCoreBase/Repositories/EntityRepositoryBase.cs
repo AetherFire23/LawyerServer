@@ -1,5 +1,4 @@
 ﻿using EFCoreBase.Entities;
-using EFCoreBase.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreBase.Repositories;

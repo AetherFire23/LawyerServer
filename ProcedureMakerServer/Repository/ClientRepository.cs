@@ -2,7 +2,6 @@
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository.ProcedureRepo;
-using System.Runtime.InteropServices;
 
 namespace ProcedureMakerServer.Repository;
 
@@ -16,7 +15,7 @@ public class ClientRepository : ProcedureCrudBase<Client>, IClientRepository
     {
         var entity = await GetEntityById(client.Id);
 
-        _mapper.Map(client, entity);
+        Mapper.Map(client, entity);
 
         await Context.SaveChangesAsync();
     }

@@ -1,17 +1,23 @@
-
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Initialization;
-
 namespace ProcedureMakerServer;
 
+// case = dossier avocat
+// affair = de cour
+// file = template
 public class Program
 {
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.ConfigureJwt();
@@ -20,10 +26,10 @@ public class Program
 
         // APP CONFIG
 
-        
+
         var app = builder.Build();
 
-        
+
 
         await AppConfigHelper.ConfigureApp(app);
 

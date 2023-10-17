@@ -14,11 +14,14 @@ public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
 
     public async Task<User> GetUserById(Guid id)
     {
-        var user = await Set.FirstOrDefaultAsync(u => u.Id == id);
+        var user = await Set
+            .Include(x => x.Lawyer)
+            .ThenInclude(x => x.Cases)
+            .FirstOrDefaultAsync(u => u.Id == id);
         return user;
     }
 
-    public async Task<User?> GetUserByName(string name)
+    public async Task<User> GetUserByName(string name)
     {
         var user = await Set
             .Include(p => p.UserRoles)
@@ -26,6 +29,11 @@ public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
             .FirstOrDefaultAsync(u => u.Name == name);
 
         return user;
+    }
+
+    public async Task SaveUser(UserDto userDto)
+    {
+        
     }
 
     public async Task<UserDto> MapUserDto(Guid id)

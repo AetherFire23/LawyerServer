@@ -8,7 +8,7 @@ public class FailedRegisterResult : IMessageResult
 
     public FailedRegisterResult()
     {
-        
+
     }
     public FailedRegisterResult(string message)
     {

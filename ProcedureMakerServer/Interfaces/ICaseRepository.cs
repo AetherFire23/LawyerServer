@@ -1,8 +1,11 @@
 ﻿using EFCoreBase.Entities;
-using EFCoreBase.Interfaces;
+using ProcedureMakerServer.Dtos;
 
 namespace ProcedureMakerServer.Interfaces;
 
-public interface ICaseRepository : IProcedureRepositoryBase<EFCoreBase.Entities.LawyerFile>
+public interface ICaseRepository : IProcedureCrudRepositoryBase<Case>
 {
+    Task<CaseDto> MapCaseDto(Guid caseId);
+    Task ModifyCase(Case lcase);
+    Task ModifyCaseFromDto(CaseDto caseDto);
 }

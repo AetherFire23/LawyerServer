@@ -1,10 +1,8 @@
-﻿using EFCoreBase.Interfaces;
-using EFCoreBase.Repositories;
-using ProcedureMakerServer.Entities;
+﻿using ProcedureMakerServer.Entities;
 
 namespace ProcedureMakerServer.Interfaces;
 
-public interface ILawyerRepository : IProcedureRepositoryBase<Lawyer>
+public interface ILawyerRepository : IProcedureCrudRepositoryBase<Lawyer>
 {
     Task ModifyLawyer(Lawyer lawyer);
 }
