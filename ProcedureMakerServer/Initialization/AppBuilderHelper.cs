@@ -4,6 +4,7 @@ using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository;
+using ProcedureMakerServer.Services;
 using System.Reflection;
 namespace ProcedureMakerServer.Initialization;
 
@@ -36,10 +37,20 @@ public static class AppBuilderHelper
 
     public static void ConfigureServices(WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<ILawyerRepository, LawyerRepository>();
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IAuthManager, AuthManager>();
-        builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
+        builder.Services.AddTransient<ILawyerRepository, LawyerRepository>();
+        builder.Services.AddTransient<IUserRepository, UserRepository>();
+        builder.Services.AddTransient<IAuthManager, AuthManager>();
+        builder.Services.AddTransient<IJwtTokenManager, JwtTokenManager>();
+
+        builder.Services.AddTransient<ICaseContextService, CaseContextService>();
+
+        builder.Services.AddTransient<ICasesContextRepository, CasesContextRepository>();
+        builder.Services.AddTransient<ICasePartRepository, CasePartRepository>();
+
+        builder.Services.AddTransient<ICaseRepository, CaseRepository>();
+
+        builder.Services.AddTransient<IClientRepository, ClientRepository>();
+
     }
 
     private static void ConfigureHTTPLogging(WebApplicationBuilder builder)

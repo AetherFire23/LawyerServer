@@ -3,13 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Entities.BaseEntities;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ProcedureMakerServer.Entities;
 
 public class Lawyer : CourtMemberBase
 {
     public Guid UserId { get; set; }
-    public User User { get; set; } = new User();
+    public User User { get; set; }
 
 
     public ICollection<Case> Cases { get; set; } = new List<Case>();
@@ -32,5 +33,9 @@ public class CaseConfiguration : IEntityTypeConfiguration<Lawyer>
         builder.HasMany(c => c.Clients)
             .WithOne(l => l.Lawyer)
             .HasForeignKey(k => k.LawyerId);
+
+        builder.HasOne(p => p.User)
+            .WithOne()
+            .HasForeignKey<Lawyer>(x => x.UserId);
     }
 }

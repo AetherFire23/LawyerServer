@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,31 +11,6 @@ namespace ProcedureMakerServer.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Lawyer",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    PostalCode = table.Column<string>(type: "text", nullable: false),
-                    Country = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    Address = table.Column<string>(type: "text", nullable: false),
-                    City = table.Column<string>(type: "text", nullable: false),
-                    MobilePhoneNumber = table.Column<string>(type: "text", nullable: false),
-                    WorkPhoneNumber = table.Column<string>(type: "text", nullable: false),
-                    HomePhoneNumber = table.Column<string>(type: "text", nullable: false),
-                    HasJuridicalAid = table.Column<bool>(type: "boolean", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    SocialSecurityNumber = table.Column<string>(type: "text", nullable: false),
-                    CourtRole = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Lawyer", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
@@ -61,11 +37,11 @@ namespace ProcedureMakerServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Client",
+                name: "Lawyers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    LawyerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     PostalCode = table.Column<string>(type: "text", nullable: false),
@@ -83,11 +59,11 @@ namespace ProcedureMakerServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Client", x => x.Id);
+                    table.PrimaryKey("PK_Lawyers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Client_Lawyer_LawyerId",
-                        column: x => x.LawyerId,
-                        principalTable: "Lawyer",
+                        name: "FK_Lawyers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -118,7 +94,39 @@ namespace ProcedureMakerServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Case",
+                name: "Clients",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    LawyerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    PostalCode = table.Column<string>(type: "text", nullable: false),
+                    Country = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    City = table.Column<string>(type: "text", nullable: false),
+                    MobilePhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    WorkPhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    HomePhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    HasJuridicalAid = table.Column<bool>(type: "boolean", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SocialSecurityNumber = table.Column<string>(type: "text", nullable: false),
+                    CourtRole = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Clients", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Clients_Lawyers_LawyerId",
+                        column: x => x.LawyerId,
+                        principalTable: "Lawyers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cases",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -127,27 +135,28 @@ namespace ProcedureMakerServer.Migrations
                     DistrictName = table.Column<string>(type: "text", nullable: false),
                     CourtAffairNumber = table.Column<string>(type: "text", nullable: false),
                     CaseNumber = table.Column<string>(type: "text", nullable: false),
-                    CourtType = table.Column<int>(type: "integer", nullable: false)
+                    CourtType = table.Column<int>(type: "integer", nullable: false),
+                    CourtNumber = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Case", x => x.Id);
+                    table.PrimaryKey("PK_Cases", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Case_Client_ClientId",
+                        name: "FK_Cases_Clients_ClientId",
                         column: x => x.ClientId,
-                        principalTable: "Client",
+                        principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Case_Lawyer_ManagerLawyerId",
+                        name: "FK_Cases_Lawyers_ManagerLawyerId",
                         column: x => x.ManagerLawyerId,
-                        principalTable: "Lawyer",
+                        principalTable: "Lawyers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CasePart",
+                name: "CaseParts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -169,34 +178,40 @@ namespace ProcedureMakerServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CasePart", x => x.Id);
+                    table.PrimaryKey("PK_CaseParts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CasePart_Case_CaseId",
+                        name: "FK_CaseParts_Cases_CaseId",
                         column: x => x.CaseId,
-                        principalTable: "Case",
+                        principalTable: "Cases",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Case_ClientId",
-                table: "Case",
-                column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Case_ManagerLawyerId",
-                table: "Case",
-                column: "ManagerLawyerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CasePart_CaseId",
-                table: "CasePart",
+                name: "IX_CaseParts_CaseId",
+                table: "CaseParts",
                 column: "CaseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Client_LawyerId",
-                table: "Client",
+                name: "IX_Cases_ClientId",
+                table: "Cases",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cases_ManagerLawyerId",
+                table: "Cases",
+                column: "ManagerLawyerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clients_LawyerId",
+                table: "Clients",
                 column: "LawyerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lawyers_UserId",
+                table: "Lawyers",
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",
@@ -213,25 +228,25 @@ namespace ProcedureMakerServer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CasePart");
+                name: "CaseParts");
 
             migrationBuilder.DropTable(
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "Case");
+                name: "Cases");
 
             migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
+                name: "Clients");
+
+            migrationBuilder.DropTable(
+                name: "Lawyers");
+
+            migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "Client");
-
-            migrationBuilder.DropTable(
-                name: "Lawyer");
         }
     }
 }

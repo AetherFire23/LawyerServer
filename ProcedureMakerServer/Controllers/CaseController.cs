@@ -25,8 +25,17 @@ public class CaseController : Controller
         return Ok();
     }
 
+    [HttpPut("createcase")]
     public async Task<IActionResult> ModifyCaseContext([FromBody] CasesContext caseContext)
     {
+        await _caseContextService.SaveContextDto(caseContext);
+        return Ok();
+    }
 
+    [HttpGet("createcase")]
+    public async Task<IActionResult> GetCaseContext(Guid lawyerId)
+    {
+        var caseContext = await _caseContextService.GetCase(lawyerId);
+        return Ok(caseContext);
     }
 }

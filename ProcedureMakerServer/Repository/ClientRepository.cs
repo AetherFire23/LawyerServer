@@ -15,7 +15,8 @@ public class ClientRepository : ProcedureCrudBase<Client>, IClientRepository
     {
         var entity = await GetEntityById(client.Id);
 
-        Mapper.Map(client, entity);
+        entity.FirstName = client.FirstName;
+        //Mapper.Map(client, entity);
 
         await Context.SaveChangesAsync();
     }

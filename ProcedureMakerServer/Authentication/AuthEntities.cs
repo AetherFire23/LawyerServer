@@ -1,4 +1,6 @@
 ﻿using EFCoreBase.Entities;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -11,10 +13,8 @@ public class User : EntityBase
 
     public string HashedPassword { get; set; } = string.Empty;
 
-    public Guid LawyerId { get; set; }
-    public Lawyer Lawyer { get; set; } = new Lawyer();
 
-    public virtual ICollection<UserRole> UserRoles { get; set; }
+    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
     [NotMapped]
     public List<RoleTypes> Roles => UserRoles is null || !UserRoles.Any() ? new List<RoleTypes>() : UserRoles.Select(ur => ur.Role.RoleType).ToList();
@@ -35,4 +35,11 @@ public class UserRole : EntityBase
 
     public Guid UserId { get; set; }
     public User User { get; set; } = new User();
+}
+
+public class UserConfiguration : IEntityTypeConfiguration<User>
+{
+    public void Configure(EntityTypeBuilder<User> builder)
+    {
+    }
 }

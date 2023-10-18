@@ -23,12 +23,16 @@ public class LawyerRepository : ProcedureCrudBase<Lawyer>, ILawyerRepository
         return lawyer;
     }
 
+
+    // no real update atm
     public async Task ModifyLawyer(Lawyer lawyer)
     {
         var entity = await GetEntityById(lawyer.Id);
+
+        
         // Do i really need a profile - yep
         // proceduralement creer les profiles?
-        Mapper.Map(lawyer, entity); // new goes into the old
+        //Mapper.Map(lawyer, entity); // new goes into the old
         // _mapper.Map<Lawyer>(entity);
         // can also already pass the existing object
         await Context.SaveChangesAsync();

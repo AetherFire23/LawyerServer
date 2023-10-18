@@ -10,34 +10,45 @@ public class CaseContextService : ICaseContextService
 {
     private readonly ProcedureContext _procedureContext;
     private readonly ICasesContextRepository _casesContextRepository;
-    public CaseContextService(ProcedureContext procedureContext, ICasesContextRepository casesContextRepository)
+    private readonly ILawyerRepository _lawyerRepository;
+    public CaseContextService(ProcedureContext procedureContext, ICasesContextRepository casesContextRepository, ILawyerRepository lawyerRepository)
     {
         _procedureContext = procedureContext;
         _casesContextRepository = casesContextRepository;
+        _lawyerRepository = lawyerRepository;
     }
 
     public async Task CreateNewCase(CaseCreationInfo creationInfo)
     {
         var (lawyerId, caseNumber, clientFirstName, clientLastName) = creationInfo;
+        await _procedureContext.SaveChangesAsync();
 
         // initialize some default values but leave the rest mostly empty
+
+        var lawyer = await _lawyerRepository.GetEntityById(lawyerId);
+
         Client client = new Client()
         {
             FirstName = clientFirstName,
             LastName = clientLastName,
+            Lawyer = lawyer
         };
+
+        await _procedureContext.Clients.AddAsync(client);
+        await _procedureContext.SaveChangesAsync();
+
 
         Case c = new Case()
         {
-            ClientId = client.Id,
             CaseNumber = caseNumber,
-            ManagerLawyerId = lawyerId,
+            ManagerLawyer = lawyer,
+            Client = client
         };
+        
 
-
-        await _procedureContext.Clients.AddAsync(client);
         await _procedureContext.Cases.AddAsync(c);
         await _procedureContext.SaveChangesAsync();
+
     }
 
     public async Task<CasesContext> GetCase(Guid lawyerId)

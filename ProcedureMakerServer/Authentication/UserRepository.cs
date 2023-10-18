@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Authentication.Interfaces;
+using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Repository.ProcedureRepo;
 
 namespace ProcedureMakerServer.Authentication;
@@ -15,8 +16,6 @@ public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
     public async Task<User> GetUserById(Guid id)
     {
         var user = await Set
-            .Include(x => x.Lawyer)
-            .ThenInclude(x => x.Cases)
             .FirstOrDefaultAsync(u => u.Id == id);
         return user;
     }
@@ -33,17 +32,18 @@ public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
 
     public async Task SaveUser(UserDto userDto)
     {
-        
+
     }
 
     public async Task<UserDto> MapUserDto(Guid id)
     {
-        User? user = await Set.FirstOrDefaultAsync(x => x.Id == id);
-
+        User? user = await Set.FirstAsync(x => x.Id == id);
+        Lawyer lawyer = await Context.Lawyers.FirstAsync(x=> x.UserId == id);
         var userDto = new UserDto()
         {
             Name = user.Name,
             Roles = user.Roles,
+            Lawyer = lawyer,
         };
 
         return userDto;

@@ -2,6 +2,7 @@
 using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Authentication.ReturnModels;
+using ProcedureMakerServer.Entities;
 using Crypt = BCrypt.Net.BCrypt;
 namespace ProcedureMakerServer.Authentication;
 
@@ -32,18 +33,20 @@ public class AuthManager : IAuthManager
         return new SuccessLoginResult()
         {
             Token = token,
-            User = userDto,
+            UserDto = userDto,
         };
     }
 
     public async Task<OneOf<FailedRegisterResult, SuccessRegisterResult>> TryRegister(RegisterRequest registerRequest)
     {
-        bool isUserExists = await _userRepository.GetUserByName(registerRequest.Username) is not null;
+        var testedUser = await _userRepository.GetUserByName(registerRequest.Username);
+        bool isUserExists = testedUser is not null;
         if (isUserExists) return new FailedRegisterResult("user exist");
 
+        string hashedPassword = Crypt.HashPassword(registerRequest.Password);
         User user = new User()
         {
-            HashedPassword = Crypt.HashPassword(registerRequest.Password),
+            HashedPassword = hashedPassword,
             Name = registerRequest.Username,
         };
 
@@ -54,13 +57,26 @@ public class AuthManager : IAuthManager
 
         UserRole userRole = new UserRole()
         {
-            RoleId = role.Id,
-            UserId = user.Id,
+            Role = role,
+            User = user,
         };
 
-        await _context.UserRoles.AddAsync(userRole);
+        var lawyer = new Lawyer()
+        {
+            UserId = user.Id,
+            FirstName = user.Name,
+        };
+
+        
         await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
         await _context.Roles.AddAsync(role);
+        await _context.SaveChangesAsync();
+
+        await _context.UserRoles.AddAsync(userRole);
+
+        await _context.Lawyers.AddAsync(lawyer);
         await _context.SaveChangesAsync();
 
         var userDto = await _userRepository.MapUserDto(user.Id);

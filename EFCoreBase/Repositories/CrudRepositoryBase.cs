@@ -15,7 +15,7 @@ public abstract class CrudRepositoryBase<TContext, TEntity> : EntityRepositoryBa
 
     public virtual async Task<TEntity> GetEntityById(Guid id)
     {
-        var entity = await Set.FirstAsync(x => x.Id == id);
+        var entity = await Set.FirstOrDefaultAsync(x => x.Id == id);
         return entity;
     }
 

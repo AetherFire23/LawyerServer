@@ -12,7 +12,7 @@ using ProcedureMakerServer;
 namespace ProcedureMakerServer.Migrations
 {
     [DbContext(typeof(ProcedureContext))]
-    [Migration("20231016160419_initial")]
+    [Migration("20231018014228_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -42,6 +42,9 @@ namespace ProcedureMakerServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("CourtNumber")
+                        .HasColumnType("integer");
+
                     b.Property<int>("CourtType")
                         .HasColumnType("integer");
 
@@ -58,7 +61,7 @@ namespace ProcedureMakerServer.Migrations
 
                     b.HasIndex("ManagerLawyerId");
 
-                    b.ToTable("Case");
+                    b.ToTable("Cases");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Authentication.Role", b =>
@@ -181,7 +184,7 @@ namespace ProcedureMakerServer.Migrations
 
                     b.HasIndex("CaseId");
 
-                    b.ToTable("CasePart");
+                    b.ToTable("CaseParts");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Entities.Client", b =>
@@ -250,7 +253,7 @@ namespace ProcedureMakerServer.Migrations
 
                     b.HasIndex("LawyerId");
 
-                    b.ToTable("Client");
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Entities.Lawyer", b =>
@@ -308,13 +311,19 @@ namespace ProcedureMakerServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("WorkPhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lawyer");
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Lawyers");
                 });
 
             modelBuilder.Entity("EFCoreBase.Entities.Case", b =>
@@ -375,6 +384,17 @@ namespace ProcedureMakerServer.Migrations
                         .IsRequired();
 
                     b.Navigation("Lawyer");
+                });
+
+            modelBuilder.Entity("ProcedureMakerServer.Entities.Lawyer", b =>
+                {
+                    b.HasOne("ProcedureMakerServer.Authentication.User", "User")
+                        .WithOne()
+                        .HasForeignKey("ProcedureMakerServer.Entities.Lawyer", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EFCoreBase.Entities.Case", b =>
