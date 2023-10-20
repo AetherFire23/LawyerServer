@@ -1,6 +1,10 @@
 ﻿using ProcedureMakerServer.Entities;
+using Reinforced.Typings.Attributes;
+
 namespace ProcedureMakerServer.Dtos;
 
+
+[TsClass]
 public class CasesContext
 {
     public List<CaseDto> Cases { get; set; } = new List<CaseDto>();

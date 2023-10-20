@@ -1,9 +1,11 @@
 ﻿using EFCoreBase.Entities;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Enums;
+using Reinforced.Typings.Attributes;
 
 namespace ProcedureMakerServer.Dtos;
 
+[TsClass]
 public class CaseDto : EntityBase
 {
     public Lawyer ManagerLawyer { get; set; } = new Lawyer(); 

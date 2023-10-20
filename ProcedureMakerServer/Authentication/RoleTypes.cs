@@ -1,5 +1,9 @@
-﻿namespace ProcedureMakerServer.Authentication;
+﻿using Reinforced.Typings.Attributes;
 
+namespace ProcedureMakerServer.Authentication;
+
+
+[TsEnum]
 public enum RoleTypes
 {
     Admin,

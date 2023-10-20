@@ -2,9 +2,12 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Enums;
+using Reinforced.Typings.Attributes;
 
 namespace EFCoreBase.Entities;
 
+
+[TsClass]
 public class Case : EntityBase
 {
     public Guid ManagerLawyerId { get; set; }

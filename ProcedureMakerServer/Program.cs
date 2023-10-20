@@ -6,6 +6,27 @@ namespace ProcedureMakerServer;
 // case = dossier avocat
 // affair = de cour
 // file = template
+
+
+// pour reinforced typings <<target compile typescript was not found >> 
+//  <Target Name="CompileTypeScript" />
+
+
+
+// setter une configuremethod
+//<RtConfigurationMethod>ProcedureMakerServer.ReinforcedTypingsConfiguration.Configure</RtConfigurationMethod>
+// pas oublier : faire matcher les namespaces
+
+
+// le catual target
+// 		<RtTargetDirectory>..\..\lawyer-procedure\mercichatgpt</RtTargetDirectory>
+
+// pour pas toute crisser dans un seul file et pouvoir import les fichiers 1 a un (require la configure method()
+//{
+//    builder.Global(config => config.CamelCaseForProperties()
+//        .AutoOptionalProperties()
+//        .UseModules());
+
 public class Program
 {
     public static async Task Main(string[] args)

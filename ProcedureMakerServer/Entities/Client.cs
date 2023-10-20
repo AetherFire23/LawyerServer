@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProcedureMakerServer.Entities.BaseEntities;
+using Reinforced.Typings.Attributes;
 
 namespace ProcedureMakerServer.Entities;
 
+[TsClass]
 public class Client : CourtMemberBase
 {
     public Guid LawyerId { get; set; }

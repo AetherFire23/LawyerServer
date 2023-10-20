@@ -5,7 +5,6 @@ using ProcedureMakerServer.Models;
 
 namespace ProcedureMakerServer.Controllers;
 
-
 [ApiController]
 [Route("[controller]")]
 public class CaseController : Controller
@@ -17,7 +16,7 @@ public class CaseController : Controller
         _caseContextService = caseContextService;
     }
 
-    [HttpPost("createcase")]
+    [HttpPost("createcase1")]
     public async Task<IActionResult> CreateCaseContext([FromBody] CaseCreationInfo caseInfo)
     {
         await _caseContextService.CreateNewCase(caseInfo);
@@ -25,17 +24,30 @@ public class CaseController : Controller
         return Ok();
     }
 
-    [HttpPut("createcase")]
+    [HttpPut("createcase2")]
     public async Task<IActionResult> ModifyCaseContext([FromBody] CasesContext caseContext)
     {
         await _caseContextService.SaveContextDto(caseContext);
         return Ok();
     }
 
-    [HttpGet("createcase")]
+    [HttpGet("createcase3")]
     public async Task<IActionResult> GetCaseContext(Guid lawyerId)
     {
         var caseContext = await _caseContextService.GetCase(lawyerId);
         return Ok(caseContext);
+    }
+
+    [HttpGet("createcase4")]
+    public async Task<IActionResult> DoStuff()
+    {
+        var s2 = new List<CaseDto>();
+
+        var context = new CasesContext()
+        {
+            Cases = s2,
+        };
+
+        return Ok(context);
     }
 }

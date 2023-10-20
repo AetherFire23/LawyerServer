@@ -1,12 +1,15 @@
 ﻿using EFCoreBase.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ProcedureMakerServer.Attributes;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Entities.BaseEntities;
+using Reinforced.Typings.Attributes;
 using System.Reflection.Metadata.Ecma335;
 
 namespace ProcedureMakerServer.Entities;
 
+[TsClass]
 public class Lawyer : CourtMemberBase
 {
     public Guid UserId { get; set; }

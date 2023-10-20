@@ -1,7 +1,10 @@
-﻿using EFCoreBase.Entities;
+﻿using EFCoreBase.Attributes;
+using EFCoreBase.Entities;
+using Reinforced.Typings.Attributes;
 
 namespace ProcedureMakerServer.Entities.BaseEntities;
 
+[TsClass]
 public abstract class PersonBase : EntityBase
 {
     public string FirstName { get; set; } = string.Empty;
@@ -15,6 +18,8 @@ public abstract class PersonBase : EntityBase
     public string WorkPhoneNumber { get; set; } = string.Empty;
     public string HomePhoneNumber { get; set; } = string.Empty;
     public bool HasJuridicalAid { get; set; } = false;
+
+    [TsDate]
     public DateTime DateOfBirth { get; set; } = DateTime.MinValue;
     public string SocialSecurityNumber { get; set; } = string.Empty;
 }
