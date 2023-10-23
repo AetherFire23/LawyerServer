@@ -51,7 +51,7 @@ public class JwtTokenManager : IJwtTokenManager
         return writenToken;
     }
 
-    public ClaimsPrincipal ValidateToken(string token)
+    public async Task<ClaimsPrincipal> ValidateToken(string token)
     {
         try
         {

@@ -27,11 +27,17 @@ public static class AppConfigHelper
     }
     public static async Task ConfigureCors(WebApplication app)
     {
-        app.UseCors(builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
+        //app.UseCors(builder =>
+        //{
+        //    builder.AllowAnyOrigin()
+        //           .AllowAnyMethod()
+        //           .AllowAnyHeader();
+        //});
+        app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials());
+
     }
 }

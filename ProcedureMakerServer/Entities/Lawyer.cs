@@ -1,11 +1,10 @@
 ﻿using EFCoreBase.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ProcedureMakerServer.Attributes;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Entities.BaseEntities;
 using Reinforced.Typings.Attributes;
-using System.Reflection.Metadata.Ecma335;
+using System.Text.Json.Serialization;
 
 namespace ProcedureMakerServer.Entities;
 
@@ -16,8 +15,9 @@ public class Lawyer : CourtMemberBase
     public User User { get; set; }
 
 
-    public ICollection<Case> Cases { get; set; } = new List<Case>();
+    public ICollection<Case> Cases { get; set; }
 
+    [JsonIgnore]
     public List<Client> Clients
         => Cases is null || !Cases.Any()
         ? new List<Client>()

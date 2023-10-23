@@ -38,12 +38,12 @@ public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
     public async Task<UserDto> MapUserDto(Guid id)
     {
         User? user = await Set.FirstAsync(x => x.Id == id);
-        Lawyer lawyer = await Context.Lawyers.FirstAsync(x=> x.UserId == id);
+        Lawyer lawyer = await Context.Lawyers.FirstAsync(x => x.UserId == id);
         var userDto = new UserDto()
         {
             Name = user.Name,
             Roles = user.Roles,
-            Lawyer = lawyer,
+            LawyerId = lawyer.Id,
         };
 
         return userDto;

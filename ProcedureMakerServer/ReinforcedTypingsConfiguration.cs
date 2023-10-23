@@ -1,5 +1,4 @@
-﻿using Reinforced.Typings;
-using Reinforced.Typings.Ast.TypeNames;
+﻿using Reinforced.Typings.Ast.TypeNames;
 using Reinforced.Typings.Fluent;
 using Config = Reinforced.Typings.Fluent.ConfigurationBuilder;
 namespace ProcedureMakerServer;
@@ -13,6 +12,6 @@ public static class ReinforcedTypingsConfiguration
             .UseModules());
 
         builder.Substitute(typeof(Guid), new RtSimpleTypeName("string"));
-
+        builder.Substitute(typeof(DateTime), new RtSimpleTypeName("Date"));
     }
 }

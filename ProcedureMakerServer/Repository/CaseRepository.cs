@@ -81,6 +81,7 @@ public class CaseRepository : ProcedureCrudBase<Case>, ICaseRepository
             CourtNumber = lcase.CourtNumber,
             CourtType = lcase.CourtType,
             DistrictName = lcase.DistrictName,
+            
         };
 
 

@@ -25,10 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AppLaunch\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EFCoreBase\EFCoreBase.csproj" />
   </ItemGroup>
 

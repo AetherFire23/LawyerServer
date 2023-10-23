@@ -27,6 +27,12 @@ namespace ProcedureMakerServer;
 //        .AutoOptionalProperties()
 //        .UseModules());
 
+
+// redis
+// stringpool
+
+
+
 public class Program
 {
     public static async Task Main(string[] args)

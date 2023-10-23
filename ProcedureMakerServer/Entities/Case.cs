@@ -11,7 +11,7 @@ namespace EFCoreBase.Entities;
 public class Case : EntityBase
 {
     public Guid ManagerLawyerId { get; set; }
-    public virtual Lawyer ManagerLawyer { get; set; } = new Lawyer();
+    public virtual Lawyer ManagerLawyer { get; set; }
 
     public Guid ClientId { get; set; }
     public virtual Client Client { get; set; } = new Client();

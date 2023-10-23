@@ -1,8 +1,14 @@
-﻿using OneOf;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using OneOf;
 using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Authentication.ReturnModels;
 using ProcedureMakerServer.Entities;
+using ProcedureMakerServer.Enums;
+using ProcedureMakerServer.Exceptions;
+using ProcedureMakerServer.Models;
 using Crypt = BCrypt.Net.BCrypt;
 namespace ProcedureMakerServer.Authentication;
 
@@ -13,37 +19,48 @@ public class AuthManager : IAuthManager
     private readonly IJwtTokenManager _jwtTokenManager;
     private readonly ProcedureContext _context;
 
-    public AuthManager(IUserRepository userRepository, IJwtTokenManager jwtTokenManager, ProcedureContext context)
+    public AuthManager(IUserRepository userRepository,
+                       IJwtTokenManager jwtTokenManager,
+                       ProcedureContext context)
     {
         _userRepository = userRepository;
         _jwtTokenManager = jwtTokenManager;
         _context = context;
     }
 
-    public async Task<OneOf<FailedLoginResult, SuccessLoginResult>> GenerateTokenIfCorrectCredentials(LoginRequest loginRequest)
+
+    // should rechange everything to the atualy datatypes i wanna send I guess
+    public async Task<OneOf<LoginResult, InvalidCredentials>> GenerateTokenIfCorrectCredentials(LoginRequest loginRequest)
     {
         var user = await _userRepository.GetUserByName(loginRequest.Username);
 
-        if (user is null) return new FailedLoginResult("incorrect userName");
-        if (!Crypt.Verify(loginRequest.Password, user.HashedPassword)) return new FailedLoginResult("inccorect password");
+        if (user is null) return new InvalidCredentials();
+        if (!Crypt.Verify(loginRequest.Password, user.HashedPassword))
+        {
+            return new InvalidCredentials();
+        }
 
         string token = await _jwtTokenManager.GenerateToken(user);
         UserDto userDto = await _userRepository.MapUserDto(user.Id);
 
-        return new SuccessLoginResult()
+        var req = new LoginResult()
         {
             Token = token,
             UserDto = userDto,
         };
+
+        return req; ;
     }
 
-    public async Task<OneOf<FailedRegisterResult, SuccessRegisterResult>> TryRegister(RegisterRequest registerRequest)
+    public async Task<OneOf<RegisterResult, InvalidRequestMessage>> TryRegister(RegisterRequest registerRequest)
     {
         var testedUser = await _userRepository.GetUserByName(registerRequest.Username);
         bool isUserExists = testedUser is not null;
-        if (isUserExists) return new FailedRegisterResult("user exist");
+
+        if (isUserExists) return new InvalidRequestMessage("");
 
         string hashedPassword = Crypt.HashPassword(registerRequest.Password);
+
         User user = new User()
         {
             HashedPassword = hashedPassword,
@@ -67,7 +84,6 @@ public class AuthManager : IAuthManager
             FirstName = user.Name,
         };
 
-        
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
@@ -80,6 +96,6 @@ public class AuthManager : IAuthManager
         await _context.SaveChangesAsync();
 
         var userDto = await _userRepository.MapUserDto(user.Id);
-        return new SuccessRegisterResult(userDto);
+        return new RequestResult(RequestResultTypes.Success, JsonConvert.SerializeObject(userDto));
     }
 }

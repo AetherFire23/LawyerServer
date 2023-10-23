@@ -37,10 +37,10 @@ public static class TestScope
                 Username = "fred",
             };
 
-            OneOf<FailedLoginResult, SuccessLoginResult> loginResult = await auth.GenerateTokenIfCorrectCredentials(loginRequest);
+            RequestResult result = await auth.GenerateTokenIfCorrectCredentials(loginRequest);
 
-            SuccessLoginResult success = loginResult.AsT1;
 
+            var loginResult = JsonConvert.DeserializeObject<LoginResult>(result.SerializedData);
             // now test crud capabilities
             // besoin du User icitte
 
@@ -50,13 +50,13 @@ public static class TestScope
                 CaseNumber = "200-04-555-222",
                 ClientFirstName = "Fred",
                 ClientLastName = "Richer",
-                LawyerId = success.UserDto.Lawyer.Id,
+                LawyerId = loginResult.UserDto.LawyerId,
             };
 
             await caseContextService.CreateNewCase(caseCreation);
 
 
-            var lcase = await caseContextService.GetCase(success.UserDto.Lawyer.Id);
+            var lcase = await caseContextService.GetCase(loginResult.UserDto.LawyerId);
 
             lcase.Cases.First().Client.FirstName = "I am changed!";
 

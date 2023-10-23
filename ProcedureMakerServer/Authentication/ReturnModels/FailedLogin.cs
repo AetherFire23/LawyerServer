@@ -1,19 +1,23 @@
 ﻿using ProcedureMakerServer.Enums;
 using ProcedureMakerServer.Interfaces;
+using Reinforced.Typings.Attributes;
 
 namespace ProcedureMakerServer.Authentication.ReturnModels;
 
-public class FailedRegisterResult : IMessageResult, IRequestResult
+[TsClass]
+public class FailedLogin : IMessageResult, IRequestResult
 {
     public string Message { get; set; } = string.Empty;
 
+    public string MessageMessage { get; set; } = string.Empty;
     public RequestResultTypes Result { get; } = RequestResultTypes.Fail;
 
-    public FailedRegisterResult()
+    public FailedLogin()
     {
 
     }
-    public FailedRegisterResult(string message)
+
+    public FailedLogin(string message)
     {
         Message = message;
     }

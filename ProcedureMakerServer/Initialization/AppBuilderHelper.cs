@@ -20,6 +20,8 @@ public static class AppBuilderHelper
         ConfigureHTTPLogging(builder);
     }
 
+
+
     private static void ConfigureAutoMapper(WebApplicationBuilder builder)
     {
         builder.Services.AddAutoMapper(x =>
