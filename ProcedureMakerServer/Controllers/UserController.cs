@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
+using ProcedureMakerServer.Scratches;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
@@ -12,6 +13,7 @@ namespace ProcedureMakerServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+//[ServiceFilter(typeof(HttpResponseExceptionFilter))]
 public class UserController : Controller
 {
     private readonly IAuthManager _authManager;
@@ -30,11 +32,8 @@ public class UserController : Controller
     [HttpPut("token")]
     public async Task<IActionResult> GenerateTokenIfValid([FromBody] LoginRequest loginRequest)
     {
-        var result = (await _authManager.GenerateTokenIfCorrectCredentials(loginRequest))
-            .Match<IActionResult>(Ok, NotFound);
-
-        return result;
-            
+        return (await _authManager.GenerateTokenIfCorrectCredentials(loginRequest))
+            .Match<IActionResult>(Ok, BadRequest);
     }
 
     [HttpGet("tokenLogin")]
@@ -55,15 +54,12 @@ public class UserController : Controller
         return Ok(result);
     }
 
-
-
     [HttpGet("test")]
     [Authorize(Roles = nameof(RoleTypes.Admin))]
     public async Task<IActionResult> AuthorizedTest(string token) // just for test
     {
         return Ok();
     }
-
 
     [HttpGet("test7")]
     public async Task<IActionResult> BreakTest()
@@ -81,5 +77,13 @@ public class UserController : Controller
             return Ok(obj);
         }
 
+    }
+
+    [HttpGet("test8")]
+    public async Task<IActionResult> BreakTest2()
+    {
+        throw new MyInvalidException();
+         
+        return Ok();
     }
 }

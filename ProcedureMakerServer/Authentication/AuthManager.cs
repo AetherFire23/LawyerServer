@@ -9,6 +9,7 @@ using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Enums;
 using ProcedureMakerServer.Exceptions;
 using ProcedureMakerServer.Models;
+using System.Net;
 using Crypt = BCrypt.Net.BCrypt;
 namespace ProcedureMakerServer.Authentication;
 
@@ -28,17 +29,17 @@ public class AuthManager : IAuthManager
         _context = context;
     }
 
-
     // should rechange everything to the atualy datatypes i wanna send I guess
-    public async Task<OneOf<LoginResult, InvalidCredentials>> GenerateTokenIfCorrectCredentials(LoginRequest loginRequest)
+    public async Task<LoginResult> GenerateTokenIfCorrectCredentials(LoginRequest loginRequest)
     {
         var user = await _userRepository.GetUserByName(loginRequest.Username);
 
         if (user is null) return new InvalidCredentials();
-        if (!Crypt.Verify(loginRequest.Password, user.HashedPassword))
-        {
-            return new InvalidCredentials();
-        }
+        if (!Crypt.Verify(loginRequest.Password, user.HashedPassword)) return new InvalidCredentials();
+
+        // just fire exceptions and handle it in useexcetionHandler
+        // middle for catching exceptions
+        // 
 
         string token = await _jwtTokenManager.GenerateToken(user);
         UserDto userDto = await _userRepository.MapUserDto(user.Id);
@@ -52,7 +53,7 @@ public class AuthManager : IAuthManager
         return req; ;
     }
 
-    public async Task<OneOf<RegisterResult, InvalidRequestMessage>> TryRegister(RegisterRequest registerRequest)
+    public async Task<RegisterResult> TryRegister(RegisterRequest registerRequest)
     {
         var testedUser = await _userRepository.GetUserByName(registerRequest.Username);
         bool isUserExists = testedUser is not null;
@@ -78,6 +79,8 @@ public class AuthManager : IAuthManager
             User = user,
         };
 
+
+
         var lawyer = new Lawyer()
         {
             UserId = user.Id,
@@ -96,6 +99,8 @@ public class AuthManager : IAuthManager
         await _context.SaveChangesAsync();
 
         var userDto = await _userRepository.MapUserDto(user.Id);
-        return new RequestResult(RequestResultTypes.Success, JsonConvert.SerializeObject(userDto));
+
+
+        return new RegisterResult(userDto);
     }
 }

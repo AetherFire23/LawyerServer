@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Newtonsoft.Json;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Initialization;
+using ProcedureMakerServer.Scratches;
+
 namespace ProcedureMakerServer;
 
 // case = dossier avocat
@@ -33,6 +36,26 @@ namespace ProcedureMakerServer;
 
 
 
+
+  //app.UseExceptionHandler(
+  //              options =>
+  //              {
+  //                  options.Run(
+  //                      async context =>
+  //                      {
+  //                          context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+  //                          context.Response.ContentType = "text/html";
+  //                          var ex = context.Features.Get<IExceptionHandlerFeature>();
+  //                          if (ex != null)
+  //                          {
+  //                              var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace}";
+  //                              await context.Response.WriteAsync(err).ConfigureAwait(false);
+  //                          }
+  //                      });
+  //              }
+  //          );
+
+
 public class Program
 {
     public static async Task Main(string[] args)
@@ -57,6 +80,21 @@ public class Program
         var app = builder.Build();
 
 
+
+        app.UseExceptionHandler((exceptionHandler) =>
+        {
+            exceptionHandler.Run(async context =>
+            {
+                var handler = context.Features.Get<IExceptionHandlerFeature>();
+
+                if (handler?.Error is MyInvalidExceptionBase exception)
+                {
+                    context.Response.StatusCode = exception.StatusCode;
+
+                    await context.Response.WriteAsJsonAsync(exception.Data);
+                }
+            });
+        });
 
         await AppConfigHelper.ConfigureApp(app);
 

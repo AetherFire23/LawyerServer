@@ -7,8 +7,6 @@ using System.Security.Claims;
 using System.Text;
 
 namespace ProcedureMakerServer.Authentication;
-
-
 public class JwtTokenManager : IJwtTokenManager
 {
     private readonly JwtConfig _config;
@@ -20,6 +18,7 @@ public class JwtTokenManager : IJwtTokenManager
         _tokenHandler = new JwtSecurityTokenHandler();
 
     }
+
     public async Task<string> GenerateToken(User user)
     {
         await Task.Delay(0);

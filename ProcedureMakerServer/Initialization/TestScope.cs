@@ -37,12 +37,12 @@ public static class TestScope
                 Username = "fred",
             };
 
-            RequestResult result = await auth.GenerateTokenIfCorrectCredentials(loginRequest);
+            var result = await auth.GenerateTokenIfCorrectCredentials(loginRequest);
 
 
-            var loginResult = JsonConvert.DeserializeObject<LoginResult>(result.SerializedData);
-            // now test crud capabilities
-            // besoin du User icitte
+            // var loginResult = JsonConvert.DeserializeObject<LoginResult>(result.SerializedData);
+
+            var s = result.AsT0;
 
 
             CaseCreationInfo caseCreation = new CaseCreationInfo()
@@ -50,13 +50,13 @@ public static class TestScope
                 CaseNumber = "200-04-555-222",
                 ClientFirstName = "Fred",
                 ClientLastName = "Richer",
-                LawyerId = loginResult.UserDto.LawyerId,
+                LawyerId = s.UserDto.LawyerId,
             };
 
             await caseContextService.CreateNewCase(caseCreation);
 
 
-            var lcase = await caseContextService.GetCase(loginResult.UserDto.LawyerId);
+            var lcase = await caseContextService.GetCase(s.UserDto.LawyerId);
 
             lcase.Cases.First().Client.FirstName = "I am changed!";
 

@@ -8,6 +8,8 @@ using ProcedureMakerServer.Services;
 using System.Reflection;
 namespace ProcedureMakerServer.Initialization;
 
+
+
 public static class AppBuilderHelper
 {
     private static WebApplicationBuilder _builder;
@@ -19,8 +21,6 @@ public static class AppBuilderHelper
         ConfigureAutoMapper(builder);
         ConfigureHTTPLogging(builder);
     }
-
-
 
     private static void ConfigureAutoMapper(WebApplicationBuilder builder)
     {
@@ -52,6 +52,9 @@ public static class AppBuilderHelper
         builder.Services.AddTransient<ICaseRepository, CaseRepository>();
 
         builder.Services.AddTransient<IClientRepository, ClientRepository>();
+
+
+        builder.Services.AddTransient<HttpResponseExceptionFilter>();
 
     }
 
