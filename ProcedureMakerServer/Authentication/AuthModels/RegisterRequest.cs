@@ -1,5 +1,4 @@
-﻿using ProcedureMakerServer.Interfaces;
-using Reinforced.Typings.Attributes;
+﻿using Reinforced.Typings.Attributes;
 
 namespace ProcedureMakerServer.Authentication.AuthModels;
 

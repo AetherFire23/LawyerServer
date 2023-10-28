@@ -16,6 +16,7 @@ public class CaseController : Controller
         _caseContextService = caseContextService;
     }
 
+    // I wanna create 
     [HttpPost("createcase1")]
     public async Task<IActionResult> CreateCaseContext([FromBody] CaseCreationInfo caseInfo)
     {
@@ -31,7 +32,7 @@ public class CaseController : Controller
         return Ok();
     }
 
-    [HttpGet("createcase3")]
+    [HttpGet("getcases")]
     public async Task<IActionResult> GetCaseContext(Guid lawyerId)
     {
         var caseContext = await _caseContextService.GetCase(lawyerId);

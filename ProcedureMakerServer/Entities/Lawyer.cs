@@ -15,7 +15,7 @@ public class Lawyer : CourtMemberBase
     public User User { get; set; }
 
 
-    public ICollection<Case> Cases { get; set; }
+    public ICollection<Case> Cases { get; set; } = new List<Case>();
 
     [JsonIgnore]
     public List<Client> Clients

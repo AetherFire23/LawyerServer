@@ -12,7 +12,7 @@ using ProcedureMakerServer;
 namespace ProcedureMakerServer.Migrations
 {
     [DbContext(typeof(ProcedureContext))]
-    [Migration("20231018014228_initial")]
+    [Migration("20231025020047_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -168,6 +168,10 @@ namespace ProcedureMakerServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PostalCase")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasColumnType("text");
@@ -237,6 +241,10 @@ namespace ProcedureMakerServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PostalCase")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasColumnType("text");
@@ -300,6 +308,10 @@ namespace ProcedureMakerServer.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MobilePhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PostalCase")
                         .IsRequired()
                         .HasColumnType("text");
 

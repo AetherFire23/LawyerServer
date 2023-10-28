@@ -7,5 +7,5 @@ namespace ProcedureMakerServer.Interfaces;
 [TsInterface]
 public interface IRequestResult
 {
-    public RequestResultTypes Result { get;  }
+    public RequestResultTypes Result { get; }
 }

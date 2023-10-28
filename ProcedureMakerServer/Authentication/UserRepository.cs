@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Entities;
+using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 using ProcedureMakerServer.Repository.ProcedureRepo;
 
 namespace ProcedureMakerServer.Authentication;
@@ -37,8 +38,11 @@ public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
 
     public async Task<UserDto> MapUserDto(Guid id)
     {
-        User? user = await Set.FirstAsync(x => x.Id == id);
-        Lawyer lawyer = await Context.Lawyers.FirstAsync(x => x.UserId == id);
+        User? user = await Set.FirstOrDefaultAsync(x => x.Id == id);
+        Lawyer lawyer = await Context.Lawyers.FirstOrDefaultAsync(x => x.UserId == id);
+
+        if (user is null || lawyer is null) throw new InvalidTokenException();
+
         var userDto = new UserDto()
         {
             Name = user.Name,

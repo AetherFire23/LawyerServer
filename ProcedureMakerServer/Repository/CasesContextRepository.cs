@@ -1,5 +1,4 @@
-﻿using ProcedureMakerServer.Authentication;
-using ProcedureMakerServer.Authentication.Interfaces;
+﻿using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Dtos;
 using ProcedureMakerServer.Interfaces;
 
@@ -43,6 +42,7 @@ public class CasesContextRepository : ICasesContextRepository
         CasesContext context = new CasesContext()
         {
             Cases = cases,
+            Lawyer = lawyer,
         };
 
         return context;

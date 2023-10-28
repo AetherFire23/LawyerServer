@@ -18,6 +18,7 @@ public abstract class PersonBase : EntityBase
     public string WorkPhoneNumber { get; set; } = string.Empty;
     public string HomePhoneNumber { get; set; } = string.Empty;
     public bool HasJuridicalAid { get; set; } = false;
+    public string PostalCase { get; set; } = string.Empty;
 
     [TsDate]
     public DateTime DateOfBirth { get; set; } = DateTime.MinValue;

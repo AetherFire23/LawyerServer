@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using EFCoreBase.Entities;
 using Microsoft.EntityFrameworkCore;
-using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Dtos;
-using ProcedureMakerServer.Entities;
-using ProcedureMakerServer.Enums;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository.ProcedureRepo;
 
@@ -81,7 +78,7 @@ public class CaseRepository : ProcedureCrudBase<Case>, ICaseRepository
             CourtNumber = lcase.CourtNumber,
             CourtType = lcase.CourtType,
             DistrictName = lcase.DistrictName,
-            
+
         };
 
 

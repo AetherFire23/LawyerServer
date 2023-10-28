@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Newtonsoft.Json;
 using ProcedureMakerServer.Authentication;
+using ProcedureMakerServer.Exceptions;
 using ProcedureMakerServer.Initialization;
 using ProcedureMakerServer.Scratches;
 
@@ -37,23 +38,23 @@ namespace ProcedureMakerServer;
 
 
 
-  //app.UseExceptionHandler(
-  //              options =>
-  //              {
-  //                  options.Run(
-  //                      async context =>
-  //                      {
-  //                          context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
-  //                          context.Response.ContentType = "text/html";
-  //                          var ex = context.Features.Get<IExceptionHandlerFeature>();
-  //                          if (ex != null)
-  //                          {
-  //                              var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace}";
-  //                              await context.Response.WriteAsync(err).ConfigureAwait(false);
-  //                          }
-  //                      });
-  //              }
-  //          );
+//app.UseExceptionHandler(
+//              options =>
+//              {
+//                  options.Run(
+//                      async context =>
+//                      {
+//                          context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+//                          context.Response.ContentType = "text/html";
+//                          var ex = context.Features.Get<IExceptionHandlerFeature>();
+//                          if (ex != null)
+//                          {
+//                              var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace}";
+//                              await context.Response.WriteAsync(err).ConfigureAwait(false);
+//                          }
+//                      });
+//              }
+//          );
 
 
 public class Program
@@ -71,6 +72,12 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.ConfigureJwt();
+
+
+        builder.Services.AddRouting(options =>
+        {
+            options.LowercaseUrls = true;
+        }); // omgf
         AppBuilderHelper.Configure(builder);
 
 
@@ -79,22 +86,41 @@ public class Program
 
         var app = builder.Build();
 
-
-
-        app.UseExceptionHandler((exceptionHandler) =>
+        app.UseExceptionHandler(exceptionHandler =>
         {
             exceptionHandler.Run(async context =>
             {
-                var handler = context.Features.Get<IExceptionHandlerFeature>();
+                IExceptionHandlerPathFeature exceptionHandlerFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 
-                if (handler?.Error is MyInvalidExceptionBase exception)
+                if (exceptionHandlerFeature?.Error is MyInvalidExceptionBase exBase)
                 {
-                    context.Response.StatusCode = exception.StatusCode;
+                    context.Response.StatusCode = (int)exBase.StatusCode;
 
-                    await context.Response.WriteAsJsonAsync(exception.Data);
+                    ExceptionResponseData responseData = new()
+                    {
+                        Data = exBase.Data,
+                        Message = exBase.Message,
+                    };
+
+                    await context.Response.WriteAsJsonAsync(responseData);
                 }
             });
         });
+
+        //app.UseExceptionHandler((exceptionHandler) =>
+        //{
+        //    exceptionHandler.Run(async context =>
+        //    {
+        //        var handler = context.Features.Get<IExceptionHandlerFeature>();
+
+        //        if (handler?.Error is MyInvalidExceptionBase exception)
+        //        {
+        //            context.Response.StatusCode = exception.StatusCode;
+
+        //            await context.Response.WriteAsJsonAsync(exception.Data);
+        //        }
+        //    });
+        //});
 
         await AppConfigHelper.ConfigureApp(app);
 

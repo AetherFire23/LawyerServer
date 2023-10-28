@@ -1,29 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc;
-using ProcedureMakerServer.Scratches;
+﻿//using Microsoft.AspNetCore.Mvc.Filters;
+//using Microsoft.AspNetCore.Mvc;
+//using ProcedureMakerServer.Scratches;
 
-public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
-{
-    // list of errors?
-    public HttpResponseExceptionFilter()
-    {
-        
-    }
+//public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
+//{
+//    // list of errors?
+//    public HttpResponseExceptionFilter()
+//    {
 
-    public int Order => int.MaxValue - 10;
+//    }
 
-    public void OnActionExecuting(ActionExecutingContext context) { }
+//    public int Order => int.MaxValue - 10;
 
-    public void OnActionExecuted(ActionExecutedContext context)
-    {
-        if (context.Exception is MyInvalidExceptionBase myInvalidException)
-        {
-            context.Result = new ObjectResult(myInvalidException.Data)
-            {
-                StatusCode = myInvalidException.StatusCode,
-            };
+//    public void OnActionExecuting(ActionExecutingContext context) { }
 
-            context.ExceptionHandled = true;
-        }
-    }
-}
+//    public void OnActionExecuted(ActionExecutedContext context)
+//    {
+//        if (context.Exception is MyInvalidExceptionBase myInvalidException)
+//        {
+//            context.Result = new ObjectResult(myInvalidException.Data)
+//            {
+//                StatusCode = myInvalidException.StatusCode,
+//            };
+
+//            context.ExceptionHandled = true;
+//        }
+//    }
+//}

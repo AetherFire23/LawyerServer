@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
-using ProcedureMakerServer.Scratches;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using ProcedureMakerServer.Authentication.ReturnModels;
+using ProcedureMakerServer.Constants;
+using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 using System.Security.Claims;
 
 namespace ProcedureMakerServer.Controllers;
@@ -29,29 +28,35 @@ public class UserController : Controller
         _JwtTokenManager = jwtTokenManager;
     }
 
-    [HttpPut("token")]
+    [HttpPut(UserEndpoints.CredentialsLogin)]
     public async Task<IActionResult> GenerateTokenIfValid([FromBody] LoginRequest loginRequest)
     {
-        return (await _authManager.GenerateTokenIfCorrectCredentials(loginRequest))
-            .Match<IActionResult>(Ok, BadRequest);
+        LoginResult result = await _authManager.GenerateTokenIfCorrectCredentials(loginRequest);
+        return Ok(result);
     }
 
-    [HttpGet("tokenLogin")]
-    [Authorize(Roles = nameof(RoleTypes.Normal))]
+    [HttpPost(UserEndpoints.TokenLogin)]
+    [Authorize(Roles = nameof(RoleTypes.Normal))] // token still valid but user got deleted when db dropped
     public async Task<IActionResult> GetUserDto() // bad cos parametres often get cached and-or expoised
     {
         Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
         var userDto = await _userRepository.MapUserDto(userId);
 
-        return Ok(userDto);
+        LoginResult result = new LoginResult()
+        {
+            Token = "",
+            UserDto = userDto,
+
+        };
+        return Ok(result);
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest registerRequest)
     {
-        var result = await _authManager.TryRegister(registerRequest);
-        return Ok(result);
+        await _authManager.TryRegister(registerRequest);
+        return Ok();
     }
 
     [HttpGet("test")]
@@ -69,21 +74,12 @@ public class UserController : Controller
         if (failOrSuccess == 0)
         {
             //  throw new HttpRequestException("Lolzida", new Exception(), System.Net.HttpStatusCode.NotFound);
-            return NotFound(obj);
+            throw new InvalidCredentialsException();
 
         }
         else
         {
             return Ok(obj);
         }
-
-    }
-
-    [HttpGet("test8")]
-    public async Task<IActionResult> BreakTest2()
-    {
-        throw new MyInvalidException();
-         
-        return Ok();
     }
 }

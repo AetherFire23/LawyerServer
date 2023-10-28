@@ -1,10 +1,7 @@
 ﻿using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Interfaces;
-using Newtonsoft.Json;
 using ProcedureMakerServer.Models;
-using OneOf;
-using ProcedureMakerServer.Authentication.ReturnModels;
 
 namespace ProcedureMakerServer.Initialization;
 public static class TestScope
@@ -42,7 +39,7 @@ public static class TestScope
 
             // var loginResult = JsonConvert.DeserializeObject<LoginResult>(result.SerializedData);
 
-            var s = result.AsT0;
+            var logResult = result;
 
 
             CaseCreationInfo caseCreation = new CaseCreationInfo()
@@ -50,19 +47,19 @@ public static class TestScope
                 CaseNumber = "200-04-555-222",
                 ClientFirstName = "Fred",
                 ClientLastName = "Richer",
-                LawyerId = s.UserDto.LawyerId,
+                LawyerId = logResult.UserDto.LawyerId,
             };
 
             await caseContextService.CreateNewCase(caseCreation);
 
 
-            var lcase = await caseContextService.GetCase(s.UserDto.LawyerId);
+            var lcase = await caseContextService.GetCase(logResult.UserDto.LawyerId);
 
             lcase.Cases.First().Client.FirstName = "I am changed!";
 
             await caseContextService.SaveContextDto(lcase);
 
-           // caseContextService.CreateNewCase();
+            // caseContextService.CreateNewCase();
 
 
 

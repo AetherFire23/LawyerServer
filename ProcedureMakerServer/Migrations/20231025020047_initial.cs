@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -53,6 +52,7 @@ namespace ProcedureMakerServer.Migrations
                     WorkPhoneNumber = table.Column<string>(type: "text", nullable: false),
                     HomePhoneNumber = table.Column<string>(type: "text", nullable: false),
                     HasJuridicalAid = table.Column<bool>(type: "boolean", nullable: false),
+                    PostalCase = table.Column<string>(type: "text", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     SocialSecurityNumber = table.Column<string>(type: "text", nullable: false),
                     CourtRole = table.Column<int>(type: "integer", nullable: false)
@@ -110,6 +110,7 @@ namespace ProcedureMakerServer.Migrations
                     WorkPhoneNumber = table.Column<string>(type: "text", nullable: false),
                     HomePhoneNumber = table.Column<string>(type: "text", nullable: false),
                     HasJuridicalAid = table.Column<bool>(type: "boolean", nullable: false),
+                    PostalCase = table.Column<string>(type: "text", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     SocialSecurityNumber = table.Column<string>(type: "text", nullable: false),
                     CourtRole = table.Column<int>(type: "integer", nullable: false)
@@ -172,6 +173,7 @@ namespace ProcedureMakerServer.Migrations
                     WorkPhoneNumber = table.Column<string>(type: "text", nullable: false),
                     HomePhoneNumber = table.Column<string>(type: "text", nullable: false),
                     HasJuridicalAid = table.Column<bool>(type: "boolean", nullable: false),
+                    PostalCase = table.Column<string>(type: "text", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     SocialSecurityNumber = table.Column<string>(type: "text", nullable: false),
                     CourtRole = table.Column<int>(type: "integer", nullable: false)

@@ -9,7 +9,7 @@ public class RequestResult
 
     public RequestResult(RequestResultTypes result)
     {
-        
+
     }
     public RequestResult(RequestResultTypes result, string serializedData)
     {

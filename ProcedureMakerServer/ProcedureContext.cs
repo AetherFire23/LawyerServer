@@ -15,7 +15,7 @@ public class ProcedureContext : DbContext
     public DbSet<Case> Cases { get; set; }
     public DbSet<Lawyer> Lawyers { get; set; }
     public DbSet<CasePart> CaseParts { get; set; }
-    public DbSet<Client> Clients { get; set; }  
+    public DbSet<Client> Clients { get; set; }
 
     public ProcedureContext(DbContextOptions<ProcedureContext> options) : base(options)
     {

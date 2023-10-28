@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using ProcedureMakerServer.Constants;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Extensions;
 using ProcedureMakerServer.Interfaces;
@@ -61,7 +60,7 @@ public class FileController : ControllerBase
         bool isValidForm = file is not null && file.Length > 0;
         if (!isValidForm) return BadRequest("Invalid file or no file was provided.");
 
-        await file.CreateFileTo($"{FileNames.ModelsPath}{file.FileName}");
+        await file.CreateFileTo($"{"models"}{file.FileName}");
         Console.WriteLine("upkloaded");
         return Ok("File uploaded successfully!");
     }

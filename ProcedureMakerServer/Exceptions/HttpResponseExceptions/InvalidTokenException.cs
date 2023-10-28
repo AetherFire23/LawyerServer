@@ -3,12 +3,12 @@ using System.Net;
 
 namespace ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 
-public class InvalidCredentialsException : MyInvalidExceptionBase
+public class InvalidTokenException : MyInvalidExceptionBase
 {
     public override HttpStatusCode StatusCode { get; set; } = HttpStatusCode.BadRequest;
 
-    public InvalidCredentialsException()
+    public InvalidTokenException()
     {
-        base.Message = "The provided credentials were invalid.";
+        base.Message = "The provided token was invalid";
     }
 }

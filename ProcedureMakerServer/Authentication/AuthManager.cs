@@ -1,15 +1,8 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using OneOf;
-using ProcedureMakerServer.Authentication.AuthModels;
+﻿using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Authentication.ReturnModels;
 using ProcedureMakerServer.Entities;
-using ProcedureMakerServer.Enums;
-using ProcedureMakerServer.Exceptions;
-using ProcedureMakerServer.Models;
-using System.Net;
+using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 using Crypt = BCrypt.Net.BCrypt;
 namespace ProcedureMakerServer.Authentication;
 
@@ -34,12 +27,11 @@ public class AuthManager : IAuthManager
     {
         var user = await _userRepository.GetUserByName(loginRequest.Username);
 
-        if (user is null) return new InvalidCredentials();
-        if (!Crypt.Verify(loginRequest.Password, user.HashedPassword)) return new InvalidCredentials();
+        if (user is null) throw new InvalidCredentialsException();
+        if (!Crypt.Verify(loginRequest.Password, user.HashedPassword)) throw new InvalidCredentialsException();
 
         // just fire exceptions and handle it in useexcetionHandler
         // middle for catching exceptions
-        // 
 
         string token = await _jwtTokenManager.GenerateToken(user);
         UserDto userDto = await _userRepository.MapUserDto(user.Id);
@@ -50,15 +42,15 @@ public class AuthManager : IAuthManager
             UserDto = userDto,
         };
 
-        return req; ;
+        return req;
     }
 
-    public async Task<RegisterResult> TryRegister(RegisterRequest registerRequest)
+    public async Task TryRegister(RegisterRequest registerRequest)
     {
         var testedUser = await _userRepository.GetUserByName(registerRequest.Username);
         bool isUserExists = testedUser is not null;
 
-        if (isUserExists) return new InvalidRequestMessage("");
+        if (isUserExists) throw new InvalidCredentialsException();
 
         string hashedPassword = Crypt.HashPassword(registerRequest.Password);
 
@@ -101,6 +93,5 @@ public class AuthManager : IAuthManager
         var userDto = await _userRepository.MapUserDto(user.Id);
 
 
-        return new RegisterResult(userDto);
     }
 }
