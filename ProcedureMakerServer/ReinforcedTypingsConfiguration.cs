@@ -26,6 +26,22 @@ public static class ReinforcedTypingsConfiguration
 
             });
 
+        builder.ExportAsClass<CasesEndpoints>()
+    .WithFields(typeof(CasesEndpoints).GetFields().ToList(), x =>
+    {
+        x.WithFieldCodeGenerator<ConstCodeGen>();
+
+
+    });
+
+        //    builder.ExportAsClass<CasesEndpoints>()
+        //.WithFields(typeof(CasesEndpoints).GetFields().ToList(), x =>
+        //{
+        //    x.WithFieldCodeGenerator<ConstCodeGen>();
+
+
+        //});
+
         //builder.ExportAsClass<UserEndpoints>()
         //    .WithMethods(typeof(UserEndpoints).GetMethods(), x =>
         //    {

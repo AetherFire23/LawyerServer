@@ -12,7 +12,6 @@ namespace ProcedureMakerServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-//[ServiceFilter(typeof(HttpResponseExceptionFilter))]
 public class UserController : Controller
 {
     private readonly IAuthManager _authManager;
@@ -52,7 +51,7 @@ public class UserController : Controller
         return Ok(result);
     }
 
-    [HttpPost("register")]
+    [HttpPost(UserEndpoints.Register)]
     public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest registerRequest)
     {
         await _authManager.TryRegister(registerRequest);
@@ -64,22 +63,5 @@ public class UserController : Controller
     public async Task<IActionResult> AuthorizedTest(string token) // just for test
     {
         return Ok();
-    }
-
-    [HttpGet("test7")]
-    public async Task<IActionResult> BreakTest()
-    {
-        var obj = new LoginRequest() { Password = "dw", Username = "wd" };
-        int failOrSuccess = Random.Shared.Next(0, 2);
-        if (failOrSuccess == 0)
-        {
-            //  throw new HttpRequestException("Lolzida", new Exception(), System.Net.HttpStatusCode.NotFound);
-            throw new InvalidCredentialsException();
-
-        }
-        else
-        {
-            return Ok(obj);
-        }
     }
 }
