@@ -5,7 +5,7 @@ using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Authentication.ReturnModels;
 using ProcedureMakerServer.Constants;
-using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
+using ProcedureMakerServer.Scratches;
 using System.Security.Claims;
 
 namespace ProcedureMakerServer.Controllers;
@@ -27,17 +27,21 @@ public class UserController : Controller
         _JwtTokenManager = jwtTokenManager;
     }
 
+    [DefaultReturnType(typeof(LoginResult))]
     [HttpPut(UserEndpoints.CredentialsLogin)]
-    public async Task<IActionResult> GenerateTokenIfValid([FromBody] LoginRequest loginRequest)
+    public async Task<IActionResult> CredentialsLoginRequest([FromBody] LoginRequest loginRequest)
     {
+        Console.WriteLine($"token login request procced{loginRequest.Username}");
         LoginResult result = await _authManager.GenerateTokenIfCorrectCredentials(loginRequest);
         return Ok(result);
     }
 
     [HttpPost(UserEndpoints.TokenLogin)]
+    [DefaultReturnType(typeof(LoginResult))]
     [Authorize(Roles = nameof(RoleTypes.Normal))] // token still valid but user got deleted when db dropped
-    public async Task<IActionResult> GetUserDto() // bad cos parametres often get cached and-or expoised
+    public async Task<IActionResult> TokenLogin() // bad cos parametres often get cached and-or expoised
     {
+        // work in progress 
         Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
         var userDto = await _userRepository.MapUserDto(userId);
@@ -48,6 +52,7 @@ public class UserController : Controller
             UserDto = userDto,
 
         };
+
         return Ok(result);
     }
 
@@ -58,10 +63,44 @@ public class UserController : Controller
         return Ok();
     }
 
-    [HttpGet("test")]
-    [Authorize(Roles = nameof(RoleTypes.Admin))]
-    public async Task<IActionResult> AuthorizedTest(string token) // just for test
+
+    [DefaultReturnType(typeof(void))]
+    [HttpPost("LolzidaEndpoint")]
+    public async Task<IActionResult> RegisterUser(string lolzida, string otherParam)
     {
         return Ok();
     }
+
+
+
+    //[HttpGet("authorizedrequest")]
+    //// [Authorize(Roles = nameof(RoleTypes.Normal))]
+    //public async Task<IActionResult> AuthorizedTesst() // just for test
+    //{
+    //    return Ok();
+    //}
+
+
+
+    //[HttpGet("test2")]
+    //public async Task<IActionResult> test(string token, string token2) // just for test
+    //{
+    //    return Ok();
+    //}
+
+    //public static int Counter = 0;
+    //[HttpGet("getcount")]
+    //public async Task<IActionResult> Test() // just for test
+    //{
+    //    Console.WriteLine($"Get {Counter}");
+    //    return Ok(Counter);
+    //}
+
+    //[HttpPost("setcount")]
+    //public async Task<IActionResult> Test(int count) // just for test
+    //{
+    //    Counter = count;
+    //    Console.WriteLine($"Set${Counter}");
+    //    return Ok(new {Counter = count});
+    //}
 }

@@ -12,6 +12,8 @@ public class CaseDto : EntityBase
     public Client Client { get; set; } = new Client();
     public List<CasePart> Participants { get; set; } = new List<CasePart>();
 
+
+
     public string DistrictName { get; set; } = string.Empty;
     public string CourtAffairNumber { get; set; } = string.Empty;
     public string CaseNumber { get; set; } = string.Empty; // cases can have different filenumbers if it comes again many times 

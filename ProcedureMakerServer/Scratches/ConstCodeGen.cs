@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using ProcedureMakerServer.Constants;
-using ProcedureMakerServer.Utils;
+﻿using ProcedureMakerServer.Utils;
 using Reinforced.Typings;
 using Reinforced.Typings.Ast;
 using Reinforced.Typings.Generators;
@@ -39,9 +37,6 @@ public class ConstCodeGen : FieldCodeGenerator
             builder.Append($"{element.Name.ToLower()}`");
             result.InitializationExpression = builder.ToString();
         }
-
-
-
 
         return result;
     }

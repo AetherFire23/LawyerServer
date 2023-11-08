@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using System;
 
 namespace ProcedureMakerServer;
 
@@ -13,9 +12,9 @@ public class LowercaseControllerModelConvention : IControllerModelConvention
             var selector = controller.Selectors[i];
             selector.AttributeRouteModel.Template = selector.AttributeRouteModel.Template.ToLower();
 
-         //   controller.ControllerName = controller.ControllerName.ToLower();
+            //   controller.ControllerName = controller.ControllerName.ToLower();
             Console.WriteLine(controller.ControllerName); // works :)
-          
+
 
         }
 
@@ -29,7 +28,7 @@ public class LowercaseControllerModelConvention : IControllerModelConvention
 
         //foreach (var item in controller.Properties.)
         //{
-            
+
         //}
     }
 }

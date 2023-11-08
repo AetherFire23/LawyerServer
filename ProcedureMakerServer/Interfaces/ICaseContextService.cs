@@ -5,7 +5,7 @@ namespace ProcedureMakerServer.Interfaces;
 
 public interface ICaseContextService
 {
-    Task CreateNewCase(CaseCreationInfo creationInfo);
-    Task<CasesContext> GetCase(Guid lawyerId);
-    Task SaveContextDto(CasesContext caseContext);
+    Task<GetCaseResponse> CreateNewCase(CaseCreationInfo creationInfo);
+    Task<CasesContext> GetCaseContext(Guid lawyerId);
+    Task SaveCaseDto(CaseDto caseDto);
 }

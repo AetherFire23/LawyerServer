@@ -53,11 +53,11 @@ public static class TestScope
             await caseContextService.CreateNewCase(caseCreation);
 
 
-            var lcase = await caseContextService.GetCase(logResult.UserDto.LawyerId);
+            var lcase = await caseContextService.GetCaseContext(logResult.UserDto.LawyerId);
 
             lcase.Cases.First().Client.FirstName = "I am changed!";
 
-            await caseContextService.SaveContextDto(lcase);
+            await caseContextService.SaveCaseDto(lcase.Cases.First());
 
             // caseContextService.CreateNewCase();
 

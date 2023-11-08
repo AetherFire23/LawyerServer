@@ -3,7 +3,7 @@ using System.Net;
 
 namespace ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 
-public class InvalidCredentialsException : MyInvalidExceptionBase
+public class InvalidCredentialsException : HttpExceptionBase
 {
     public override HttpStatusCode StatusCode { get; set; } = HttpStatusCode.BadRequest;
 

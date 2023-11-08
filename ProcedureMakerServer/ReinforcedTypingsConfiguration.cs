@@ -2,8 +2,6 @@
 using ProcedureMakerServer.Scratches;
 using Reinforced.Typings.Ast.TypeNames;
 using Reinforced.Typings.Fluent;
-using System.Diagnostics;
-using System.Reflection;
 using Config = Reinforced.Typings.Fluent.ConfigurationBuilder;
 namespace ProcedureMakerServer;
 
@@ -22,46 +20,12 @@ public static class ReinforcedTypingsConfiguration
             .WithFields(typeof(UserEndpoints).GetFields().ToList(), x =>
             {
                 x.WithFieldCodeGenerator<ConstCodeGen>();
-
-
             });
 
         builder.ExportAsClass<CasesEndpoints>()
-    .WithFields(typeof(CasesEndpoints).GetFields().ToList(), x =>
-    {
-        x.WithFieldCodeGenerator<ConstCodeGen>();
-
-
-    });
-
-        //    builder.ExportAsClass<CasesEndpoints>()
-        //.WithFields(typeof(CasesEndpoints).GetFields().ToList(), x =>
-        //{
-        //    x.WithFieldCodeGenerator<ConstCodeGen>();
-
-
-        //});
-
-        //builder.ExportAsClass<UserEndpoints>()
-        //    .WithMethods(typeof(UserEndpoints).GetMethods(), x =>
-        //    {
-        //        x.WithCodeGenerator<MethGen>();
-        //    });
-
-
-        var classes = Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .Where(x => x.GetCustomAttribute<TsConstantClassAttribute>() is not null)
-            .ToList();
-        //   x.WithCodeGenerator<ConstClassCode>();
-
-        //   x.OverrideNamespace("sex");
-
-        //Trace.WriteLine(classes);
-        //builder.ExportAsClasses(classes, x =>
-        //{
-        //});
-
-
+            .WithFields(typeof(CasesEndpoints).GetFields().ToList(), x =>
+            {
+                x.WithFieldCodeGenerator<ConstCodeGen>();
+            });
     }
 }

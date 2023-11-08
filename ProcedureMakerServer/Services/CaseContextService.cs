@@ -1,6 +1,7 @@
 ﻿using EFCoreBase.Entities;
 using ProcedureMakerServer.Dtos;
 using ProcedureMakerServer.Entities;
+using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Models;
 
@@ -18,13 +19,11 @@ public class CaseContextService : ICaseContextService
         _lawyerRepository = lawyerRepository;
     }
 
-    public async Task CreateNewCase(CaseCreationInfo creationInfo)
+    public async Task<GetCaseResponse> CreateNewCase(CaseCreationInfo creationInfo)
     {
         var (lawyerId, caseNumber, clientFirstName, clientLastName) = creationInfo;
 
         await _procedureContext.SaveChangesAsync();
-
-        // initialize some default values but leave the rest mostly empty
 
         var lawyer = await _lawyerRepository.GetEntityById(lawyerId);
 
@@ -38,7 +37,6 @@ public class CaseContextService : ICaseContextService
         await _procedureContext.Clients.AddAsync(client);
         await _procedureContext.SaveChangesAsync();
 
-
         Case c = new Case()
         {
             CaseNumber = caseNumber,
@@ -46,23 +44,21 @@ public class CaseContextService : ICaseContextService
             Client = client
         };
 
-
         await _procedureContext.Cases.AddAsync(c);
         await _procedureContext.SaveChangesAsync();
-
+        return new GetCaseResponse() { CreatedId = c.Id };
     }
 
-    public async Task<CasesContext> GetCase(Guid lawyerId)
+    public async Task<CasesContext> GetCaseContext(Guid lawyerId)
     {
-        var caseContext = await _casesContextRepository.MapCasesContext(lawyerId);
+        if (lawyerId.Equals(Guid.Empty)) throw new ArgumentInvalidException("LawyerId was empty");
+
+        CasesContext caseContext = await _casesContextRepository.MapCasesContext(lawyerId);
         return caseContext;
     }
 
-    public async Task SaveContextDto(CasesContext caseContext)
+    public async Task SaveCaseDto(CaseDto caseDto)
     {
-        foreach (CaseDto caseDto in caseContext.Cases)
-        {
-            await _casesContextRepository.ModifyContextFromCaseDto(caseDto);
-        }
+        await _casesContextRepository.ModifyCaseDto(caseDto);
     }
 }

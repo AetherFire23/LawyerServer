@@ -37,7 +37,13 @@ public class LawyerRepository : ProcedureCrudBase<Lawyer>, ILawyerRepository
     public async Task ModifyLawyer(Lawyer lawyer)
     {
         var entity = await GetEntityById(lawyer.Id);
-
+        entity.CourtRole = lawyer.CourtRole;
+        entity.Address = entity.Address;
+        entity.City = lawyer.City;
+        entity.Country = lawyer.Country;
+        entity.LastName = lawyer.LastName;
+        entity.FirstName = lawyer.FirstName;
+        entity.DateOfBirth = lawyer.DateOfBirth;
 
         // Do i really need a profile - yep
         // proceduralement creer les profiles?

@@ -25,7 +25,6 @@ public class User : EntityBase
 [TsClass]
 public class Role : EntityBase
 {
-
     public RoleTypes RoleType { get; set; }
 
     [JsonIgnore]

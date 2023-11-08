@@ -33,7 +33,7 @@ public class CaseRepository : ProcedureCrudBase<Case>, ICaseRepository
     {
         var lcase = await c2.Cases
             //.Include(p => p.Client)
-            //.Include(c => c.Participants)
+            .Include(c => c.Participants)
             //.Include(c => c.ManagerLawyer)
             .FirstOrDefaultAsync(c => c.Id == id);
 

@@ -5,5 +5,5 @@ namespace ProcedureMakerServer.Interfaces;
 public interface ICasesContextRepository
 {
     Task<CasesContext> MapCasesContext(Guid userId);
-    Task ModifyContextFromCaseDto(CaseDto caseDto);
+    Task ModifyCaseDto(CaseDto caseDto);
 }

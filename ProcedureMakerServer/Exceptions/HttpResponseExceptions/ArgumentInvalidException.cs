@@ -3,12 +3,14 @@ using System.Net;
 
 namespace ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 
-public class InvalidTokenException : HttpExceptionBase
+
+
+public class ArgumentInvalidException : HttpExceptionBase
 {
     public override HttpStatusCode StatusCode { get; set; } = HttpStatusCode.BadRequest;
 
-    public InvalidTokenException()
+    public ArgumentInvalidException(string message)
     {
-        base.Message = "The provided token was invalid";
+        base.Message = message;
     }
 }
