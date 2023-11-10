@@ -20,9 +20,17 @@ public static class WordHelper
     public static WordprocessingDocument OpenDocumentFromBytes(byte[] bytes)
     {
         var stream = new MemoryStream(bytes, 0, (int)bytes.Length);
-        var mainDoc = WordprocessingDocument.Open(stream, true);
+        var readonlyCopy = WordprocessingDocument.Open(stream, false);
 
-        return mainDoc;
+        string path = $"{Guid.NewGuid()}.docx";
+        var pack = readonlyCopy.Clone(path);
+
+        readonlyCopy.Dispose();
+        pack.Dispose();
+
+        var writeable = WordprocessingDocument.Open(path, true);
+
+        return writeable;
     }
 
     public static ParagraphProperties GetPropertiesOrCreate(this Paragraph self)

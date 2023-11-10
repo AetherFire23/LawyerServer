@@ -23,6 +23,8 @@ using System.Text;
 using PdfSharp.Pdf.IO;
 using PdfSharp.Pdf;
 using ProcedureMakerServer.Services;
+using ProcedureMakerServer.TemplateManagement.PdfManagement;
+using ProcedureMakerServer.EmailMaker;
 
 namespace ProcedureMakerServer;
 
@@ -97,155 +99,68 @@ public class Program
     public static async Task Main(string[] args)
     {
         // steps :
+        // class RuntimeInformation to check on which platofrm I am
+        // another class also exists to check if i am on x86
+        // 
 
         // 1. DOC GEN
         // Generate document to be filled
         // user interaction (signs document, fills it)
-        var s = DocumentCache.GetDocumentCopy(DocumentTypes.Backing);
-        var t = DocumentMaker.GenerateDocument(DocumentDummies.CaseDto, DocumentTypes.Backing);
 
-        
+        //return some docx here here
+
         // 2. NOTIFY
         // sends the modified document back as pdf (check for digitally signing options)
+        // IFOrmFile.CreatFileTo(.pdfShit)
+        var signedDocumentPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.Backing);
+
+        // Create Backing as PDF
+        var backingPdfPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.Backing);
+
+        // Merge signed document + backing
+        PdfMerger.MergePdfs(new() { signedDocumentPath, backingPdfPath });
 
 
-        // Merge document + backing
         // create html body for notification label
-        // format subject title
-        // (dont forget number of pages inside the document)
 
+        // format subject title
+
+        EmailCredentials credentials = new EmailCredentials();
+        credentials.Email = "richerf3212@gmail.com";
+        credentials.AppPassword = MyPassword.Pass;
+
+
+        SendEmailInfo sendingInfo = new SendEmailInfo();
+        sendingInfo.Subject = await DocumentMaker.GetEmailSubject(DocumentDummies.CaseDto, DocumentTypes.Backing);
+        string htmlPath = await DocumentMaker.GenerateDocumentAsHtml(DocumentDummies.CaseDto, DocumentTypes.Backing);
+        sendingInfo.EmailHtmlBody = File.ReadAllText(htmlPath);
+        sendingInfo.To = "richerf3212@gmail.com";
+
+        await EmailSender.NotifyDocument(credentials, sendingInfo);
+
+        // (dont forget number of pages inside the document)
         // 3. ARCHIVE NOTIFICATION
         // Read the email from the .max() MimeMessage with the researched titled
+        ImapClient client = await EmailReceiver.GetClient(credentials);
+        MimeMessage sentMessage = await EmailReceiver.FindLastMessageWithTitle(client, sendingInfo.Subject);
+
         // From said email, fill a docx version of proof of notification
-        // Convert proof of notification to PDF
+
+        // mmh, proof of notification requires optional params.
+        // Because I need the amount of pages.
+        // maybe I should jsut make another method for that
+        string ProofOfNotificationPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.Backing);
+
         // merge signed document + proof of notification + backing
+
+        string mergedPath = PdfMerger.MergePdfs(new() { signedDocumentPath, ProofOfNotificationPath, backingPdfPath });
+
         // return it to user
+        // Dunno what thype it should be haha
 
         // bonus : find a way not to have to flip the backing 
 
 
-
-        // Controller interfaces:
-        // IFile GenerateDocument(FileType)
-        // IFile NotifyDocument() 
-
-
-
-        using (PdfDocument one = PdfReader.Open("file1.pdf", PdfDocumentOpenMode.Import))
-        using (PdfDocument two = PdfReader.Open("file2.pdf", PdfDocumentOpenMode.Import))
-        using (PdfDocument outPdf = new PdfDocument())
-        {
-            CopyPages(one, outPdf);
-            CopyPages(two, outPdf);
-
-            outPdf.Save("file1and2.pdf");
-        }
-
-        void CopyPages(PdfDocument from, PdfDocument to)
-        {
-            for (int i = 0; i < from.PageCount; i++)
-            {
-                to.AddPage(from.Pages[i]);
-            }
-        }
-
-
-
-
-
-        var stdOutBuffer = new StringBuilder();
-        var result = await Cli.Wrap(@"C:\Program Files\LibreOffice\program\soffice.exe")
-            .WithArguments(args =>
-            {
-                args
-                .Add("--convert-to")
-                .Add("pdf")
-                .Add(@"C:\Doc1.docx")
-                .Add("--outdir")
-                .Add(@"C:\test.pdf");
-
-            })
-            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
-            .ExecuteAsync();
-
-        Console.WriteLine(stdOutBuffer.ToString());
-
-
-        int z = 0;
-
-
-        //var doc = DocumentCache.GetDocumentCopy(DocumentTypes.Backing);
-
-        // var r = doc.FindRunWithChildInnerText("wrong");
-        int random = Random.Shared.Next(0, 100);
-
-        // voir pour voir si la signature digitale est valide
-        // va determiner si word vs pdf 
-        // create real document
-        var cdto = new CaseDto()
-        {
-            ManagerLawyer = new Lawyer()
-            {
-                FirstName = "Test",
-            }
-        };
-
-        using (var document = DocumentMaker.GenerateDocument(cdto, DocumentTypes.Backing))
-        {
-            document.Clone("backinglolzida.docx");
-
-        }
-
-        // create email message
-        var email = new MimeMessage();
-        email.From.Add(MailboxAddress.Parse("richerf3212@gmail.com"));
-        email.To.Add(MailboxAddress.Parse("richerf3212@gmail.com"));
-        email.Subject = "NOTIFICATION";
-
-
-        email.Body = new TextPart(TextFormat.Html) { Text = $"<h1>Example HTML Message Body {random} </h1>" };
-
-        // send email
-        using var smtp = new SmtpClient();
-        smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-        smtp.Authenticate("richerf3212@gmail.com", $"dfdb aybg gjlm lxor");
-        smtp.Send(email);
-        smtp.Disconnect(true);
-
-
-        // recolter la preuve de notification
-
-        using (var client = new ImapClient())
-        {
-            client.Connect("imap.gmail.com", 993, true);
-
-            client.Authenticate("richerf3212@gmail.com", "dfdb aybg gjlm lxor");
-
-            // The Inbox folder is always available on all IMAP servers...
-            IMailFolder inbox = client.Inbox;
-            inbox.Open(FolderAccess.ReadOnly);
-
-            Console.WriteLine("Total messages: {0}", inbox.Count);
-            Console.WriteLine("Recent messages: {0}", inbox.Recent);
-
-
-            IList<UniqueId> uids = inbox.Search(SearchQuery.SubjectContains("NOTIFICATION"));
-
-            var messages = inbox.GetMessagesWithId(uids);
-
-            Console.WriteLine(random);
-            var messagesWithMostRecentDate = messages.First(x => x.Date.Equals(messages.Max(x => x.Date)));
-
-            client.Disconnect(true);
-        }
-
-
-        // should this be
-        // create notify document
-        // create backing document
-
-
-        // send email with pdf I guess
 
 
 
@@ -254,64 +169,6 @@ public class Program
 
         int ixyz = 0;
 
-
-
-
-        // var r = doc.CreateParagraphChainAtRunWithChildInnerText("changeme", new List<string> { "hello", "more", "evenmore", "evenmore", "more" });
-
-        //var r = doc.MainDocumentPart.Document.Descendants<Run>()
-        //     .FirstOrDefault(r => r.ChildElements.Any(x => x.InnerText.Contains("changeme")));
-        ////r.RemoveAllChildren();
-
-        //var parent = r.Parent;
-        //var para = parent.AppendChild(new Paragraph());
-        //var t1 = para.AppendChild(new Text("I am super cool"));
-        //var para2 = r.AppendChild(new Paragraph());
-        //var t2 = para2.AppendChild(new Text("I am super cool2"));
-
-
-        //var para3 = r.AppendChild(new Paragraph());
-
-
-        // search the run that has a child with x as a name.
-        // keep the run, delete the child. Append PARAGRAPHS to the run. might work.
-        // 
-
-
-
-        //doc.SearchAndReplace("[changeme]", "<r>  <r>");
-
-        //  string textBody = doc.ReadDocumentText();
-
-        // doc.OverwriteBody
-        // somewhat works but doesnt when between empty paragraphs. so wont work at all
-        //var bookMark = doc.MainDocumentPart.Document.Descendants<BookmarkStart>()
-        //        .FirstOrDefault(x => x.Name == "Defenders");
-
-
-        //// faut jfasse une chaine de paragraphes
-
-        //var parent = bookMark.Parent;
-
-        //var bod= doc.MainDocumentPart.Document.Body;
-
-
-        //// parent du bookmark, cest quoi
-        //Paragraph para = parent.AppendChild(new Paragraph());
-
-        //Run run = para.AppendChild(new Run());
-
-        //run.AppendChild(new Text("blabladou"));
-
-
-        //doc.Clone("backingAppended.docx");
-
-
-
-        // var test = DocumentCache.GetDocument(DocumentTypes.Backing);
-
-
-        //RTKQueryExporter.ExportQueriesToFile();
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddControllers()

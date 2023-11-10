@@ -61,6 +61,9 @@ public class FileController : ControllerBase
         if (!isValidForm) return BadRequest("Invalid file or no file was provided.");
 
         await file.CreateFileTo($"{"models"}{file.FileName}");
+
+
+        
         Console.WriteLine("upkloaded");
         return Ok("File uploaded successfully!");
     }

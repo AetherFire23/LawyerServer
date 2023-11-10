@@ -26,7 +26,9 @@ public static class DocumentCache
     public static WordprocessingDocument GetDocumentCopy(DocumentTypes docType)
     {
         byte[] documentBytes = _templates[docType];
+        byte[] buffer = new byte[documentBytes.Length];
 
+        Array.Copy(documentBytes, buffer, documentBytes.Length);
         var mainDoc = WordHelper.OpenDocumentFromBytes(documentBytes);
         return mainDoc;
     }

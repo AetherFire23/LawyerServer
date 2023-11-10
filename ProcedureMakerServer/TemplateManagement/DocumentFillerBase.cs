@@ -36,4 +36,6 @@ public abstract class DocumentFillerBase : IDocumentFiller
 
         return document;
     }
+
+    public abstract string FormatEmailSubjectTitle(CaseDto dto);
 }

@@ -2,5 +2,5 @@
 
 public class MyPassword
 {
-    public const string Pass = "Niggerfaggot12%";
+    public const string Pass = "zqrd zngy wyxh vxxd";
 }

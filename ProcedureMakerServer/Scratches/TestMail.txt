@@ -3,6 +3,6 @@ cd LibreOffice
 cd program
 
 
-.\soffice --convert-to pdf "C:\Doc1.docx" --outdir "C:\test.pdf"
+.\soffice --convert-to pdf "C:\Doc1.docx" --outdir "C:\Program Files"
 
 
