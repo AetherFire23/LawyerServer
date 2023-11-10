@@ -109,6 +109,11 @@ public class Program
 
         //return some docx here here
 
+        var doc = DocumentMaker.GenerateDocument(DocumentDummies.CaseDto, DocumentTypes.Backing);
+
+
+
+
         // 2. NOTIFY
         // sends the modified document back as pdf (check for digitally signing options)
         // IFOrmFile.CreatFileTo(.pdfShit)
@@ -117,6 +122,8 @@ public class Program
         // Create Backing as PDF
         var backingPdfPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.Backing);
 
+
+        // this needs to be an attachment
         // Merge signed document + backing
         PdfMerger.MergePdfs(new() { signedDocumentPath, backingPdfPath });
 
@@ -131,7 +138,7 @@ public class Program
 
 
         SendEmailInfo sendingInfo = new SendEmailInfo();
-        sendingInfo.Subject = await DocumentMaker.GetEmailSubject(DocumentDummies.CaseDto, DocumentTypes.Backing);
+        sendingInfo.Subject = await DocumentMaker.GenerateEmailSubject(DocumentDummies.CaseDto, DocumentTypes.Backing);
         string htmlPath = await DocumentMaker.GenerateDocumentAsHtml(DocumentDummies.CaseDto, DocumentTypes.Backing);
         sendingInfo.EmailHtmlBody = File.ReadAllText(htmlPath);
         sendingInfo.To = "richerf3212@gmail.com";
@@ -152,7 +159,7 @@ public class Program
         string ProofOfNotificationPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.Backing);
 
         // merge signed document + proof of notification + backing
-
+        // 
         string mergedPath = PdfMerger.MergePdfs(new() { signedDocumentPath, ProofOfNotificationPath, backingPdfPath });
 
         // return it to user

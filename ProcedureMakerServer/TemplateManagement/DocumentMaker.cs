@@ -1,5 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 using ProcedureMakerServer.Dtos;
+using ProcedureMakerServer.TemplateManagement.DocumentFillers;
 using ProcedureMakerServer.TemplateManagement.PdfManagement;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -70,12 +73,21 @@ public static class DocumentMaker
         return pdfPath;
     }
 
-    public static async Task<string> GetEmailSubject(CaseDto dto, DocumentTypes documentTypes)
+    public static async Task<string> GenerateEmailSubject(CaseDto dto, DocumentTypes documentTypes)
     {
         DocumentFillerBase documentFiller = _documentsMap[documentTypes];
         string subject = documentFiller.FormatEmailSubjectTitle(dto);
 
         return subject;
+    }
+    public static async Task<string> GenerateNotificationBorderAsHtml(CaseDto dto, string signedDocumentPdfPath)
+    {
+        using PdfDocument pdfDoc = PdfReader.Open(signedDocumentPdfPath, PdfDocumentOpenMode.ReadOnly);
+        int numberOfPages = pdfDoc.Pages.Count;
+
+        DocumentFillerBase documentFiller = _documentsMap[DocumentTypes.NotificationSlip] as NotificationSlipFiller;
+        WordprocessingDocument docxDoc = documentFiller.GenerateDocument();
+
     }
 
     private static string CreateRandomPath()

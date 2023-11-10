@@ -3,5 +3,7 @@
 public enum DocumentTypes
 {
     Backing,
+    NotificationSlip,
+    ProofOfNotification
 
 }
