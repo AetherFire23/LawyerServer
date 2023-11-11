@@ -20,45 +20,38 @@ public static class EmailSender
         email.To.Add(MailboxAddress.Parse(sendEmailInfo.To));
         email.Subject = sendEmailInfo.Subject;
 
-        //string html = File.ReadAllText(htmlPath2);
-        
-        email.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = sendEmailInfo.EmailHtmlBody};
+        var add = InternetAddress.Parse("balthazardf@hotmail.com");
+        email.Bcc.Add(add);
 
 
-        // send email
+        // create our message text, just like before (except don't set it as the message.Body)
+        var body = new TextPart("html")
+        {
+            Text = sendEmailInfo.EmailHtmlBody,
+        };
+
+        // create an image attachment for the file located at path
+        var attachment = new MimePart("application", "pdf")
+        {
+            Content = new MimeContent(File.OpenRead(sendEmailInfo.PdfAttachmentPath)),
+            ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+            ContentTransferEncoding = ContentEncoding.Base64,
+            FileName = Path.GetFileName(sendEmailInfo.PdfAttachmentPath)
+        };
+
+        // now create the multipart/mixed container to hold the message text and the
+        // image attachment
+        var multipart = new Multipart("mixed");
+        multipart.Add(body);
+        multipart.Add(attachment);
+
+
+        email.Body = multipart;
         using var smtp = new SmtpClient();
         smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
         smtp.Authenticate(credentials.Email, credentials.AppPassword);
         smtp.Send(email);
         smtp.Disconnect(true);
-
-
-        // recolter la preuve de notification
-
-        //using (var client = new ImapClient())
-        //{
-        //    client.Connect("imap.gmail.com", 993, true);
-
-        //    client.Authenticate("richerf3212@gmail.com", "dfdb aybg gjlm lxor");
-
-        //    // The Inbox folder is always available on all IMAP servers...
-        //    IMailFolder inbox = client.Inbox;
-        //    inbox.Open(FolderAccess.ReadOnly);
-
-        //    Console.WriteLine("Total messages: {0}", inbox.Count);
-        //    Console.WriteLine("Recent messages: {0}", inbox.Recent);
-
-
-        //    IList<UniqueId> uids = inbox.Search(SearchQuery.SubjectContains("NOTIFICATION"));
-
-        //    var messages = inbox.GetMessagesWithId(uids);
-
-        //    Console.WriteLine(random);
-        //    var messagesWithMostRecentDate = messages.First(x => x.Date.Equals(messages.Max(x => x.Date)));
-
-        //    client.Disconnect(true);
-        //}
-
 
     }
 }

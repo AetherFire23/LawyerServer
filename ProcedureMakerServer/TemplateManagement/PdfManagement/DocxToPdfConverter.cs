@@ -16,7 +16,7 @@ public static class DocxToPdfConverter
 
         
         // using relative pathing now for toPdfPath
-        string cliPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "LibreOffice", "program", "soffice.exe"); ;
+        string cliPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "LibreOffice", "program", "soffice.exe"); 
         var result = await Cli.Wrap(cliPath)
             .WithArguments(args =>
             {

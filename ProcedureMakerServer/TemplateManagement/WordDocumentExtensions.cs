@@ -1,6 +1,11 @@
 ﻿
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using ProcedureMakerServer.Constants;
+using ProcedureMakerServer.Services;
+using ProcedureMakerServer.TemplateManagement.PdfManagement;
+using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace ProcedureMakerServer.TemplateManagement;
@@ -71,6 +76,57 @@ public static class WordDocumentExtensions
         {
             writer.Write(overwrittenBody);
         }
+    }
+
+    public static async Task<string> ConvertToPdf(this WordprocessingDocument self)
+    {
+        (string docxSavePath, string pdfSaveDirectoryPath, string outFileName) = GenerateTemporaryPaths(".docx", ".pdf");
+
+        OpenXmlPackage package = self.Clone(docxSavePath, true);
+        package.Dispose();
+        self.Dispose();
+        await DocxToPdfConverter.CreatePdf(docxSavePath, pdfSaveDirectoryPath);
+
+
+        return outFileName;
+    }
+
+    public static async Task<string> ConvertToHtml(this WordprocessingDocument self)
+    {
+        (string docxSavePath, string tempDirectoryPath, string outFileName) = GenerateTemporaryPaths(".docx", ".html");
+
+        OpenXmlPackage package = self.Clone(docxSavePath, true);
+        package.Dispose();
+        self.Dispose();
+
+        await DocxToHtmlConverer.ConvertToHtml(docxSavePath, tempDirectoryPath);
+
+        return outFileName;
+    }
+
+    public static void FillAnArrayField<T>(this WordprocessingDocument self, string markerText, List<T> contentToFill, Func<T, Paragraph> paragraphTextToAdd)
+    {
+        var run = self.FindRunWithChildInnerText("bccReceivers");
+
+        var paragraph = run.Parent;
+
+        paragraph.RemoveAllChildren();
+
+        foreach (T content in contentToFill)
+        {
+            paragraph.InsertAfterSelf(paragraphTextToAdd(content));
+        }
+        paragraph.Remove();
+    }
+
+    private static (string FromPath, string OutSavePath, string OutFilePath) GenerateTemporaryPaths(string fromExtension, string outExtension)
+    {
+        string fileName = Guid.NewGuid().ToString();
+        string fromPath = Path.Combine(ConstantPaths.TemporaryFilesPath, fileName + fromExtension);
+        string outDirectory = ConstantPaths.TemporaryFilesPath;
+        string outFilePath = outDirectory + fileName + outExtension;
+        (string FromPath, string OutPath, string OutFileName) paths = (fromPath, outDirectory, outFilePath);
+        return paths;
     }
 }
 

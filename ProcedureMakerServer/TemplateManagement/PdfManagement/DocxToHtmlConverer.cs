@@ -30,5 +30,7 @@ public static class DocxToHtmlConverer
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .ExecuteAsync();
+
+        Console.WriteLine(stdOutBuffer.ToString());
     }
 }

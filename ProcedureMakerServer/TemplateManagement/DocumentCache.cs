@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using ProcedureMakerServer.Constants;
 using ProcedureMakerServer.Utils;
 using System.Collections.Generic;
 
@@ -16,6 +17,12 @@ public static class DocumentCache
         foreach (var documentType in Enum.GetValues<DocumentTypes>())
         {
             string formattedDocumentPath = $"{documentType}.docx";
+
+            if (!File.Exists(Path.Combine(ConstantPaths.DocumentsPath, formattedDocumentPath)))
+            {
+                throw new Exception($"document type should exist: {formattedDocumentPath}");
+            }
+
             templatesMap.Add(documentType, WordHelper.ReadDocumentBytesAt(formattedDocumentPath));
         }
 
@@ -27,7 +34,6 @@ public static class DocumentCache
     {
         byte[] documentBytes = _templates[docType];
         byte[] buffer = new byte[documentBytes.Length];
-
         Array.Copy(documentBytes, buffer, documentBytes.Length);
         var mainDoc = WordHelper.OpenDocumentFromBytes(documentBytes);
         return mainDoc;

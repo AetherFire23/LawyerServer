@@ -9,14 +9,14 @@ namespace ProcedureMakerServer.TemplateManagement;
 public abstract class DocumentFillerBase : IDocumentFiller
 {
     protected DocumentTypes DocumentType;
-    protected virtual List<(string From, string To)> GetStaticReplacementKeywords(CaseDto caseDto)
+    protected virtual List<(string From, string To)> GetStaticReplacementKeywords(CaseDto caseDto, object? additional = null)
     {
         List<(string From, string To)> pairs = new();
         return pairs;
     }
 
     // must be done by hand else it will 100% fuck formatting
-    protected virtual void FillArrayFields(CaseDto caseDto, WordprocessingDocument document)
+    protected virtual void FillArrayFields(CaseDto caseDto, WordprocessingDocument document, object? additional = null)
     {
 
     }
@@ -27,20 +27,20 @@ public abstract class DocumentFillerBase : IDocumentFiller
     }
 
 
-    public virtual WordprocessingDocument GenerateDocument(CaseDto dto)
+    public virtual WordprocessingDocument GenerateDocument(CaseDto dto, DocumentTypes documentType, object? additionalParams = null)
     {
-        var document = DocumentCache.GetDocumentCopy(DocumentTypes.Backing);
-        var keyWords = GetStaticReplacementKeywords(dto);
+        var document = DocumentCache.GetDocumentCopy(documentType);
+        var keyWords = GetStaticReplacementKeywords(dto, additionalParams);
 
         foreach ((string From, string To) in keyWords)
         {
             document.SearchAndReplace(From, To);
         }
 
-        this.FillArrayFields(dto, document);
+        this.FillArrayFields(dto, document, additionalParams);
 
         return document;
     }
 
-    public abstract string FormatEmailSubjectTitle(CaseDto dto);
+    public virtual string FormatEmailSubjectTitle(CaseDto dto) { return ""; }
 }

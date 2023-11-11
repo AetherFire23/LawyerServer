@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using ProcedureMakerServer.Constants;
 
 namespace ProcedureMakerServer.Utils;
 
@@ -22,7 +23,7 @@ public static class WordHelper
         var stream = new MemoryStream(bytes, 0, (int)bytes.Length);
         var readonlyCopy = WordprocessingDocument.Open(stream, false);
 
-        string path = $"{Guid.NewGuid()}.docx";
+        string path = Path.Combine(ConstantPaths.TemporaryFilesPath, $"{Guid.NewGuid()}.docx");
         var pack = readonlyCopy.Clone(path);
 
         readonlyCopy.Dispose();

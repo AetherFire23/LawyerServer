@@ -1,5 +1,7 @@
 ﻿using PdfSharp.Pdf.IO;
 using PdfSharp.Pdf;
+using System.Reflection.Metadata;
+using ProcedureMakerServer.Constants;
 
 namespace ProcedureMakerServer.TemplateManagement.PdfManagement;
 
@@ -13,7 +15,7 @@ public static class PdfMerger
 
         documents.ForEach(d => outPdf.AppendDocument(d));
 
-        string savePath = $"{Guid.NewGuid()}.pdf";
+        string savePath = Path.Combine(ConstantPaths.TemporaryFilesPath, $"{Guid.NewGuid().ToString()}-merged.pdf");
         outPdf.Save(savePath);
 
         documents.ForEach(x => x.Dispose());

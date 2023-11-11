@@ -33,4 +33,8 @@
     <ProjectReference Include="..\EFCoreBase\EFCoreBase.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DocsTemplates\Temporary\" />
+  </ItemGroup>
+
 </Project>

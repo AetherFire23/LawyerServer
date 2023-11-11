@@ -25,6 +25,7 @@ using PdfSharp.Pdf;
 using ProcedureMakerServer.Services;
 using ProcedureMakerServer.TemplateManagement.PdfManagement;
 using ProcedureMakerServer.EmailMaker;
+using ProcedureMakerServer.TemplateManagement.DocumentFillers;
 
 namespace ProcedureMakerServer;
 
@@ -98,6 +99,12 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+
+        //var doc2 = WordprocessingDocument.Open(@"DocsTemplates\ProofOfNotification.docx", true);
+
+        //var run = doc2.FindRunWithChildInnerText("bccReceivers");
+
+       
         // steps :
         // class RuntimeInformation to check on which platofrm I am
         // another class also exists to check if i am on x86
@@ -117,7 +124,7 @@ public class Program
         // 2. NOTIFY
         // sends the modified document back as pdf (check for digitally signing options)
         // IFOrmFile.CreatFileTo(.pdfShit)
-        var signedDocumentPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.Backing);
+        var presentationNoticePath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.PresentationNotice);
 
         // Create Backing as PDF
         var backingPdfPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.Backing);
@@ -125,7 +132,7 @@ public class Program
 
         // this needs to be an attachment
         // Merge signed document + backing
-        PdfMerger.MergePdfs(new() { signedDocumentPath, backingPdfPath });
+        string mergedPdfPath = PdfMerger.MergePdfs(new() { presentationNoticePath, backingPdfPath });
 
 
         // create html body for notification label
@@ -139,28 +146,22 @@ public class Program
 
         SendEmailInfo sendingInfo = new SendEmailInfo();
         sendingInfo.Subject = await DocumentMaker.GenerateEmailSubject(DocumentDummies.CaseDto, DocumentTypes.Backing);
-        string htmlPath = await DocumentMaker.GenerateDocumentAsHtml(DocumentDummies.CaseDto, DocumentTypes.Backing);
+        string htmlPath = await DocumentMaker.GenerateNotificationBorderAsHtml(DocumentDummies.CaseDto, presentationNoticePath);
         sendingInfo.EmailHtmlBody = File.ReadAllText(htmlPath);
         sendingInfo.To = "richerf3212@gmail.com";
-
+        sendingInfo.PdfAttachmentPath = mergedPdfPath;
         await EmailSender.NotifyDocument(credentials, sendingInfo);
 
         // (dont forget number of pages inside the document)
         // 3. ARCHIVE NOTIFICATION
         // Read the email from the .max() MimeMessage with the researched titled
-        ImapClient client = await EmailReceiver.GetClient(credentials);
-        MimeMessage sentMessage = await EmailReceiver.FindLastMessageWithTitle(client, sendingInfo.Subject);
 
-        // From said email, fill a docx version of proof of notification
 
-        // mmh, proof of notification requires optional params.
-        // Because I need the amount of pages.
-        // maybe I should jsut make another method for that
-        string ProofOfNotificationPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.Backing);
+        string ProofOfNotificationPath = await DocumentMaker.GenerateProofOfNotificationAsPdf(DocumentDummies.CaseDto,
+            sendingInfo.Subject,
+            credentials);
 
-        // merge signed document + proof of notification + backing
-        // 
-        string mergedPath = PdfMerger.MergePdfs(new() { signedDocumentPath, ProofOfNotificationPath, backingPdfPath });
+        string mergedPath = PdfMerger.MergePdfs(new() { presentationNoticePath, ProofOfNotificationPath, backingPdfPath });
 
         // return it to user
         // Dunno what thype it should be haha
@@ -171,10 +172,9 @@ public class Program
 
 
 
-
-
-
         int ixyz = 0;
+
+
 
         var builder = WebApplication.CreateBuilder(args);
 
@@ -199,9 +199,6 @@ public class Program
         AppBuilderHelper.Configure(builder);
 
 
-        // APP CONFIG
-
-
         var app = builder.Build();
 
         app.UseExceptionHandler(exceptionHandler =>
@@ -224,21 +221,6 @@ public class Program
                 }
             });
         });
-
-        //app.UseExceptionHandler((exceptionHandler) =>
-        //{
-        //    exceptionHandler.Run(async context =>
-        //    {
-        //        var handler = context.Features.Get<IExceptionHandlerFeature>();
-
-        //        if (handler?.Error is MyInvalidExceptionBase exception)
-        //        {
-        //            context.Response.StatusCode = exception.StatusCode;
-
-        //            await context.Response.WriteAsJsonAsync(exception.Data);
-        //        }
-        //    });
-        //});
 
         await AppConfigHelper.ConfigureApp(app);
 

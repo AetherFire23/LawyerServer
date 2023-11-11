@@ -10,8 +10,9 @@ public class BackingFiller : DocumentFillerBase
         return "NOTIFICATION";
     }
 
+
     // should use dictionary maybe?
-    protected override List<(string From, string To)> GetStaticReplacement]Keywords(CaseDto caseDto)
+    protected override List<(string From, string To)> GetStaticReplacementKeywords(CaseDto caseDto, object? additional)
     {
         var map = new List<(string From, string To)>();
         map.Add(("lawyerName", $"{caseDto.ManagerLawyer.FirstName}"));

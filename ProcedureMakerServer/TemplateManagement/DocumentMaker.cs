@@ -1,11 +1,12 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
+using MailKit.Net.Imap;
+using MimeKit;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using ProcedureMakerServer.Dtos;
+using ProcedureMakerServer.EmailMaker;
 using ProcedureMakerServer.TemplateManagement.DocumentFillers;
-using ProcedureMakerServer.TemplateManagement.PdfManagement;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace ProcedureMakerServer.TemplateManagement;
 
@@ -13,6 +14,59 @@ public static class DocumentMaker
 {
     private static Dictionary<DocumentTypes, DocumentFillerBase> _documentsMap
         = InitializeDocumentFillers();
+
+    public static WordprocessingDocument GenerateDocument(CaseDto dto, DocumentTypes documentType)
+    {
+        DocumentFillerBase documentFiller = _documentsMap[documentType];
+        WordprocessingDocument doc = documentFiller.GenerateDocument(dto, documentType);
+        return doc;
+    }
+
+    public static async Task<string> GenerateDocumentAsPdf(CaseDto dto, DocumentTypes documentType, object? additional = null)
+    {
+        DocumentFillerBase documentFiller = _documentsMap[documentType];
+        using WordprocessingDocument doc = documentFiller.GenerateDocument(dto, documentType, additional);
+        string pdfPath = await doc.ConvertToPdf();
+        return pdfPath;
+    }
+
+    public static async Task<string> GenerateDocumentAsHtml(CaseDto dto, DocumentTypes documentType, object? additional = null)
+    {
+        DocumentFillerBase documentFiller = _documentsMap[documentType];
+        using WordprocessingDocument doc = documentFiller.GenerateDocument(dto, documentType, additional);
+        string htmlPath = await doc.ConvertToHtml();
+        return htmlPath;
+    }
+
+    public static async Task<string> GenerateEmailSubject(CaseDto dto, DocumentTypes documentTypes)
+    {
+        DocumentFillerBase documentFiller = _documentsMap[documentTypes];
+        string subject = documentFiller.FormatEmailSubjectTitle(dto);
+
+        return subject;
+    }
+
+    public static async Task<string> GenerateNotificationBorderAsHtml(CaseDto dto, string signedDocumentPdfPath)
+    {
+        using PdfDocument pdfDoc = PdfReader.Open(signedDocumentPdfPath, PdfDocumentOpenMode.ReadOnly);
+        var notificationSlipParams = new NotificationSlipParams()
+        {
+            PageCount = pdfDoc.Pages.Count
+        };
+        string htmlPath = await GenerateDocumentAsHtml(dto, DocumentTypes.TransmissionSlip, notificationSlipParams);
+        return htmlPath;
+    }
+
+    public static async Task<string> GenerateProofOfNotificationAsPdf(CaseDto dto,
+        string emailSubject,
+        EmailCredentials creds)
+    {
+        ImapClient client = await EmailReceiver.GetClient(creds);
+        using MimeMessage emailMessage = await EmailReceiver.FindLastMessageWithTitle(client, emailSubject);
+
+        string pdfPath = await DocumentMaker.GenerateDocumentAsPdf(dto, DocumentTypes.ProofOfNotification, emailMessage);
+        return pdfPath;
+    }
 
     private static Dictionary<DocumentTypes, DocumentFillerBase> InitializeDocumentFillers()
     {
@@ -23,77 +77,12 @@ public static class DocumentMaker
 
 
         var map = new Dictionary<DocumentTypes, DocumentFillerBase>();
+
         foreach (var documentFiller in documentFillers)
         {
             map.Add(documentFiller.GetType().GetCustomAttribute<DocumentFillerAttribute>().DocumentType, documentFiller);
         }
 
         return map;
-    }
-
-    public static WordprocessingDocument GenerateDocument(CaseDto dto, DocumentTypes documentType)
-    {
-        DocumentFillerBase documentFiller = _documentsMap[documentType];
-        WordprocessingDocument doc = documentFiller.GenerateDocument(dto);
-        return doc;
-    }
-
-    public static async Task<string> GenerateDocumentAsPdf(CaseDto dto, DocumentTypes documentType)
-    {
-        DocumentFillerBase documentFiller = _documentsMap[documentType];
-        WordprocessingDocument doc = documentFiller.GenerateDocument(dto);
-
-        string random = CreateRandomPath();
-        string randomFileWithExtension = (random) + ".docx";
-        string absolutePath = @$"C:\Program Files\LibreOffice\program\{randomFileWithExtension}";
-
-        OpenXmlPackage package = doc.Clone(absolutePath, true);
-        package.Dispose();
-        doc.Dispose();
-
-        await DocxToPdfConverter.CreatePdf(absolutePath, "test");
-        string pdfPath = $@"test\{random}.pdf";
-        return pdfPath;
-    }
-
-    public static async Task<string> GenerateDocumentAsHtml(CaseDto dto, DocumentTypes documentType)
-    {
-        DocumentFillerBase documentFiller = _documentsMap[documentType];
-        WordprocessingDocument doc = documentFiller.GenerateDocument(dto);
-        string random = CreateRandomPath();
-        string randomFileWithExtension = (random) + ".docx";
-        string absolutePath = @$"C:\Program Files\LibreOffice\program\{randomFileWithExtension}";
-
-        OpenXmlPackage package = doc.Clone(absolutePath, true);
-        package.Dispose();
-        doc.Dispose();
-
-        await DocxToHtmlConverer.ConvertToHtml(absolutePath, "test");
-        string pdfPath = $@"test\{random}.html";
-        return pdfPath;
-    }
-
-    public static async Task<string> GenerateEmailSubject(CaseDto dto, DocumentTypes documentTypes)
-    {
-        DocumentFillerBase documentFiller = _documentsMap[documentTypes];
-        string subject = documentFiller.FormatEmailSubjectTitle(dto);
-
-        return subject;
-    }
-    public static async Task<string> GenerateNotificationBorderAsHtml(CaseDto dto, string signedDocumentPdfPath)
-    {
-        using PdfDocument pdfDoc = PdfReader.Open(signedDocumentPdfPath, PdfDocumentOpenMode.ReadOnly);
-        int numberOfPages = pdfDoc.Pages.Count;
-
-        DocumentFillerBase documentFiller = _documentsMap[DocumentTypes.NotificationSlip] as NotificationSlipFiller;
-        WordprocessingDocument docxDoc = documentFiller.GenerateDocument();
-
-    }
-
-    private static string CreateRandomPath()
-    {
-        string randomPath = Guid.NewGuid().ToString().Replace("-", string.Empty);
-
-        return randomPath;
     }
 }
