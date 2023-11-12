@@ -21,7 +21,7 @@ public class Case : EntityBase
     public string DistrictName { get; set; } = string.Empty;
     public string CourtAffairNumber { get; set; } = string.Empty;
     public string CaseNumber { get; set; } = string.Empty; // cases can have different filenumbers if it comes again many times 
-    public CourtType CourtType { get; set; }
+    public ChamberNames CourtType { get; set; }
     public int CourtNumber { get; set; }
 }
 

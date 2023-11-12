@@ -15,23 +15,21 @@ namespace ProcedureMakerServer.TemplateManagement.DocumentFillers;
 public class ProofOfNotificationFiller : DocumentFillerBase
 {
 
-    protected override void GetStaticReplacementKeywords(CaseDto caseDto, List<(string From, string To)> keywordMap, object? additional = null)
+    protected override void CreateFixedReplacementKeywords(CaseDto caseDto, List<(string From, string To)> keywordMap, object? additional = null)
     {
         var email = additional as MimeMessage;
         var attachment = email.Attachments.FirstOrDefault();
 
-        var l = new List<(string From, string To)>();
-
-
         // specific to proof 
         long size = MeasureAttachmentSize(attachment as MimePart);
-        l.Add(("senderName", email.From.ToString()));
-        l.Add(("subjectName", email.Subject));
-        l.Add(("date", email.Date.ToString()));
-        l.Add(("attachmentSize", size.ToString()));
-        l.Add(("attachmentName", attachment.ContentType.Name));
+        keywordMap.Add(("senderName", email.From.ToString()));
+        keywordMap.Add(("subjectName", email.Subject));
+        keywordMap.Add(("date", email.Date.ToString()));
+        keywordMap.Add(("attachmentSize", size.ToString()));
+        keywordMap.Add(("attachmentName", attachment.ContentType.Name));
+
         CultureInfo fr = new CultureInfo("fr-FR");
-        l.Add(("dayMonthYear", email.Date.ToString("dd/MM/yyyy", fr)));
+        keywordMap.Add(("dayMonthYear", email.Date.ToString("dd/MM/yyyy", fr)));
 
 
 
@@ -40,7 +38,6 @@ public class ProofOfNotificationFiller : DocumentFillerBase
         //  l.Add(("attachment", email.Attachments.ToList().First().ToString()));
         // l.Add(("attachmentSize", email.Attachments.First().siz));
 
-        return l;
     }
 
 

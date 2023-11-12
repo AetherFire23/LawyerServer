@@ -56,7 +56,7 @@ public class CaseRepository : ProcedureCrudBase<Case>, ICaseRepository
         retrieved.DistrictName = caseDto.DistrictName;
         retrieved.CourtAffairNumber = caseDto.CourtAffairNumber;
         retrieved.CaseNumber = caseDto.CaseNumber;
-        retrieved.CourtType = caseDto.CourtType;
+        retrieved.CourtType = caseDto.ChamberName;
         retrieved.CourtNumber = caseDto.CourtNumber;
 
         await Context.SaveChangesAsync();
@@ -76,7 +76,7 @@ public class CaseRepository : ProcedureCrudBase<Case>, ICaseRepository
             CaseNumber = lcase.CaseNumber,
             CourtAffairNumber = lcase.CourtAffairNumber,
             CourtNumber = lcase.CourtNumber,
-            CourtType = lcase.CourtType,
+            ChamberName = lcase.CourtType,
             DistrictName = lcase.DistrictName,
 
         };

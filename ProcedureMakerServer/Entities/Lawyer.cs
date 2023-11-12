@@ -13,7 +13,7 @@ public class Lawyer : CourtMemberBase
 {
     public Guid UserId { get; set; }
     public User User { get; set; }
-
+    public string CourtLockerNumber { get; set; } = string.Empty;
 
     public ICollection<Case> Cases { get; set; } = new List<Case>();
 

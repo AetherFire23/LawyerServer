@@ -26,6 +26,8 @@ using ProcedureMakerServer.Services;
 using ProcedureMakerServer.TemplateManagement.PdfManagement;
 using ProcedureMakerServer.EmailMaker;
 using ProcedureMakerServer.TemplateManagement.DocumentFillers;
+using System.Text.RegularExpressions;
+using Org.BouncyCastle.Utilities;
 
 namespace ProcedureMakerServer;
 
@@ -99,80 +101,46 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+         //// 1. DOC GEN
 
-        //var doc2 = WordprocessingDocument.Open(@"DocsTemplates\ProofOfNotification.docx", true);
-
-        //var run = doc2.FindRunWithChildInnerText("bccReceivers");
-
-       
-        // steps :
-        // class RuntimeInformation to check on which platofrm I am
-        // another class also exists to check if i am on x86
-        // 
-
-        // 1. DOC GEN
-        // Generate document to be filled
-        // user interaction (signs document, fills it)
-
-        //return some docx here here
-
-        var doc = DocumentMaker.GenerateDocument(DocumentDummies.CaseDto, DocumentTypes.Backing);
+            // 2. NOTIFY
+        // document part
+        var presentationNoticePath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
+        var backingPdfPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.Backing, new BackingFillerParams() { DocumentName = DocumentTypes.PresentationNotice.ToString()});
+        string mergedNotificationPath = PdfMerger.MergePdfs(new() { presentationNoticePath, backingPdfPath });
 
 
-
-
-        // 2. NOTIFY
-        // sends the modified document back as pdf (check for digitally signing options)
-        // IFOrmFile.CreatFileTo(.pdfShit)
-        var presentationNoticePath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.PresentationNotice);
-
-        // Create Backing as PDF
-        var backingPdfPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CaseDto, DocumentTypes.Backing);
-
-
-        // this needs to be an attachment
-        // Merge signed document + backing
-        string mergedPdfPath = PdfMerger.MergePdfs(new() { presentationNoticePath, backingPdfPath });
-
-
-        // create html body for notification label
-
-        // format subject title
-
-        EmailCredentials credentials = new EmailCredentials();
-        credentials.Email = "richerf3212@gmail.com";
-        credentials.AppPassword = MyPassword.Pass;
-
+        // Send email part
+        EmailCredentials credentials = new EmailCredentials()
+        {
+            Email = "richerf3212@gmail.com",
+            AppPassword = MyPassword.Pass,
+        };
 
         SendEmailInfo sendingInfo = new SendEmailInfo();
-        sendingInfo.Subject = await DocumentMaker.GenerateEmailSubject(DocumentDummies.CaseDto, DocumentTypes.Backing);
-        string htmlPath = await DocumentMaker.GenerateNotificationBorderAsHtml(DocumentDummies.CaseDto, presentationNoticePath);
+        sendingInfo.Subject = await DocumentMaker.GenerateEmailSubject(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
+        string htmlPath = await DocumentMaker.GenerateNotificationBorderAsHtml(DocumentDummies.CreateCaseDto(), mergedNotificationPath, DocumentTypes.PresentationNotice.ToString());
         sendingInfo.EmailHtmlBody = File.ReadAllText(htmlPath);
         sendingInfo.To = "richerf3212@gmail.com";
-        sendingInfo.PdfAttachmentPath = mergedPdfPath;
+        sendingInfo.PdfAttachmentPath = mergedNotificationPath;
         await EmailSender.NotifyDocument(credentials, sendingInfo);
 
-        // (dont forget number of pages inside the document)
+
         // 3. ARCHIVE NOTIFICATION
-        // Read the email from the .max() MimeMessage with the researched titled
 
-
-        string ProofOfNotificationPath = await DocumentMaker.GenerateProofOfNotificationAsPdf(DocumentDummies.CaseDto,
+        string ProofOfNotificationPath = await DocumentMaker.GenerateProofOfNotificationAsPdf(DocumentDummies.CreateCaseDto(),
             sendingInfo.Subject,
             credentials);
 
-        string mergedPath = PdfMerger.MergePdfs(new() { presentationNoticePath, ProofOfNotificationPath, backingPdfPath });
-
-        // return it to user
-        // Dunno what thype it should be haha
-
-        // bonus : find a way not to have to flip the backing 
-
-
-
-
+        string mergedWithProof = PdfMerger.MergePdfs(new() { presentationNoticePath, ProofOfNotificationPath, backingPdfPath });
 
         int ixyz = 0;
+
+
+
+
+
+
 
 
 

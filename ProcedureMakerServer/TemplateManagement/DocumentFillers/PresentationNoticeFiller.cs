@@ -1,25 +1,37 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using MimeKit;
 using ProcedureMakerServer.Dtos;
+using ProcedureMakerServer.Entities;
+using System.Text;
 
 namespace ProcedureMakerServer.TemplateManagement.DocumentFillers;
 
 [DocumentFiller(DocumentTypes.PresentationNotice)]
 public class PresentationNoticeFiller : DocumentFillerBase
 {
-    protected override List<(string From, string To)> GetStaticReplacementKeywords(CaseDto caseDto, object? additional = null)
+
+    public override string FormatEmailSubjectTitle(CaseDto dto)
     {
-        List<(string From, string To)> keywords = new();
+        StringBuilder builder = new StringBuilder();
+        builder.Append("NOTIFICATION PAR COURRIEL ");
+        builder.Append($"({dto.CourtNumber}) ");
+        builder.Append(dto.Plaintiff.LowerCaseFormattedFullName ?? "");
+        builder.Append(" c. ");
+        builder.Append(dto.Plaintiff.LowerCaseFormattedFullName ?? "");
 
-        keywords.Add(("lawyerName", caseDto.Client.FirstName));
+        string subject = $"NOTIFICATION PAR COURRIEL ({dto.CourtNumber}) {dto.Defender.LowerCaseFormattedFullName} c. {dto.Plaintiff.LowerCaseFormattedFullName}";
+        return builder.ToString();
+    }
 
-        return keywords;
+    // expects
+    protected override void CreateFixedReplacementKeywords(CaseDto caseDto, List<(string From, string To)> keywordMap, object? additional = null)
+    {
+
     }
 
     protected override void FillArrayFields(CaseDto caseDto, WordprocessingDocument document, object? additional = null)
     {
 
-
-      //  Console.WriteLine(additional.GetType());
+        //  Console.WriteLine(additional.GetType());
     }
 }

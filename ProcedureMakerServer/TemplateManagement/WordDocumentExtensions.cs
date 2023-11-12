@@ -12,23 +12,31 @@ namespace ProcedureMakerServer.TemplateManagement;
 
 public static class WordDocumentExtensions
 {
-    public static void SearchAndReplace(this WordprocessingDocument self, string from, string to)
+    public static void SearchAndReplace(this WordprocessingDocument doc, string from, string to)
     {
         string docText;
-        using (StreamReader sr = new StreamReader(self.MainDocumentPart.GetStream()))
+        using (StreamReader sr = new StreamReader(doc.MainDocumentPart.GetStream()))
         {
             docText = sr.ReadToEnd();
         }
 
-        Regex regexText = new Regex($"{from}");
-        docText = regexText.Replace(docText, $"{to}");
+        Regex regexText = new Regex(from);
+        docText = regexText.Replace(docText, to);
 
-        using (StreamWriter sw = new StreamWriter(self.MainDocumentPart.GetStream(FileMode.Create)))
+        using (StreamWriter sw = new StreamWriter(doc.MainDocumentPart.GetStream(FileMode.Create)))
         {
             sw.Write(docText);
         }
+
+        using (StreamReader sr = new StreamReader(doc.MainDocumentPart.GetStream()))
+        {
+            string s = sr.ReadToEnd(); // bon xml
+        }
+        var p = doc.Clone("benClone.docx", false);
+        p.Dispose();
     }
 
+    // zombie code io think
     public static (Paragraph, Text) CreateParagraphWithText(this Run self, string text)
     {
         SpacingBetweenLines spacing = new SpacingBetweenLines() { Line = "240", LineRule = LineSpacingRuleValues.Exact, Before = "0", After = "0" };
@@ -52,14 +60,6 @@ public static class WordDocumentExtensions
         return run;
     }
 
-    public static void ReplaceWords(this WordprocessingDocument self, List<(string From, string To)> wordMaps)
-    {
-        foreach ((string From, string To) in wordMaps)
-        {
-            self.SearchAndReplace(From, To);
-        }
-    }
-
     public static string ReadDocumentText(this WordprocessingDocument self)
     {
         string read;
@@ -78,30 +78,34 @@ public static class WordDocumentExtensions
         }
     }
 
-    public static async Task<string> ConvertToPdf(this WordprocessingDocument self)
+    public static async Task<string> ConvertToPdf(WordDocInfo documentPath)
     {
-        (string docxSavePath, string pdfSaveDirectoryPath, string outFileName) = GenerateTemporaryPaths(".docx", ".pdf");
+        (string pdfSaveDirectoryPath, string outFileName) = GenerateOutPaths(documentPath.FileName, ".pdf");
 
-        OpenXmlPackage package = self.Clone(docxSavePath, true);
-        package.Dispose();
-        self.Dispose();
-        await DocxToPdfConverter.CreatePdf(docxSavePath, pdfSaveDirectoryPath);
-
-
+        await DocxToPdfConverter.CreatePdf(documentPath.FilePath, pdfSaveDirectoryPath);
         return outFileName;
     }
 
-    public static async Task<string> ConvertToHtml(this WordprocessingDocument self)
+    public static async Task<string> ConvertToHtml(WordDocInfo documentPath)
     {
-        (string docxSavePath, string tempDirectoryPath, string outFileName) = GenerateTemporaryPaths(".docx", ".html");
+        (string tempDirectoryPath, string outFileName) = GenerateOutPaths(documentPath.FileName, ".html");
 
-        OpenXmlPackage package = self.Clone(docxSavePath, true);
-        package.Dispose();
-        self.Dispose();
-
-        await DocxToHtmlConverer.ConvertToHtml(docxSavePath, tempDirectoryPath);
-
+        await DocxToHtmlConverer.ConvertToHtml(documentPath.FilePath, tempDirectoryPath);
         return outFileName;
+    }
+
+    public static string CloneDocumentAt(string fromPath, string toPath)
+    {
+        using (WordprocessingDocument document = WordprocessingDocument.Open(fromPath, true))
+        {
+            using OpenXmlPackage package = document.Clone(toPath, true);
+        }
+        return toPath;
+    }
+
+    public static string GetInnerXml(this WordprocessingDocument self)
+    {
+        return self.MainDocumentPart.Document.InnerXml;
     }
 
     public static void FillAnArrayField<T>(this WordprocessingDocument self, string markerText, List<T> contentToFill, Func<T, Paragraph> paragraphTextToAdd)
@@ -117,6 +121,14 @@ public static class WordDocumentExtensions
             paragraph.InsertAfterSelf(paragraphTextToAdd(content));
         }
         paragraph.Remove();
+    }
+
+    private static (string OutSavePath, string OutFilePath) GenerateOutPaths(string docxFileName, string outExtension)
+    {
+        string outDirectory = ConstantPaths.TemporaryFilesPath;
+        string outFilePath = outDirectory + docxFileName + outExtension;
+        (string OutPath, string OutFileName) paths = (outDirectory, outFilePath);
+        return paths;
     }
 
     private static (string FromPath, string OutSavePath, string OutFilePath) GenerateTemporaryPaths(string fromExtension, string outExtension)

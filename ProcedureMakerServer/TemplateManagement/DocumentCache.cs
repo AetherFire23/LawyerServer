@@ -30,12 +30,12 @@ public static class DocumentCache
     }
 
     /// <summary> Must be disposed :) </summary>
-    public static WordprocessingDocument GetDocumentCopy(DocumentTypes docType)
+    public static WordDocInfo GetDocumentCopy(DocumentTypes docType)
     {
         byte[] documentBytes = _templates[docType];
         byte[] buffer = new byte[documentBytes.Length];
         Array.Copy(documentBytes, buffer, documentBytes.Length);
-        var mainDoc = WordHelper.OpenDocumentFromBytes(documentBytes);
+        WordDocInfo mainDoc = WordHelper.OpenDocumentFromBytes(documentBytes);
         return mainDoc;
     }
 }

@@ -165,6 +165,10 @@ namespace ProcedureMakerServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("NotificationEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("PostalCase")
                         .IsRequired()
                         .HasColumnType("text");
@@ -238,6 +242,10 @@ namespace ProcedureMakerServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("NotificationEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("PostalCase")
                         .IsRequired()
                         .HasColumnType("text");
@@ -305,6 +313,10 @@ namespace ProcedureMakerServer.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MobilePhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NotificationEmail")
                         .IsRequired()
                         .HasColumnType("text");
 

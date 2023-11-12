@@ -15,26 +15,24 @@ public static class DocumentMaker
     private static Dictionary<DocumentTypes, DocumentFillerBase> _documentsMap
         = InitializeDocumentFillers();
 
-    public static WordprocessingDocument GenerateDocument(CaseDto dto, DocumentTypes documentType)
+    public static WordDocInfo GenerateDocument(CaseDto dto, DocumentTypes documentType, object? additional)
     {
         DocumentFillerBase documentFiller = _documentsMap[documentType];
-        WordprocessingDocument doc = documentFiller.GenerateDocument(dto, documentType);
-        return doc;
+        WordDocInfo documentPath = documentFiller.FillDocument(dto, documentType, additional);
+        return documentPath;
     }
 
     public static async Task<string> GenerateDocumentAsPdf(CaseDto dto, DocumentTypes documentType, object? additional = null)
     {
-        DocumentFillerBase documentFiller = _documentsMap[documentType];
-        using WordprocessingDocument doc = documentFiller.GenerateDocument(dto, documentType, additional);
-        string pdfPath = await doc.ConvertToPdf();
+        WordDocInfo documentPath = GenerateDocument(dto, documentType, additional);
+        string pdfPath = await WordDocumentExtensions.ConvertToPdf(documentPath);
         return pdfPath;
     }
 
     public static async Task<string> GenerateDocumentAsHtml(CaseDto dto, DocumentTypes documentType, object? additional = null)
     {
-        DocumentFillerBase documentFiller = _documentsMap[documentType];
-        using WordprocessingDocument doc = documentFiller.GenerateDocument(dto, documentType, additional);
-        string htmlPath = await doc.ConvertToHtml();
+        WordDocInfo documentPath = GenerateDocument(dto, documentType, additional);
+        string htmlPath = await WordDocumentExtensions.ConvertToHtml(documentPath);
         return htmlPath;
     }
 
@@ -42,16 +40,16 @@ public static class DocumentMaker
     {
         DocumentFillerBase documentFiller = _documentsMap[documentTypes];
         string subject = documentFiller.FormatEmailSubjectTitle(dto);
-
         return subject;
     }
 
-    public static async Task<string> GenerateNotificationBorderAsHtml(CaseDto dto, string signedDocumentPdfPath)
+    public static async Task<string> GenerateNotificationBorderAsHtml(CaseDto dto, string signedDocumentPdfPath, string signedPdfName)
     {
         using PdfDocument pdfDoc = PdfReader.Open(signedDocumentPdfPath, PdfDocumentOpenMode.ReadOnly);
         var notificationSlipParams = new NotificationSlipParams()
         {
-            PageCount = pdfDoc.Pages.Count
+            PageCount = pdfDoc.Pages.Count,
+            DocumentName = signedPdfName,
         };
         string htmlPath = await GenerateDocumentAsHtml(dto, DocumentTypes.TransmissionSlip, notificationSlipParams);
         return htmlPath;
