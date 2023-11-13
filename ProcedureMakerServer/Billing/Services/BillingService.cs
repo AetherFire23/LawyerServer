@@ -1,4 +1,5 @@
 ﻿using EFCoreBase.Entities;
+using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository;
@@ -45,22 +46,36 @@ public class BillingService : IBillingService
             Id = np.Id,
             AmountPaid = 4200,
             Invoice = inv,
-            AmountPaidDate = DateTime.Now,
+            AmountPaidDate = DateTime.UtcNow,
         };
 
-        await UpdatePayment(newPayment);
+
+        //
+        var info = _procedureContext.Entry(np);
+        info.State = EntityState.Detached;
+
+        _procedureContext.Update(newPayment);
+        await _procedureContext.SaveChangesAsync();
+
+
+        var regotten = _procedureContext.Payments.First(x => x.Id == newPayment.Id);
+
+
+        // await UpdatePayment(np, newPayment);
 
 
     }
 
     // when last : return the task from the savechangesAsync
-    public Task UpdatePayment(Payment newPayment)
+    public async Task UpdatePayment(Payment old, Payment newPayment)
     {
+        var trackinfo = _procedureContext.Entry(newPayment);
+        trackinfo.State = EntityState.Detached;
+        await _procedureContext.SaveChangesAsync();
+
 
         _procedureContext.Update(newPayment);
-        var task = _procedureContext.SaveChangesAsync();
-
-        return task;
+        await _procedureContext.SaveChangesAsync();
     }
 
     // qu'est-ce tu peux vouloir faire ?
