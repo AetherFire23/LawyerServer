@@ -1,4 +1,5 @@
 ﻿using EFCoreBase.Entities;
+using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Dtos;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
@@ -37,16 +38,24 @@ public class CaseContextService : ICaseContextService
         await _procedureContext.Clients.AddAsync(client);
         await _procedureContext.SaveChangesAsync();
 
-        Case c = new Case()
+        Case cCase = new Case()
         {
             CaseNumber = caseNumber,
             ManagerLawyer = lawyer,
-            Client = client
+            Client = client,
         };
 
-        await _procedureContext.Cases.AddAsync(c);
+        await _procedureContext.Cases.AddAsync(cCase);
         await _procedureContext.SaveChangesAsync();
-        return new GetCaseResponse() { CreatedId = c.Id };
+
+        var accountStatement = new AccountStatement()
+        {
+            Case = cCase,
+        };
+        await _procedureContext.AddAsync(accountStatement);
+        await _procedureContext.SaveChangesAsync();
+
+        return new GetCaseResponse() { CreatedId = cCase.Id };
     }
 
     public async Task<CasesContext> GetCaseContext(Guid lawyerId)

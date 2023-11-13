@@ -1,7 +1,10 @@
-﻿using ProcedureMakerServer.Authentication.AuthModels;
+﻿using DocumentFormat.OpenXml.Validation;
+using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
+using ProcedureMakerServer.Billing.Services;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Models;
+using ProcedureMakerServer.Scratches;
 
 namespace ProcedureMakerServer.Initialization;
 public static class TestScope
@@ -19,7 +22,7 @@ public static class TestScope
             RegisterRequest req = new RegisterRequest()
             {
                 Password = "password",
-                Role = Authentication.RoleTypes.Admin,
+                Role = Authentication.RoleTypes.Normal,
                 Username = "fred"
             };
 
@@ -50,7 +53,7 @@ public static class TestScope
                 LawyerId = logResult.UserDto.LawyerId,
             };
 
-            await caseContextService.CreateNewCase(caseCreation);
+            await caseContextService.CreateNewCase(caseCreation); // inits billing also
 
 
             var lcase = await caseContextService.GetCaseContext(logResult.UserDto.LawyerId);
@@ -59,10 +62,15 @@ public static class TestScope
 
             await caseContextService.SaveCaseDto(lcase.Cases.First());
 
-            // caseContextService.CreateNewCase();
+
+            var billingManager = scope.ServiceProvider.GetRequiredService<IBillingService>();
 
 
+            var statement = context.AccountStatements.First(x => x.CaseId == lcase.Cases.First().Id);
 
+            await billingManager.UpdateInvoices(AccountStatementDummy.CreateStatementToUpdate(statement.Id));
+
+            // billing testing
         }
     }
 }

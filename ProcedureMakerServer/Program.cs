@@ -101,40 +101,40 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-         //// 1. DOC GEN
+        // //// 1. DOC GEN
 
-            // 2. NOTIFY
-        // document part
-        var presentationNoticePath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
-        var backingPdfPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.Backing, new BackingFillerParams() { DocumentName = DocumentTypes.PresentationNotice.ToString()});
-        string mergedNotificationPath = PdfMerger.MergePdfs(new() { presentationNoticePath, backingPdfPath });
-
-
-        // Send email part
-        EmailCredentials credentials = new EmailCredentials()
-        {
-            Email = "richerf3212@gmail.com",
-            AppPassword = MyPassword.Pass,
-        };
-
-        SendEmailInfo sendingInfo = new SendEmailInfo();
-        sendingInfo.Subject = await DocumentMaker.GenerateEmailSubject(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
-        string htmlPath = await DocumentMaker.GenerateNotificationBorderAsHtml(DocumentDummies.CreateCaseDto(), mergedNotificationPath, DocumentTypes.PresentationNotice.ToString());
-        sendingInfo.EmailHtmlBody = File.ReadAllText(htmlPath);
-        sendingInfo.To = "richerf3212@gmail.com";
-        sendingInfo.PdfAttachmentPath = mergedNotificationPath;
-        await EmailSender.NotifyDocument(credentials, sendingInfo);
+        //    // 2. NOTIFY
+        //// document part
+        //var presentationNoticePath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
+        //var backingPdfPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.Backing, new BackingFillerParams() { DocumentName = DocumentTypes.PresentationNotice.ToString()});
+        //string mergedNotificationPath = PdfMerger.MergePdfs(new() { presentationNoticePath, backingPdfPath });
 
 
-        // 3. ARCHIVE NOTIFICATION
+        //// Send email part
+        //EmailCredentials credentials = new EmailCredentials()
+        //{
+        //    Email = "richerf3212@gmail.com",
+        //    AppPassword = MyPassword.Pass,
+        //};
 
-        string ProofOfNotificationPath = await DocumentMaker.GenerateProofOfNotificationAsPdf(DocumentDummies.CreateCaseDto(),
-            sendingInfo.Subject,
-            credentials);
+        //SendEmailInfo sendingInfo = new SendEmailInfo();
+        //sendingInfo.Subject = await DocumentMaker.GenerateEmailSubject(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
+        //string htmlPath = await DocumentMaker.GenerateNotificationBorderAsHtml(DocumentDummies.CreateCaseDto(), mergedNotificationPath, DocumentTypes.PresentationNotice.ToString());
+        //sendingInfo.EmailHtmlBody = File.ReadAllText(htmlPath);
+        //sendingInfo.To = "richerf3212@gmail.com";
+        //sendingInfo.PdfAttachmentPath = mergedNotificationPath;
+        //await EmailSender.NotifyDocument(credentials, sendingInfo);
 
-        string mergedWithProof = PdfMerger.MergePdfs(new() { presentationNoticePath, ProofOfNotificationPath, backingPdfPath });
 
-        int ixyz = 0;
+        //// 3. ARCHIVE NOTIFICATION
+
+        //string ProofOfNotificationPath = await DocumentMaker.GenerateProofOfNotificationAsPdf(DocumentDummies.CreateCaseDto(),
+        //    sendingInfo.Subject,
+        //    credentials);
+
+        //string mergedWithProof = PdfMerger.MergePdfs(new() { presentationNoticePath, ProofOfNotificationPath, backingPdfPath });
+
+        //int ixyz = 0;
 
 
 

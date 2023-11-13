@@ -21,6 +21,7 @@ public static class AppConfigHelper
         using (var scope = app.Services.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<ProcedureContext>();
+
             context.Database.EnsureDeleted();
             context.Database.Migrate();
         }

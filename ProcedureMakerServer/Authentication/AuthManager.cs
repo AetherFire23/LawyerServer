@@ -1,6 +1,7 @@
 ﻿using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Authentication.ReturnModels;
+using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 using Crypt = BCrypt.Net.BCrypt;
@@ -73,25 +74,37 @@ public class AuthManager : IAuthManager
 
 
 
-        var lawyer = new Lawyer()
-        {
-            UserId = user.Id,
-            FirstName = user.Name,
-        };
 
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
+
+
+
+        var lawyer = new Lawyer()
+        {
+            User = user,
+            FirstName = user.Name,
+
+        };
+        await _context.Lawyers.AddAsync(lawyer);
+        await _context.SaveChangesAsync();
+
+
+        var lawyerBillingOptions = new LawyerBillingOptions()
+        {
+            Lawyer = lawyer,
+        };
+
+        await _context.LawyerBillingOptions.AddAsync(lawyerBillingOptions);
+        await _context.SaveChangesAsync();
+
+
 
         await _context.Roles.AddAsync(role);
         await _context.SaveChangesAsync();
 
         await _context.UserRoles.AddAsync(userRole);
 
-        await _context.Lawyers.AddAsync(lawyer);
-        await _context.SaveChangesAsync();
-
         var userDto = await _userRepository.MapUserDto(user.Id);
-
-
     }
 }

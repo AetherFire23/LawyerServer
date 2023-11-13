@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.HttpLogging;
+﻿using EFCoreBase.RefresherService;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Authentication.Interfaces;
+using ProcedureMakerServer.Billing.Services;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository;
 using ProcedureMakerServer.Services;
@@ -63,9 +65,8 @@ public static class AppBuilderHelper
 
         builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
-
-        // builder.Services.AddTransient<HttpResponseExceptionFilter>();
-
+        builder.Services.AddScoped<IRefresherServe, ProcedureEntityRefresher>();
+        builder.Services.AddScoped<IBillingService, BillingService>();
     }
 
     private static void ConfigureHTTPLogging(WebApplicationBuilder builder)

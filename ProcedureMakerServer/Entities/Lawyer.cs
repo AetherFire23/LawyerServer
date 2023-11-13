@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProcedureMakerServer.Authentication;
+using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Entities.BaseEntities;
 using Reinforced.Typings.Attributes;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ProcedureMakerServer.Entities;
@@ -14,6 +16,9 @@ public class Lawyer : CourtMemberBase
     public Guid UserId { get; set; }
     public User User { get; set; }
     public string CourtLockerNumber { get; set; } = string.Empty;
+
+    //public Guid LawyerBillingOptionsId { get; set; }
+    public LawyerBillingOptions LawyerBillingOptions { get; set; }
 
     public ICollection<Case> Cases { get; set; } = new List<Case>();
 
