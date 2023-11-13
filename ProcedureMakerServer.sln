@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcedureMakerServer", "Pro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCoreBase", "EFCoreBase\EFCoreBase.csproj", "{56AD34E2-9B71-4281-ACB5-B6BB384244ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestTester", "RequestTester\RequestTester.csproj", "{88F6756C-701A-4CF5-8FF6-375955F05CAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{56AD34E2-9B71-4281-ACB5-B6BB384244ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56AD34E2-9B71-4281-ACB5-B6BB384244ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56AD34E2-9B71-4281-ACB5-B6BB384244ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88F6756C-701A-4CF5-8FF6-375955F05CAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88F6756C-701A-4CF5-8FF6-375955F05CAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88F6756C-701A-4CF5-8FF6-375955F05CAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88F6756C-701A-4CF5-8FF6-375955F05CAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

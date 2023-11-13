@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 
 namespace ProcedureMakerServer.Entities;
 
+
 [TsClass]
 public class Lawyer : CourtMemberBase
 {
@@ -27,6 +28,7 @@ public class Lawyer : CourtMemberBase
         => Cases is null || !Cases.Any()
         ? new List<Client>()
         : Cases.Select(c => c.Client).ToList();
+
 }
 
 

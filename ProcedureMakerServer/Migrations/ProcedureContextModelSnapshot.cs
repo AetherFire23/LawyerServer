@@ -144,11 +144,11 @@ namespace ProcedureMakerServer.Migrations
                     b.Property<bool>("HasPersonalizedBillingElement")
                         .HasColumnType("boolean");
 
+                    b.Property<decimal>("HoursWorked")
+                        .HasColumnType("numeric");
+
                     b.Property<Guid?>("InvoiceId")
                         .HasColumnType("uuid");
-
-                    b.Property<decimal>("TimeWorking")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 

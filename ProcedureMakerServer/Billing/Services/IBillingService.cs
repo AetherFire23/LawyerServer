@@ -2,5 +2,6 @@
 
 public interface IBillingService
 {
-    Task UpdateInvoices(AccountStatement upToDateStatement);
+    Task<AccountStatement> GetAccountStatement(Guid caseId);
+    Task UpdateAccountStatement(AccountStatement upToDateStatement);
 }

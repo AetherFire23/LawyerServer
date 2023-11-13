@@ -66,9 +66,7 @@ public static class TestScope
             var billingManager = scope.ServiceProvider.GetRequiredService<IBillingService>();
 
 
-            var statement = context.AccountStatements.First(x => x.CaseId == lcase.Cases.First().Id);
-
-            await billingManager.UpdateInvoices(AccountStatementDummy.CreateStatementToUpdate(statement.Id));
+            
 
             // billing testing
         }

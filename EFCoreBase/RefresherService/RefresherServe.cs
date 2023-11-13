@@ -4,9 +4,16 @@ using EFCoreBase.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreBase.RefresherService;
+
+public interface ICopyToAble<T> where T : Entities.EntityBase
+{
+    public void CopyTo(T target);
+}
+
 public interface IRefresherServe
 {
-    Task RefreshEntities<T>(IEnumerable<T> upToDateElements, IEnumerable<T> currentTrackedElements) where T : EntityBase;
+    Task<IEnumerable<T>> RefreshAndUpdateEntities<T>(IEnumerable<T> upToDateElements, IEnumerable<T> currentTrackedElements) where T : EntityBase;
+    Task RefreshAndUpdateEntitiesWithCopyTo<T>(IEnumerable<T> upToDateElements, IEnumerable<T> currentTrackedElements) where T : EntityBase, ICopyToAble<T>;
 }
 
 public class RefresherServe<TContext> : IRefresherServe
@@ -19,8 +26,19 @@ public class RefresherServe<TContext> : IRefresherServe
         _context = context;
     }
 
-    public async Task RefreshEntities<T>(IEnumerable<T> upToDateElements, IEnumerable<T> currentTrackedElements)
+
+
+    /// <summary>
+    /// returns currently tracked entities without updating them
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="upToDateElements"></param>
+    /// <param name="currentTrackedElements"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<T>> RefreshAndUpdateEntities<T>(IEnumerable<T> upToDateElements,
+        IEnumerable<T> currentTrackedElements)
         where T : EntityBase
+
     {
         var refreshResult = EntitiesRefesher.GetRefreshResult(upToDateElements, currentTrackedElements);
         foreach (var newElement in refreshResult.Appeared)
@@ -32,15 +50,15 @@ public class RefresherServe<TContext> : IRefresherServe
         {
             _context.Set<T>().Remove(disappearedBillingElement);
         }
+        return refreshResult.AlreadyTrackedEntities;
     }
 
 
-    public async Task RefreshAndUpdateEntities<T>(IEnumerable<T> upToDateElements,
-        IEnumerable<T> currentTrackedElements,
-        Action<T, T> updateFunction)
-        where T : EntityBase
+    public async Task RefreshAndUpdateEntitiesWithCopyTo<T>(IEnumerable<T>? upToDateElements,
+    IEnumerable<T>? currentTrackedElements)
+    where T : EntityBase, ICopyToAble<T>
+
     {
-        await RefreshEntities(upToDateElements, currentTrackedElements);
         var refreshResult = EntitiesRefesher.GetRefreshResult(upToDateElements, currentTrackedElements);
         foreach (var newElement in refreshResult.Appeared)
         {
@@ -54,8 +72,10 @@ public class RefresherServe<TContext> : IRefresherServe
 
         foreach (var currentTrackedEntity in refreshResult.AlreadyTrackedEntities)
         {
-            var upToDateEntity = upToDateElements.First(x => x.Id == currentTrackedEntity.Id);
-            updateFunction?.Invoke(currentTrackedEntity, upToDateEntity);
+            var commonTrackedEntity = upToDateElements.FirstOrDefault(x => x.Id == currentTrackedEntity.Id);
+            if (commonTrackedEntity is null) continue;
+
+            commonTrackedEntity.CopyTo(currentTrackedEntity);
         }
     }
 }

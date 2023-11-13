@@ -65,7 +65,7 @@ public static class AppBuilderHelper
 
         builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
-        builder.Services.AddScoped<IRefresherServe, ProcedureEntityRefresher>();
+        builder.Services.AddScoped<IProcedureEntityRefresher, ProcedureEntityRefresher>();
         builder.Services.AddScoped<IBillingService, BillingService>();
     }
 

@@ -12,8 +12,8 @@ using ProcedureMakerServer;
 namespace ProcedureMakerServer.Migrations
 {
     [DbContext(typeof(ProcedureContext))]
-    [Migration("20231112222509_4")]
-    partial class _4
+    [Migration("20231113161103_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -147,22 +147,17 @@ namespace ProcedureMakerServer.Migrations
                     b.Property<bool>("HasPersonalizedBillingElement")
                         .HasColumnType("boolean");
 
+                    b.Property<decimal>("HoursWorked")
+                        .HasColumnType("numeric");
+
                     b.Property<Guid?>("InvoiceId")
                         .HasColumnType("uuid");
-
-                    b.Property<Guid>("PersonalizedBillingElementId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("TimeWorking")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BillingElementId");
 
                     b.HasIndex("InvoiceId");
-
-                    b.HasIndex("PersonalizedBillingElementId");
 
                     b.ToTable("Activities");
                 });
@@ -180,10 +175,6 @@ namespace ProcedureMakerServer.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsHourlyRate")
                         .HasColumnType("boolean");
 
@@ -200,10 +191,6 @@ namespace ProcedureMakerServer.Migrations
                     b.HasIndex("LawyerId");
 
                     b.ToTable("BillingElements");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("BillingElement");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Billing.Invoice", b =>
@@ -212,17 +199,15 @@ namespace ProcedureMakerServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AccountStatementId")
+                    b.Property<Guid>("AccountStatementId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CaseId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("InvoiceStatuses")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccountStatementId");
-
-                    b.HasIndex("CaseId");
 
                     b.ToTable("Invoices");
                 });
@@ -529,13 +514,6 @@ namespace ProcedureMakerServer.Migrations
                     b.ToTable("Lawyers");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.PersonalizedBillingElement", b =>
-                {
-                    b.HasBaseType("ProcedureMakerServer.Billing.BillingElement");
-
-                    b.HasDiscriminator().HasValue("PersonalizedBillingElement");
-                });
-
             modelBuilder.Entity("EFCoreBase.Entities.Case", b =>
                 {
                     b.HasOne("ProcedureMakerServer.Entities.Client", "Client")
@@ -597,15 +575,7 @@ namespace ProcedureMakerServer.Migrations
                         .WithMany("Activities")
                         .HasForeignKey("InvoiceId");
 
-                    b.HasOne("ProcedureMakerServer.Billing.PersonalizedBillingElement", "PersonalizedBillingElement")
-                        .WithMany()
-                        .HasForeignKey("PersonalizedBillingElementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("BillingElement");
-
-                    b.Navigation("PersonalizedBillingElement");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Billing.BillingElement", b =>
@@ -625,17 +595,13 @@ namespace ProcedureMakerServer.Migrations
 
             modelBuilder.Entity("ProcedureMakerServer.Billing.Invoice", b =>
                 {
-                    b.HasOne("ProcedureMakerServer.Billing.AccountStatement", null)
+                    b.HasOne("ProcedureMakerServer.Billing.AccountStatement", "AccountStatement")
                         .WithMany("Invoices")
-                        .HasForeignKey("AccountStatementId");
-
-                    b.HasOne("EFCoreBase.Entities.Case", "Case")
-                        .WithMany()
-                        .HasForeignKey("CaseId")
+                        .HasForeignKey("AccountStatementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Case");
+                    b.Navigation("AccountStatement");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Billing.LawyerBillingOptions", b =>

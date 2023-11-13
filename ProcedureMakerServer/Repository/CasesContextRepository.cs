@@ -62,6 +62,7 @@ public class CasesContextRepository : ICasesContextRepository
         await _clientRepository.ModifyClient(caseDto.Client);
 
 
+
         // can either create or update the case part (can create a new client in the form :)
         foreach (var participant in caseDto.Participants)
         {

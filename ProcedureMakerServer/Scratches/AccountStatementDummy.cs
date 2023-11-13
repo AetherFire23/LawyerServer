@@ -15,8 +15,24 @@ public class AccountStatementDummy
                     new Payment()
                     {
                         AmountPaid = 420,
+                    },
+                    new Payment()
+                    {
+                        AmountPaid = 550,
+                    }
+                },
+                Activities = new List<Activity>()
+                {
+                    new Activity()
+                    {
+                        HoursWorked = 12
+                    },
+                    new Activity()
+                    {
+                        HoursWorked = 1
                     }
                 }
+                
             }
         };
 
