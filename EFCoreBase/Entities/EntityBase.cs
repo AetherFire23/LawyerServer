@@ -28,4 +28,6 @@ public abstract class EntityBase : IEntity, IEquatable<IEntity>
     {
         return HashCode.Combine(Id);
     }
+
+
 }

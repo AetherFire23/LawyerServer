@@ -93,9 +93,22 @@ public class AuthManager : IAuthManager
         var lawyerBillingOptions = new LawyerBillingOptions()
         {
             Lawyer = lawyer,
+            
+           
+        };
+        await _context.LawyerBillingOptions.AddAsync(lawyerBillingOptions);
+        await _context.SaveChangesAsync();
+
+        var defaultBillingElement = new BillingElement()
+        {
+            ActivityName ="JuridicalWork",
+            Amount = 100,
+            Lawyer = lawyer,
+            LawyerBillingOptions = lawyerBillingOptions,
         };
 
-        await _context.LawyerBillingOptions.AddAsync(lawyerBillingOptions);
+
+        await _context.BillingElements.AddAsync(defaultBillingElement);
         await _context.SaveChangesAsync();
 
 

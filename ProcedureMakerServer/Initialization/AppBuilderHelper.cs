@@ -1,4 +1,4 @@
-﻿using EFCoreBase.RefresherService;
+﻿
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Authentication;
@@ -65,7 +65,6 @@ public static class AppBuilderHelper
 
         builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
-        builder.Services.AddScoped<IProcedureEntityRefresher, ProcedureEntityRefresher>();
         builder.Services.AddScoped<IBillingService, BillingService>();
     }
 

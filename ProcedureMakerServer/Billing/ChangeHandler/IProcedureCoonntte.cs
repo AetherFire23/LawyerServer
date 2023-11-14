@@ -1,0 +1,114 @@
+﻿using EFCoreBase.Entities;
+using EFCoreBase.Utils;
+using Microsoft.EntityFrameworkCore;
+
+namespace ProcedureMakerServer.Billing.ChangeHandler;
+
+public interface IContextReference
+{
+    public ProcedureContext ProcedureContext { get; set; }
+}
+
+
+// commence a etre sexy cette class-la
+public static class IContextReferenceExtensions
+{
+    public static async Task HandleChange<T>(this IContextReference self,
+        IEnumerable<T> updatedEntities,
+        IEnumerable<T> storedEntities,
+        Func<IEnumerable<T>, IEnumerable<T>, T, T, Task> onUpdate)
+    where T : EntityBase
+    {
+        (IEnumerable<T> removed, IEnumerable<T> updated) = EntitiesRefesher.GetRefreshResultGeneric<T>(updatedEntities, storedEntities);
+
+        DbSet<T> set = self.ProcedureContext.Set<T>();
+        foreach (var rem in removed)
+        {
+            T entity = await set.FirstAsync(x => x.Id == rem.Id);
+            set.Remove(entity);
+        }
+        foreach (var upd in updated)
+        {
+            T entity = await set.FirstAsync(x => x.Id == upd.Id);
+            await onUpdate(updatedEntities, storedEntities, upd, entity);
+            await self.ProcedureContext.SaveChangesAsync();
+        }
+    }
+
+    public static async Task HandleChange<T>(this IContextReference self,
+        IEnumerable<T> updatedEntities,
+        IEnumerable<T> storedEntities,
+        Func<T, T, Task> onUpdate)
+        where T : EntityBase
+    {
+        (IEnumerable<T> removed, IEnumerable<T> updated) = EntitiesRefesher.GetRefreshResultGeneric<T>(updatedEntities, storedEntities);
+
+        DbSet<T> set = self.ProcedureContext.Set<T>();
+
+        foreach (var rem in removed)
+        {
+            T entity = await set.FirstAsync(x => x.Id == rem.Id);
+            set.Remove(entity);
+        }
+
+        foreach (var upd in updated)
+        {
+            T entity = await set.FirstAsync(x => x.Id == upd.Id);
+            await onUpdate(upd, entity);
+            await self.ProcedureContext.SaveChangesAsync();
+        }
+    }
+
+
+
+    // T1 should be updated
+    // therefore t2 is set
+    public static async Task HandleChangeDto<T, T2>(this IContextReference self,
+    IEnumerable<T> updatedEntities,
+    IEnumerable<T2> storedEntities,
+    Func<IEnumerable<T>, IEnumerable<T2>, T, T2, Task> onUpdate)
+        where T : EntityBase
+        where T2 : EntityBase
+    {
+        var (removed, updated) = EntitiesRefesher.GetRefreshResultGeneric(updatedEntities, storedEntities);
+
+        var set = self.ProcedureContext.Set<T2>();
+        foreach (var rem in removed)
+        {
+            var entity = await set.FirstAsync(x => x.Id == rem.Id);
+            set.Remove(entity);
+        }
+        foreach (var upd in updated)
+        {
+            var entity = await set.FirstAsync(x => x.Id == upd.Id);
+            await onUpdate(updatedEntities, storedEntities, upd, entity);
+            await self.ProcedureContext.SaveChangesAsync();
+        }
+    }
+
+    // T1 should be updated, therefore t2 is set
+    public static async Task HandleChangeDto<T, T2>(this IContextReference self,
+        IEnumerable<T> updatedEntities,
+        IEnumerable<T2> storedEntities,
+        Func<T, T2, Task> onUpdate)
+        where T : EntityBase
+        where T2 : EntityBase
+    {
+        var (removed, updated) = EntitiesRefesher.GetRefreshResultGeneric(updatedEntities, storedEntities);
+
+        var set = self.ProcedureContext.Set<T2>();
+
+        foreach (var rem in removed)
+        {
+            var entity = await set.FirstAsync(x => x.Id == rem.Id);
+            set.Remove(entity);
+        }
+
+        foreach (var upd in updated)
+        {
+            var entity = await set.FirstAsync(x => x.Id == upd.Id);
+            await onUpdate(upd, entity);
+            await self.ProcedureContext.SaveChangesAsync();
+        }
+    }
+}

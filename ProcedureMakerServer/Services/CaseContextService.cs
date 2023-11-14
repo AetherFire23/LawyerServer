@@ -51,6 +51,7 @@ public class CaseContextService : ICaseContextService
         var accountStatement = new AccountStatement()
         {
             Case = cCase,
+            Lawyer = lawyer,
         };
         await _procedureContext.AddAsync(accountStatement);
         await _procedureContext.SaveChangesAsync();

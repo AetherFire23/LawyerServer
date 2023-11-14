@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Authentication.AuthModels;
@@ -7,13 +8,15 @@ using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Dtos;
 using ProcedureMakerServer.Initialization;
 using ProcedureMakerServer.Models;
+using ProcedureMakerServer.Utils;
 using RestSharp;
 
 public class Program
 {
     public static RestClient Client = new RestClient();
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
+        await Task.Delay(450);
         // register
         var registerRequest = new RegisterRequest()
         {
@@ -57,7 +60,7 @@ public class Program
         };
 
 
-        var s = Client.SendRequestWithBodyAndReturn<GetCaseResponse, CaseCreationInfo>(Method.Post, $"http://localhost:5099/case/createnewcase", caseCreationInfo);
+        GetCaseResponse getCaseResposne = Client.SendRequestWithBodyAndReturn<GetCaseResponse, CaseCreationInfo>(Method.Post, $"http://localhost:5099/case/createnewcase", caseCreationInfo);
 
 
         // get cases
@@ -78,13 +81,76 @@ public class Program
 
 
         // get accoutn satement
-        var statement = Client.SendRequestWithReturn<AccountStatement>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
+        var statement = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
 
 
-        // update the account statement
+        // add Invoice
+        Client.SendRequestWithReturn<IActionResult>(Method.Post, $"http://localhost:5099/invoice/addinvoice?caseId={caseToModifiy.Id.ToString()}");
 
-        Client.SendRequestNoReturnWithBody(Method.Post, "http://localhost:5099/invoice/updateinvoices", statement);
+        var statement2 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
 
+        // add activity 
+
+        ActivityCreation activityCreation = new()
+        {
+            BillingElementId = statement2.LawyerBillingElements.First().Id,
+            HasPersonalizedBillingElement = false,
+            HoursWorked = 1,
+            InvoiceId = statement2.Invoices.First().Id,
+        };
+
+
+        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/addactivity", activityCreation);
+
+        var statement3 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
+
+        // add payment
+
+        PaymentCreationRequest payment = new PaymentCreationRequest()
+        {
+            AmountPaid = 100,
+            AmountPaidDate = DateTime.UtcNow,
+            InvoiceId = statement3.Invoices.First().Id,
+        };
+
+        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/addpayment", payment);
+        var statement4 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
+
+
+        // add billing element  
+        var statement5 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
+
+        BillingElementCreationRequest billingElemetnRequest = new BillingElementCreationRequest()
+        {
+            AccountStatementId = statement4.Id,
+            IsHourlyRate = true,
+            ActivityName = "Test",
+            Amount = 420,
+            IsPersonalizedBillingElement = false,
+        };
+        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/addbillingelement", billingElemetnRequest);
+
+
+        // update the billing element to another one.
+        // from JuridicalWork to Test
+        var statement6 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
+
+
+        statement6.Invoices.First().Activities.First().BillingElement.Id = statement6.LawyerBillingElements.First(x => x.ActivityName == "Test").Id;
+        Client.SendRequestNoReturnWithBody(Method.Post, "http://localhost:5099/invoice/updateinvoices", statement6.Invoices.First());
+
+        var statement7 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
+
+        //statement4.Invoices.First().InvoiceStatus = InvoiceStatuses.Paid;
+        //statement4.Invoices.First().Activities.First().BillingElement.Id = 
+
+        // Client.SendRequestNoReturnWithBody(Method.Post, "http://localhost:5099/invoice/updateinvoices", statement4.Invoices.First());
+
+
+
+        // Add personalized billing element
+        // add billing element
+        // add activity
 
     }
 }

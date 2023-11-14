@@ -1,9 +1,8 @@
 ﻿using EFCoreBase.Entities;
-using EFCoreBase.RefresherService;
 
 namespace ProcedureMakerServer.Billing;
 
-public partial class Invoice : EntityBase , ICopyToAble<Invoice>
+public partial class Invoice : EntityBase
 {
     public Guid AccountStatementId { get; set; }
     public AccountStatement? AccountStatement { get; set; }

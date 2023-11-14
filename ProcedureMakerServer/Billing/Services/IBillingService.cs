@@ -2,6 +2,10 @@
 
 public interface IBillingService
 {
-    Task<AccountStatement> GetAccountStatement(Guid caseId);
-    Task UpdateAccountStatement(AccountStatement upToDateStatement);
+    Task AddActivityToInvoice(ActivityCreation activityCreation);
+    Task AddBillingElement(BillingElementCreationRequest billingElementCreation);
+    Task AddInvoice(Guid caseId);
+    Task AddPayment(PaymentCreationRequest paymentCreation);
+    Task<AccountStatementDto> MapAccountStatementDto(Guid caseId);
+    Task UpdateInvoice(InvoiceDto updatedInvoice);
 }

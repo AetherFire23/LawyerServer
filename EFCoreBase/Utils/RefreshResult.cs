@@ -4,46 +4,81 @@ namespace EFCoreBase.Utils;
 
 public static class EntitiesRefesher
 {
-    public static RefreshResult<T> GetRefreshResult<T>(IEnumerable<T> upToDate, IEnumerable<T> old)
-         where T : EntityBase
+    public static (IEnumerable<EntityBase> Removed, IEnumerable<EntityBase> Updated) GetRefreshResult(IEnumerable<EntityBase> upToDate, IEnumerable<EntityBase> old)
     {
-        IEnumerable<T> appeared = upToDate.Where(x => !old.Any(y => y.Id == x.Id));
+        IEnumerable<EntityBase> disappeared = old.Where(x => !upToDate.Any(y => y.Id == x.Id));
+        IEnumerable<EntityBase> commonTrackedElements = old.Where(x => upToDate.Any(y => y.Id == x.Id));
+
+        if (!old.Any())
+        {
+            disappeared = new List<EntityBase>();
+            commonTrackedElements = new List<EntityBase>();
+        }
+        else if (!upToDate.Any())
+        {
+            disappeared = old;
+            commonTrackedElements = new List<EntityBase>();
+        }
+        else
+        {
+            disappeared = old.Where(x => !upToDate.Any(y => y.Id == x.Id));
+            commonTrackedElements = old.Where(x => upToDate.Any(y => y.Id == x.Id));
+        }
+        var result = (disappeared, commonTrackedElements);
+        return result;
+    }
+
+
+    public static (IEnumerable<T> Removed, IEnumerable<T> Updated) GetRefreshResultGeneric<T>(IEnumerable<T> upToDate, IEnumerable<T> old)
+        where T: EntityBase
+    {
         IEnumerable<T> disappeared = old.Where(x => !upToDate.Any(y => y.Id == x.Id));
         IEnumerable<T> commonTrackedElements = old.Where(x => upToDate.Any(y => y.Id == x.Id));
 
         if (!old.Any())
         {
-            appeared = upToDate;
             disappeared = new List<T>();
             commonTrackedElements = new List<T>();
         }
         else if (!upToDate.Any())
         {
-            appeared = new List<T>();
             disappeared = old;
             commonTrackedElements = new List<T>();
         }
         else
         {
-            appeared = upToDate.Where(x => !old.Any(y => y.Id == x.Id));
             disappeared = old.Where(x => !upToDate.Any(y => y.Id == x.Id));
             commonTrackedElements = old.Where(x => upToDate.Any(y => y.Id == x.Id));
         }
-        var result = new RefreshResult<T>(appeared, disappeared, commonTrackedElements);
+        var result = (disappeared, commonTrackedElements);
         return result;
     }
-}
 
-public class RefreshResult<T>
-{
-    public IEnumerable<T> Appeared;
-    public IEnumerable<T> Disappeared;
-    public IEnumerable<T> AlreadyTrackedEntities;
 
-    public RefreshResult(IEnumerable<T> appeared, IEnumerable<T> disappeared, IEnumerable<T> alreadyTrackedEntities)
+    // t1 is dto
+    public static (IEnumerable<TEntity> Removed, IEnumerable<TDto> Updated) GetRefreshResultGeneric<TDto, TEntity>(IEnumerable<TDto> upToDate, IEnumerable<TEntity> old)
+    where TDto : EntityBase
+    where TEntity : EntityBase
     {
-        Appeared = appeared;
-        Disappeared = disappeared;
-        AlreadyTrackedEntities = alreadyTrackedEntities;
+        IEnumerable<TEntity> disappeared;
+        IEnumerable<TDto> commonTrackedElements;
+
+        if (!old.Any())
+        {
+            disappeared = new List<TEntity>();
+            commonTrackedElements = new List<TDto>();
+        }
+        else if (!upToDate.Any())
+        {
+            disappeared = old;
+            commonTrackedElements = new List<TDto>();
+        }
+        else
+        {
+            disappeared = old.Where(x => !upToDate.Any(y => y.Id == x.Id));
+            commonTrackedElements = upToDate.Where(x => old.Any(y => y.Id == x.Id));
+        }
+        var result = (disappeared, commonTrackedElements);
+        return result;
     }
 }

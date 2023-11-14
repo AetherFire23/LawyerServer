@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProcedureMakerServer.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class _5 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -190,10 +190,12 @@ namespace ProcedureMakerServer.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     LawyerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LawyerBillingOptionsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AccountStatementGuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsPersonalizedBillingElement = table.Column<bool>(type: "boolean", nullable: false),
                     ActivityName = table.Column<string>(type: "text", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
-                    IsHourlyRate = table.Column<bool>(type: "boolean", nullable: false),
-                    LawyerBillingOptionsId = table.Column<Guid>(type: "uuid", nullable: true)
+                    IsHourlyRate = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -202,7 +204,8 @@ namespace ProcedureMakerServer.Migrations
                         name: "FK_BillingElements_LawyerBillingOptions_LawyerBillingOptionsId",
                         column: x => x.LawyerBillingOptionsId,
                         principalTable: "LawyerBillingOptions",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_BillingElements_Lawyers_LawyerId",
                         column: x => x.LawyerId,
@@ -216,7 +219,8 @@ namespace ProcedureMakerServer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CaseId = table.Column<Guid>(type: "uuid", nullable: false)
+                    CaseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LawyerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -225,6 +229,12 @@ namespace ProcedureMakerServer.Migrations
                         name: "FK_AccountStatements_Cases_CaseId",
                         column: x => x.CaseId,
                         principalTable: "Cases",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AccountStatements_Lawyers_LawyerId",
+                        column: x => x.LawyerId,
+                        principalTable: "Lawyers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -289,10 +299,10 @@ namespace ProcedureMakerServer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    InvoiceId = table.Column<Guid>(type: "uuid", nullable: false),
                     BillingElementId = table.Column<Guid>(type: "uuid", nullable: false),
                     HasPersonalizedBillingElement = table.Column<bool>(type: "boolean", nullable: false),
-                    HoursWorked = table.Column<decimal>(type: "numeric", nullable: false),
-                    InvoiceId = table.Column<Guid>(type: "uuid", nullable: true)
+                    HoursWorked = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -307,7 +317,8 @@ namespace ProcedureMakerServer.Migrations
                         name: "FK_Activities_Invoices_InvoiceId",
                         column: x => x.InvoiceId,
                         principalTable: "Invoices",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -335,6 +346,11 @@ namespace ProcedureMakerServer.Migrations
                 table: "AccountStatements",
                 column: "CaseId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccountStatements_LawyerId",
+                table: "AccountStatements",
+                column: "LawyerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Activities_BillingElementId",
