@@ -46,6 +46,7 @@ public class CaseController : Controller
 
         if (lawyerId.Equals(Guid.Empty)) throw new ArgumentInvalidException("lawyer id null");
         CasesContext caseContext = await _caseContextService.GetCaseContext(lawyerId);
+        Console.WriteLine("case hit");
         return Ok(caseContext);
     }
 
