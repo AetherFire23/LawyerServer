@@ -10,6 +10,16 @@ using System.Reflection;
 
 namespace ProcedureMakerServer.TemplateManagement;
 
+// tips:
+// design
+// send the widht or height so that I can know 
+// what to resize to after 
+
+// html - dynamic css
+// 
+
+
+// also DI these classes instead of static
 public static class DocumentMaker
 {
     private static Dictionary<DocumentTypes, DocumentFillerBase> _documentsMap

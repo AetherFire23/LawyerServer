@@ -63,6 +63,12 @@ public class Program
         GetCaseResponse getCaseResposne = Client.SendRequestWithBodyAndReturn<GetCaseResponse, CaseCreationInfo>(Method.Post, $"http://localhost:5099/case/createnewcase", caseCreationInfo);
 
 
+        Client.AddDefaultHeader("Authorization", $"Bearer {loginResBody.Token}");
+        var caseContextabcd = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext");
+
+
+
+
         // get cases
         var caseContext = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext?lawyerId={lawyerId}");
 

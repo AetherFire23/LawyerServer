@@ -25,26 +25,17 @@ public class BackingFiller : DocumentFillerBase
 
         keywordMap.Add(("plaintiffName", $"{caseDto.Plaintiff.FirstName}"));
         keywordMap.Add(("genderedPlaintiff", $"{caseDto.Plaintiff.FullName}"));
-
         keywordMap.Add(("defenderName", $"{caseDto.Defender.FullName.ToUpper()}"));
         keywordMap.Add(("genderedDefender", $"{caseDto.Defender.GetGenderedCourtRoleName()}"));
-
         keywordMap.Add(("documentName", $"{parms.DocumentName}"));
         keywordMap.Add(("lawyerName", $"{caseDto.ManagerLawyer.UppercaseFormattedFullName}"));
-
         keywordMap.Add(("fullAddress", $"{caseDto.ManagerLawyer.Address}"));
-
         keywordMap.Add(("postalCode", $"{caseDto.ManagerLawyer.PostalCode}"));
-
         keywordMap.Add(("fax", $"{caseDto.ManagerLawyer.Fax}"));
-
-
         keywordMap.Add(("notificationEmail", $"{caseDto.ManagerLawyer.NotificationEmail}"));
         keywordMap.Add(("lawyerCourtNumber", $"{caseDto.CourtAffairNumber}"));
         keywordMap.Add(("fileNumber", $"{caseDto.CaseNumber}"));
         keywordMap.Add(("courtLockerNumber", $"{caseDto.ManagerLawyer.CourtLockerNumber}"));
-
-
     }
 }
 

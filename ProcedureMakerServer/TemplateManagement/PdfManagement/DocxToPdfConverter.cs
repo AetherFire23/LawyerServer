@@ -13,7 +13,6 @@ public static class DocxToPdfConverter
 
         var stdOutBuffer = new StringBuilder();
         // hardcoed executable path
-
         
         // using relative pathing now for toPdfPath
         string cliPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "LibreOffice", "program", "soffice.exe"); 
@@ -26,7 +25,6 @@ public static class DocxToPdfConverter
                 .Add(fromDocxPath)
                 .Add("--outdir")
                 .Add(toPdfPath);
-
             })
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdOutBuffer))

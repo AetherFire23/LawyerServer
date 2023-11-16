@@ -52,6 +52,5 @@ public static class EmailSender
         smtp.Authenticate(credentials.Email, credentials.AppPassword);
         smtp.Send(email);
         smtp.Disconnect(true);
-
     }
 }

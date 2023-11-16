@@ -12,39 +12,6 @@ namespace ProcedureMakerServer.TemplateManagement;
 
 public static class WordDocumentExtensions
 {
-    public static void SearchAndReplace(this WordprocessingDocument doc, string from, string to)
-    {
-        string docText;
-        using (StreamReader sr = new StreamReader(doc.MainDocumentPart.GetStream()))
-        {
-            docText = sr.ReadToEnd();
-        }
-
-        Regex regexText = new Regex(from);
-        docText = regexText.Replace(docText, to);
-
-        using (StreamWriter sw = new StreamWriter(doc.MainDocumentPart.GetStream(FileMode.Create)))
-        {
-            sw.Write(docText);
-        }
-
-        using (StreamReader sr = new StreamReader(doc.MainDocumentPart.GetStream()))
-        {
-            string s = sr.ReadToEnd(); // bon xml
-        }
-        var p = doc.Clone("benClone.docx", false);
-        p.Dispose();
-    }
-
-    // zombie code io think
-    public static (Paragraph, Text) CreateParagraphWithText(this Run self, string text)
-    {
-        SpacingBetweenLines spacing = new SpacingBetweenLines() { Line = "240", LineRule = LineSpacingRuleValues.Exact, Before = "0", After = "0" };
-        var para = self.AppendChild(new Paragraph(spacing));
-        var t = para.AppendChild(new Text(text));
-
-        return (para, t);
-    }
 
     public static List<Run> GetRuns(this WordprocessingDocument self)
     {
@@ -59,25 +26,6 @@ public static class WordDocumentExtensions
 
         return run;
     }
-
-    public static string ReadDocumentText(this WordprocessingDocument self)
-    {
-        string read;
-        using (var reader = new StreamReader(self.MainDocumentPart.GetStream()))
-        {
-            read = reader.ReadToEnd();
-        }
-        return read;
-    }
-
-    public static void OverwriteBody(this WordprocessingDocument self, string overwrittenBody)
-    {
-        using (var writer = new StreamWriter(self.MainDocumentPart.GetStream()))
-        {
-            writer.Write(overwrittenBody);
-        }
-    }
-
     public static async Task<string> ConvertToPdf(WordDocInfo documentPath)
     {
         (string pdfSaveDirectoryPath, string outFileName) = GenerateOutPaths(documentPath.FileName, ".pdf");
