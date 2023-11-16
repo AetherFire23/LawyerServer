@@ -62,8 +62,8 @@ public class JwtTokenManager : IJwtTokenManager
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                //ValidIssuer = _config.Issuer,
-                //ValidAudience = _config.Audience,
+                ValidIssuer = _config.Issuer,
+                ValidAudience = _config.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.SecretKey))
             };
 

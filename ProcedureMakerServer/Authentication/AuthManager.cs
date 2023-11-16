@@ -117,6 +117,7 @@ public class AuthManager : IAuthManager
         await _context.SaveChangesAsync();
 
         await _context.UserRoles.AddAsync(userRole);
+        await _context.SaveChangesAsync();
 
         var userDto = await _userRepository.MapUserDto(user.Id);
     }

@@ -38,7 +38,7 @@ public class UserController : Controller
 
     [HttpPost(UserEndpoints.TokenLogin)]
     [DefaultReturnType(typeof(LoginResult))]
-    [Authorize(Roles = nameof(RoleTypes.Normal))] // token still valid but user got deleted when db dropped
+    [Authorize(Roles = nameof(RoleTypes.Admin))] // token still valid but user got deleted when db dropped
     public async Task<IActionResult> TokenLogin() // bad cos parametres often get cached and-or expoised
     {
         // work in progress 
@@ -73,12 +73,12 @@ public class UserController : Controller
 
 
 
-    //[HttpGet("authorizedrequest")]
-    //// [Authorize(Roles = nameof(RoleTypes.Normal))]
-    //public async Task<IActionResult> AuthorizedTesst() // just for test
-    //{
-    //    return Ok();
-    //}
+    [HttpGet("authorizedrequest")]
+    [Authorize(Roles = nameof(RoleTypes.Normal))]
+    public async Task<IActionResult> AuthorizedTesst() // just for test
+    {
+        return Ok();
+    }
 
 
 
