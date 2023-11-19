@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.64.0.3155" />
     <PackageReference Include="RestSharp" Version="110.2.0" />
   </ItemGroup>
 

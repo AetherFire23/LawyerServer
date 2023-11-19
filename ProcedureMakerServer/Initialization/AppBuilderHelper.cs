@@ -55,17 +55,12 @@ public static class AppBuilderHelper
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IAuthManager, AuthManager>();
         builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
-
         builder.Services.AddScoped<ICaseContextService, CaseContextService>();
-
         builder.Services.AddScoped<ICasesContextRepository, CasesContextRepository>();
         builder.Services.AddScoped<ICasePartRepository, CasePartRepository>();
-
         builder.Services.AddScoped<ICaseRepository, CaseRepository>();
-
         builder.Services.AddScoped<IClientRepository, ClientRepository>();
-
-        builder.Services.AddScoped<IBillingService, BillingService>();
+        builder.Services.AddScoped< BillingService>();
     }
 
     private static void ConfigureHTTPLogging(WebApplicationBuilder builder)

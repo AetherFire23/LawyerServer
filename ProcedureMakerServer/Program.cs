@@ -1,33 +1,9 @@
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using MailKit.Net.Imap;
-using MailKit;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using MimeKit;
-using MimeKit.Text;
 using Newtonsoft.Json;
 using ProcedureMakerServer.Authentication;
-using ProcedureMakerServer.Dtos;
-using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Exceptions;
 using ProcedureMakerServer.Initialization;
 using ProcedureMakerServer.Scratches;
-using ProcedureMakerServer.TemplateManagement;
-using ProcedureMakerServer.Utils;
-using MailKit.Search;
-using CliWrap;
-using System.Text;
-using PdfSharp.Pdf.IO;
-using PdfSharp.Pdf;
-using ProcedureMakerServer.Services;
-using ProcedureMakerServer.TemplateManagement.PdfManagement;
-using ProcedureMakerServer.EmailMaker;
-using ProcedureMakerServer.TemplateManagement.DocumentFillers;
-using System.Text.RegularExpressions;
-using Org.BouncyCastle.Utilities;
 
 namespace ProcedureMakerServer;
 

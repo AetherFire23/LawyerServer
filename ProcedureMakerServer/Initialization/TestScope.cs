@@ -63,7 +63,7 @@ public static class TestScope
             await caseContextService.SaveCaseDto(lcase.Cases.First());
 
 
-            var billingManager = scope.ServiceProvider.GetRequiredService<IBillingService>();
+            var billingManager = scope.ServiceProvider.GetRequiredService<BillingService>();
 
 
             

@@ -4,6 +4,8 @@
 namespace ProcedureMakerServer.Billing;
 
 
+
+// Payment Type for Fideicommis ?
 public partial class Payment : EntityBase
 {
     public Guid InvoiceId { get; set; }
@@ -25,5 +27,4 @@ public class PaymentCreationRequest
     public Guid InvoiceId { get; set; }
     public decimal AmountPaid { get; set; }
     public DateTime? AmountPaidDate { get; set; }
-
 }

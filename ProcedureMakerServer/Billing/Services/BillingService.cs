@@ -9,6 +9,7 @@ using ProcedureMakerServer.Interfaces;
 namespace ProcedureMakerServer.Billing.Services;
 
 
+// not a service in fact. It is just a normal repository.
 // IconTextReference extension?
 public class BillingService : IBillingService, IContextReference
 {
