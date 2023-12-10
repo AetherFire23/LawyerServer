@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ProcedureMakerServer.Billing;
+using ProcedureMakerServer.Billing.StatementEntities;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Enums;
 using Reinforced.Typings.Attributes;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EFCoreBase.Entities;
 

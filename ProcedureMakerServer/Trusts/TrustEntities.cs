@@ -1,11 +1,11 @@
 ﻿using EFCoreBase.Entities;
-using ProcedureMakerServer.Entities;
+using ProcedureMakerServer.Utils;
 
 namespace ProcedureMakerServer.Trusts;
 
 
 
-public class TrustPayment : EntityBase
+public class TrustPayment : EntityBase, ListExtensions.ICopyFromAbleDto<TrustPaymentDto>
 {
     public Guid TrustId { get; set; }
     public Trust Trust { get; set; }
@@ -22,15 +22,15 @@ public class TrustPayment : EntityBase
         };
         return payz;
     }
-    public void CopyFromDto(TrustPaymentDto dto, Trust trackedTrust)
+
+    public void CopyFromDto(TrustPaymentDto dto)
     {
-        this.Amount = dto.Amount;
-        this.Date = dto.Date;
-        this.Trust = trackedTrust;
+        Amount = dto.Amount;
+        Date = dto.Date;
     }
 }
 
-public class TrustDisburse : EntityBase
+public class TrustDisburse : EntityBase, ListExtensions.ICopyFromAbleDto<TrustDisburseDto>
 {
     public Guid TrustId { get; set; }
     public Trust Trust { get; set; }
@@ -48,16 +48,9 @@ public class TrustDisburse : EntityBase
         return disburse;
     }
 
-    public void CopyFromDto(TrustDisburseDto dto, Trust trackedTrust)
+    public void CopyFromDto(TrustDisburseDto dto)
     {
         this.Amount = dto.Amount;
         this.Date = dto.Date;
-        this.Trust = trackedTrust;
-
-        bool hasChangedTrustAccount = this.TrustId != trackedTrust.Id;
-        if (hasChangedTrustAccount)
-        {
-            this.Trust = trackedTrust;
-        }
     }
 }

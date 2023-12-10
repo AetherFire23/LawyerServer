@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace ProcedureMakerServer.Utils;
+﻿namespace ProcedureMakerServer.Utils;
 
 public static class StreamExtensions
 {

@@ -1,4 +1,4 @@
-﻿namespace ProcedureMakerServer.Billing;
+﻿namespace ProcedureMakerServer.Billing.StatementEntities;
 
 
 // join table

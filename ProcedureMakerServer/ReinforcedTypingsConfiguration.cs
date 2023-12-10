@@ -3,8 +3,8 @@ using ProcedureMakerServer.Scratches;
 using Reinforced.Typings.Ast.TypeNames;
 using Reinforced.Typings.Fluent;
 using Config = Reinforced.Typings.Fluent.ConfigurationBuilder;
-namespace ProcedureMakerServer;
 
+namespace ProcedureMakerServer;
 public static class ReinforcedTypingsConfiguration
 {
     public static void Configure(Config builder)

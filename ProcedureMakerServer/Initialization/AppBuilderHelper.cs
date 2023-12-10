@@ -7,6 +7,7 @@ using ProcedureMakerServer.Billing.Services;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository;
 using ProcedureMakerServer.Services;
+using ProcedureMakerServer.Trusts;
 using System.Reflection;
 namespace ProcedureMakerServer.Initialization;
 
@@ -60,7 +61,8 @@ public static class AppBuilderHelper
         builder.Services.AddScoped<ICasePartRepository, CasePartRepository>();
         builder.Services.AddScoped<ICaseRepository, CaseRepository>();
         builder.Services.AddScoped<IClientRepository, ClientRepository>();
-        builder.Services.AddScoped< BillingService>();
+        builder.Services.AddTransient<AccountStatementRepository>();
+        builder.Services.AddTransient<TrustRepository>();
     }
 
     private static void ConfigureHTTPLogging(WebApplicationBuilder builder)

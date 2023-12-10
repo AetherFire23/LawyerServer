@@ -1,13 +1,9 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using MailKit;
-using Microsoft.OpenApi.Extensions;
 using MimeKit;
 using MimeKit.IO;
 using ProcedureMakerServer.Dtos;
 using System.Globalization;
-using System.Reflection.Metadata;
 
 namespace ProcedureMakerServer.TemplateManagement.DocumentFillers;
 

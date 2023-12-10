@@ -24,7 +24,7 @@ public class FileController : ControllerBase
     [HttpPost("addlawyer")]
     public async Task AddLawyer([FromBody] Lawyer lawyer)
     {
-        await _lawyerRepository.Create(lawyer);
+        await _lawyerRepository.CreateLawyer(lawyer);
     }
 
     [HttpPut("modlawyer")]
@@ -40,7 +40,7 @@ public class FileController : ControllerBase
     [HttpPost("addclient")]
     public async Task<IActionResult> AddClient([FromBody] Client client) // create and init locally
     {
-        await _clientRepository.Create(client);
+        await _clientRepository.CreateLawyer(client);
         return Ok();
     }
 

@@ -1,7 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using ProcedureMakerServer.Dtos;
+﻿using ProcedureMakerServer.Dtos;
 using ProcedureMakerServer.Entities;
 using System.Globalization;
 

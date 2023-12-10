@@ -1,5 +1,4 @@
 ﻿using ProcedureMakerServer.Dtos;
-using ProcedureMakerServer.Entities.BaseEntities;
 
 namespace ProcedureMakerServer.TemplateManagement.DocumentFillers;
 

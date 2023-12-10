@@ -1,65 +1,48 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Billing.Services;
-
+using ProcedureMakerServer.Trusts;
 namespace ProcedureMakerServer.Controllers;
-
 
 [ApiController]
 [Route("[controller]")]
 public class InvoiceController : Controller
 {
-    private IBillingService _billingService { get; set; }
+    private readonly AccountStatementRepository _accountStatementRepository;
+    private readonly TrustRepository _trustRepository;
+    
 
-    public InvoiceController(IBillingService billingService)
+    public InvoiceController(AccountStatementRepository accountStatementRepository, TrustRepository trustRepository)
     {
-        _billingService = billingService;
+        _accountStatementRepository = accountStatementRepository;
+        _trustRepository = trustRepository;
     }
 
-    [HttpPost("updateinvoices")]
-    public async Task<IActionResult> UpdateInvoice([FromBody] InvoiceDto accountStatement)
+    [HttpGet("getaccountdto")]
+    public async Task<IActionResult> GetAccountDto(Guid clientId)
     {
-        await _billingService.UpdateInvoice(accountStatement);
+        var accountStatementDto = await _accountStatementRepository.ConstructAccountStatementDtoByCaseId(clientId);
+        return Ok(accountStatementDto);
+    }
 
+    // trust
+    [HttpGet("gettrustdto")]
+    public async Task<IActionResult> GetTrustDto(Guid clientId)
+    {
+        var trustDto = await _trustRepository.ConstructTrustDto(clientId);
+        return Ok(trustDto);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddTrustPayment([FromBody] TrustPaymentDto trustPayment, Guid clientId)
+    {
+        await _trustRepository.AddPayment(clientId, trustPayment);
         return Ok();
     }
 
-    [HttpPost("addactivity")]
-    public async Task<IActionResult> AddActivity([FromBody] ActivityCreation activityCreation)
+    [HttpPut]
+    public async Task<IActionResult> ModifyPayment(Guid clientId, TrustPaymentDto trustPayment)
     {
-        await _billingService.AddActivityToInvoice(activityCreation);
-
+        
         return Ok();
-    }
-
-    [HttpPost("addbillingelement")]
-    public async Task<IActionResult> AddBillingElement([FromBody] BillingElementCreationRequest billingElementCreation)
-    {
-        await _billingService.AddBillingElement(billingElementCreation);
-
-        return Ok();
-    }
-
-    [HttpPost("addinvoice")]
-    public async Task<IActionResult> AddInvoice(Guid caseId)
-    {
-        await _billingService.AddInvoice(caseId);
-        return Ok();
-    }
-
-    [HttpPost("addpayment")]
-    public async Task<IActionResult> AddPayment([FromBody] PaymentCreationRequest paymentCreation)
-    {
-        await _billingService.AddPayment(paymentCreation);
-        return Ok();
-    }
-
-    // deletes invoices on case deletion only. 
-
-    [HttpGet("getaccountstatement")]
-    public async Task<IActionResult> GetAccountStatement(Guid caseId)
-    {
-        var statement = await _billingService.MapAccountStatementDto(caseId);
-        return Ok(statement);
     }
 }

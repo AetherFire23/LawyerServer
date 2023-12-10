@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProcedureMakerServer.Migrations
 {
     /// <inheritdoc />
-    public partial class _5 : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -135,26 +135,6 @@ namespace ProcedureMakerServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LawyerBillingOptions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TPS = table.Column<decimal>(type: "numeric", nullable: false),
-                    TVQ = table.Column<decimal>(type: "numeric", nullable: false),
-                    LawyerId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LawyerBillingOptions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LawyerBillingOptions_Lawyers_LawyerId",
-                        column: x => x.LawyerId,
-                        principalTable: "Lawyers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Cases",
                 columns: table => new
                 {
@@ -185,31 +165,19 @@ namespace ProcedureMakerServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BillingElements",
+                name: "Trusts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    LawyerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    LawyerBillingOptionsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AccountStatementGuid = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsPersonalizedBillingElement = table.Column<bool>(type: "boolean", nullable: false),
-                    ActivityName = table.Column<string>(type: "text", nullable: false),
-                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
-                    IsHourlyRate = table.Column<bool>(type: "boolean", nullable: false)
+                    ClientId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BillingElements", x => x.Id);
+                    table.PrimaryKey("PK_Trusts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BillingElements_LawyerBillingOptions_LawyerBillingOptionsId",
-                        column: x => x.LawyerBillingOptionsId,
-                        principalTable: "LawyerBillingOptions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BillingElements_Lawyers_LawyerId",
-                        column: x => x.LawyerId,
-                        principalTable: "Lawyers",
+                        name: "FK_Trusts_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -276,12 +244,75 @@ namespace ProcedureMakerServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TrustDisburses",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TrustId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrustDisburses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrustDisburses_Trusts_TrustId",
+                        column: x => x.TrustId,
+                        principalTable: "Trusts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrustPayments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TrustId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrustPayments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrustPayments_Trusts_TrustId",
+                        column: x => x.TrustId,
+                        principalTable: "Trusts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BillingElements",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AccountStatementGuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    AccountStatementId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsPersonalizedBillingElement = table.Column<bool>(type: "boolean", nullable: false),
+                    ActivityName = table.Column<string>(type: "text", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    IsHourlyRate = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BillingElements", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BillingElements_AccountStatements_AccountStatementId",
+                        column: x => x.AccountStatementId,
+                        principalTable: "AccountStatements",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Invoices",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AccountStatementId = table.Column<Guid>(type: "uuid", nullable: false),
-                    InvoiceStatuses = table.Column<int>(type: "integer", nullable: false)
+                    InvoiceStatus = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -363,14 +394,9 @@ namespace ProcedureMakerServer.Migrations
                 column: "InvoiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BillingElements_LawyerBillingOptionsId",
+                name: "IX_BillingElements_AccountStatementId",
                 table: "BillingElements",
-                column: "LawyerBillingOptionsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BillingElements_LawyerId",
-                table: "BillingElements",
-                column: "LawyerId");
+                column: "AccountStatementId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CaseParts_CaseId",
@@ -398,12 +424,6 @@ namespace ProcedureMakerServer.Migrations
                 column: "AccountStatementId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LawyerBillingOptions_LawyerId",
-                table: "LawyerBillingOptions",
-                column: "LawyerId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Lawyers_UserId",
                 table: "Lawyers",
                 column: "UserId",
@@ -413,6 +433,21 @@ namespace ProcedureMakerServer.Migrations
                 name: "IX_Payments_InvoiceId",
                 table: "Payments",
                 column: "InvoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrustDisburses_TrustId",
+                table: "TrustDisburses",
+                column: "TrustId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrustPayments_TrustId",
+                table: "TrustPayments",
+                column: "TrustId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trusts_ClientId",
+                table: "Trusts",
+                column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",
@@ -438,6 +473,12 @@ namespace ProcedureMakerServer.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
+                name: "TrustDisburses");
+
+            migrationBuilder.DropTable(
+                name: "TrustPayments");
+
+            migrationBuilder.DropTable(
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
@@ -447,10 +488,10 @@ namespace ProcedureMakerServer.Migrations
                 name: "Invoices");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "Trusts");
 
             migrationBuilder.DropTable(
-                name: "LawyerBillingOptions");
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "AccountStatements");

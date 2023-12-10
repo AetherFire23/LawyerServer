@@ -3,8 +3,6 @@ using MailKit.Net.Imap;
 using MailKit.Search;
 using MimeKit;
 using ProcedureMakerServer.Utils;
-using System;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace ProcedureMakerServer.EmailMaker;
 
@@ -36,7 +34,7 @@ public static class EmailReceiver
         MimeMessage messageWithMostRecentDate = messages.First(x => x.Date.Equals(messages.Max(x => x.Date)));
 
 
-        client.Disconnect(true);
+        await client.DisconnectAsync(true);
         return messageWithMostRecentDate;
     }
 }

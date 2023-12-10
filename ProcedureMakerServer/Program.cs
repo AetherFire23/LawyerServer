@@ -1,3 +1,4 @@
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Diagnostics;
 using Newtonsoft.Json;
 using ProcedureMakerServer.Authentication;
@@ -7,71 +8,14 @@ using ProcedureMakerServer.Scratches;
 
 namespace ProcedureMakerServer;
 
-// case = dossier avocat
-// affair = de cour
-// file = template
 
 
-// pour reinforced typings <<target compile typescript was not found >> 
-//  <Target Name="CompileTypeScript" />
+// pour le tool de rtkQuery
+// y aller peut-etre comme reinforeced typings mais jpas sur comment
+// sinon nu pre-build
+// sinon juste un solution thing où j'launch ma premiere solution avant
+//  en tant que headless console.
 
-
-
-// setter une configuremethod
-//<RtConfigurationMethod>ProcedureMakerServer.ReinforcedTypingsConfiguration.Configure</RtConfigurationMethod>
-// pas oublier : faire matcher les namespaces
-
-
-// le catual target
-// 		<RtTargetDirectory>..\..\lawyer-procedure\mercichatgpt</RtTargetDirectory>
-
-// pour pas toute crisser dans un seul file et pouvoir import les fichiers 1 a un (require la configure method()
-//{
-//    builder.Global(config => config.CamelCaseForProperties()
-//        .AutoOptionalProperties()
-//        .UseModules());
-
-
-// redis
-// stringpool
-
-
-
-
-//app.UseExceptionHandler(
-//              options =>
-//              {
-//                  options.Run(
-//                      async context =>
-//                      {
-//                          context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
-//                          context.Response.ContentType = "text/html";
-//                          var ex = context.Features.Get<IExceptionHandlerFeature>();
-//                          if (ex != null)
-//                          {
-//                              var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace}";
-//                              await context.Response.WriteAsync(err).ConfigureAwait(false);
-//                          }
-//                      });
-//              }
-//          );
-
-
-
-// spaceing between lines?
-// structure is body -> paragraph => run -> text
-
-//var text = new Text("dwdw");
-
-//var run = new Run(text);
-
-//var par = new Paragraph(run);
-
-//var space = new SpacingBetweenLines();
-//space.After = "0";
-//par.AppendChild(space);
-
-//doc.MainDocumentPart.Document.Body.AppendChild(par);
 
 public class Program
 {
@@ -149,7 +93,7 @@ public class Program
         {
             exceptionHandler.Run(async context =>
             {
-                IExceptionHandlerPathFeature exceptionHandlerFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                IExceptionHandlerPathFeature? exceptionHandlerFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 
                 if (exceptionHandlerFeature?.Error is HttpExceptionBase exBase)
                 {
@@ -183,5 +127,26 @@ public class Program
         app.Run();
     }
 
+    // only in var is cannot be  implicitly changed
+    public async Task SendEmailAsync()
+    {
+        string senderEmail = "richerf3212@gmail.com";
+        string senderName;
+        string recipientEmail = "richerf3212@gmail.com";
+        string subject = "test";
+        string body = "<h1> test </h1>";
+        string clientId;
+        string clientSecret;
+        string refreshToken;
+
+
+
+
+        var secrets = new ClientSecrets
+        {
+            ClientId = Environment.GetEnvironmentVariable("GMailClientId"),
+            ClientSecret = Environment.GetEnvironmentVariable("GMailClientSecret")
+        };
+    }
 
 }

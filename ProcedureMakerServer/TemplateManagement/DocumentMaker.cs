@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using MailKit.Net.Imap;
+﻿using MailKit.Net.Imap;
 using MimeKit;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;

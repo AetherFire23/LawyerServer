@@ -10,7 +10,7 @@ public interface ICrudRepositoryBase<T1, T2>
     where T2 : EntityBase
 {
 
-    Task Create(T2 entity);
+    Task CreateLawyer(T2 entity);
     Task CreateRange(List<T2> entity);
     Task<T2> GetEntityById(Guid id);
     Task Remove(Guid id);

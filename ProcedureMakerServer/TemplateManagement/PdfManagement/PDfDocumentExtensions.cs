@@ -1,5 +1,4 @@
 ﻿using PdfSharp.Pdf;
-using System.Runtime.CompilerServices;
 
 namespace ProcedureMakerServer.TemplateManagement.PdfManagement;
 

@@ -1,5 +1,4 @@
-﻿using Npgsql.Internal.TypeHandlers.DateTimeHandlers;
-using ProcedureMakerServer.Enums;
+﻿using ProcedureMakerServer.Enums;
 using Reinforced.Typings.Attributes;
 
 namespace ProcedureMakerServer.Entities.BaseEntities;

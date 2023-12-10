@@ -1,7 +1,6 @@
 ﻿
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using ProcedureMakerServer.Constants;
 using ProcedureMakerServer.TemplateManagement;
 
 namespace ProcedureMakerServer.Utils;
@@ -12,7 +11,7 @@ public static class WordHelper
 
     public static byte[] ReadDocumentBytesAt(string wordDocumentName)
     {
-        string path = DocumentFolderPath + wordDocumentName;
+        var path = DocumentFolderPath + wordDocumentName;
         if (!File.Exists(path)) throw new Exception("Template did not exist, file should match enum type value");
 
         var bytes = File.ReadAllBytes(path);

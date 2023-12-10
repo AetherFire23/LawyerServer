@@ -9,6 +9,7 @@ public class ClientRepository : ProcedureCrudBase<Client>, IClientRepository
 {
     public ClientRepository(ProcedureContext context, IMapper mapper) : base(context, mapper)
     {
+
     }
 
     public async Task ModifyClient(Client client)

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Google.Apis.Util;
+﻿using Google.Apis.Util;
 using Google.Apis.Util.Store;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
-
-using MailKit;
 using MailKit.Net.Imap;
 using MailKit.Security;
 

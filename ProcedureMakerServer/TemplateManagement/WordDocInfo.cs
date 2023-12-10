@@ -1,7 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using Microsoft.EntityFrameworkCore.Metadata;
-using MimeKit.Cryptography;
-using ProcedureMakerServer.Constants;
+﻿using ProcedureMakerServer.Constants;
 
 namespace ProcedureMakerServer.TemplateManagement;
 

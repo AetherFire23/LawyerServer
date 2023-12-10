@@ -1,12 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 using ProcedureMakerServer.Dtos;
-using ProcedureMakerServer.Utils;
-using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ProcedureMakerServer.TemplateManagement;

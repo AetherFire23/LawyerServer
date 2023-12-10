@@ -19,7 +19,7 @@ public abstract class CrudRepositoryBase<TContext, TEntity> : EntityRepositoryBa
         return entity;
     }
 
-    public async Task Create(TEntity entity)
+    public async Task CreateLawyer(TEntity entity)
     {
         await Set.AddAsync(entity);
     }

@@ -21,20 +21,19 @@ public class CasePartRepository : ProcedureCrudBase<CasePart>, ICasePartReposito
         return entity;
     }
 
+    // This shouldnt! work
     public async Task CreateOrModifyCasePart(Case cCase, CasePart casePart)
     {
-        var c = await base.Set.Include(x => x.Case)
+        var caseEntity = await base.Set.Include(x => x.Case)
             .FirstOrDefaultAsync(x => x.Id == casePart.Id);
 
-        if (c is null)
+        if (caseEntity is null)
         {
             casePart.Case = cCase;
             this.Set.Add(casePart);
+            await base.Context.SaveChangesAsync();
         }
-        else
-        {
-            await ModifyCasePart(casePart);
-        }
+        await ModifyCasePart(casePart);
         await base.Context.SaveChangesAsync();
     }
 

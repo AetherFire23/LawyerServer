@@ -33,6 +33,7 @@ public static class AuthenticationServiceExtensionscs
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecretKey))
             };
         });
+
         _ = builder.Services.AddAuthorization();
     }
 }

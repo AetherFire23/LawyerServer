@@ -1,18 +1,22 @@
 ﻿using EFCoreBase.Entities;
 
-namespace ProcedureMakerServer.Billing;
+namespace ProcedureMakerServer.Billing.StatementEntities;
 
 public partial class Invoice : EntityBase
 {
     public Guid AccountStatementId { get; set; }
     public AccountStatement? AccountStatement { get; set; }
-
-    public InvoiceStatuses InvoiceStatuses { get; set; } = InvoiceStatuses.InPreparation;
+    public InvoiceStatuses InvoiceStatus { get; set; } = InvoiceStatuses.InPreparation;
     public ICollection<Activity> Activities { get; set; } = new List<Activity>();
     public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
-    public void CopyTo(Invoice target)
+    public Invoice()
     {
-        target.InvoiceStatuses = this.InvoiceStatuses;
+        
+    }
+
+    public Invoice(AccountStatement trackedAccountStatement)
+    {
+        AccountStatement = trackedAccountStatement;
     }
 }

@@ -1,6 +1,5 @@
 ﻿using PdfSharp.Pdf.IO;
 using PdfSharp.Pdf;
-using System.Reflection.Metadata;
 using ProcedureMakerServer.Constants;
 
 namespace ProcedureMakerServer.TemplateManagement.PdfManagement;

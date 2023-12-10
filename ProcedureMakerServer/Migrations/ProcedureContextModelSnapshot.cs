@@ -115,7 +115,7 @@ namespace ProcedureMakerServer.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.AccountStatement", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.AccountStatement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -137,7 +137,7 @@ namespace ProcedureMakerServer.Migrations
                     b.ToTable("AccountStatements");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.Activity", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Activity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -164,13 +164,16 @@ namespace ProcedureMakerServer.Migrations
                     b.ToTable("Activities");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.BillingElement", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.BillingElement", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("AccountStatementGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountStatementId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("ActivityName")
@@ -186,22 +189,14 @@ namespace ProcedureMakerServer.Migrations
                     b.Property<bool>("IsPersonalizedBillingElement")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("LawyerBillingOptionsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("LawyerId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("LawyerBillingOptionsId");
-
-                    b.HasIndex("LawyerId");
+                    b.HasIndex("AccountStatementId");
 
                     b.ToTable("BillingElements");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.Invoice", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Invoice", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -210,7 +205,7 @@ namespace ProcedureMakerServer.Migrations
                     b.Property<Guid>("AccountStatementId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("InvoiceStatuses")
+                    b.Property<int>("InvoiceStatus")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -220,30 +215,7 @@ namespace ProcedureMakerServer.Migrations
                     b.ToTable("Invoices");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.LawyerBillingOptions", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("LawyerId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("TPS")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("TVQ")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LawyerId")
-                        .IsUnique();
-
-                    b.ToTable("LawyerBillingOptions");
-                });
-
-            modelBuilder.Entity("ProcedureMakerServer.Billing.Payment", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Payment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -522,6 +494,66 @@ namespace ProcedureMakerServer.Migrations
                     b.ToTable("Lawyers");
                 });
 
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.Trust", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("Trusts");
+                });
+
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustDisburse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TrustId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrustId");
+
+                    b.ToTable("TrustDisburses");
+                });
+
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustPayment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TrustId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrustId");
+
+                    b.ToTable("TrustPayments");
+                });
+
             modelBuilder.Entity("EFCoreBase.Entities.Case", b =>
                 {
                     b.HasOne("ProcedureMakerServer.Entities.Client", "Client")
@@ -560,11 +592,11 @@ namespace ProcedureMakerServer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.AccountStatement", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.AccountStatement", b =>
                 {
                     b.HasOne("EFCoreBase.Entities.Case", "Case")
                         .WithOne("AccountStatement")
-                        .HasForeignKey("ProcedureMakerServer.Billing.AccountStatement", "CaseId")
+                        .HasForeignKey("ProcedureMakerServer.Billing.StatementEntities.AccountStatement", "CaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -579,15 +611,15 @@ namespace ProcedureMakerServer.Migrations
                     b.Navigation("Lawyer");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.Activity", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Activity", b =>
                 {
-                    b.HasOne("ProcedureMakerServer.Billing.BillingElement", "BillingElement")
+                    b.HasOne("ProcedureMakerServer.Billing.StatementEntities.BillingElement", "BillingElement")
                         .WithMany()
                         .HasForeignKey("BillingElementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProcedureMakerServer.Billing.Invoice", "Invoice")
+                    b.HasOne("ProcedureMakerServer.Billing.StatementEntities.Invoice", "Invoice")
                         .WithMany("Activities")
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -598,28 +630,20 @@ namespace ProcedureMakerServer.Migrations
                     b.Navigation("Invoice");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.BillingElement", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.BillingElement", b =>
                 {
-                    b.HasOne("ProcedureMakerServer.Billing.LawyerBillingOptions", "LawyerBillingOptions")
-                        .WithMany("BillingElements")
-                        .HasForeignKey("LawyerBillingOptionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProcedureMakerServer.Entities.Lawyer", "Lawyer")
+                    b.HasOne("ProcedureMakerServer.Billing.StatementEntities.AccountStatement", "AccountStatement")
                         .WithMany()
-                        .HasForeignKey("LawyerId")
+                        .HasForeignKey("AccountStatementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Lawyer");
-
-                    b.Navigation("LawyerBillingOptions");
+                    b.Navigation("AccountStatement");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.Invoice", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Invoice", b =>
                 {
-                    b.HasOne("ProcedureMakerServer.Billing.AccountStatement", "AccountStatement")
+                    b.HasOne("ProcedureMakerServer.Billing.StatementEntities.AccountStatement", "AccountStatement")
                         .WithMany("Invoices")
                         .HasForeignKey("AccountStatementId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -628,20 +652,9 @@ namespace ProcedureMakerServer.Migrations
                     b.Navigation("AccountStatement");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.LawyerBillingOptions", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Payment", b =>
                 {
-                    b.HasOne("ProcedureMakerServer.Entities.Lawyer", "Lawyer")
-                        .WithOne("LawyerBillingOptions")
-                        .HasForeignKey("ProcedureMakerServer.Billing.LawyerBillingOptions", "LawyerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lawyer");
-                });
-
-            modelBuilder.Entity("ProcedureMakerServer.Billing.Payment", b =>
-                {
-                    b.HasOne("ProcedureMakerServer.Billing.Invoice", "Invoice")
+                    b.HasOne("ProcedureMakerServer.Billing.StatementEntities.Invoice", "Invoice")
                         .WithMany("Payments")
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -683,6 +696,39 @@ namespace ProcedureMakerServer.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.Trust", b =>
+                {
+                    b.HasOne("ProcedureMakerServer.Entities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustDisburse", b =>
+                {
+                    b.HasOne("ProcedureMakerServer.Trusts.Trust", "Trust")
+                        .WithMany("Disburses")
+                        .HasForeignKey("TrustId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trust");
+                });
+
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustPayment", b =>
+                {
+                    b.HasOne("ProcedureMakerServer.Trusts.Trust", "Trust")
+                        .WithMany("Payments")
+                        .HasForeignKey("TrustId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trust");
+                });
+
             modelBuilder.Entity("EFCoreBase.Entities.Case", b =>
                 {
                     b.Navigation("AccountStatement")
@@ -701,21 +747,16 @@ namespace ProcedureMakerServer.Migrations
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.AccountStatement", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.AccountStatement", b =>
                 {
                     b.Navigation("Invoices");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.Invoice", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Invoice", b =>
                 {
                     b.Navigation("Activities");
 
                     b.Navigation("Payments");
-                });
-
-            modelBuilder.Entity("ProcedureMakerServer.Billing.LawyerBillingOptions", b =>
-                {
-                    b.Navigation("BillingElements");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Entities.Client", b =>
@@ -728,9 +769,13 @@ namespace ProcedureMakerServer.Migrations
                     b.Navigation("Cases");
 
                     b.Navigation("Clients");
+                });
 
-                    b.Navigation("LawyerBillingOptions")
-                        .IsRequired();
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.Trust", b =>
+                {
+                    b.Navigation("Disburses");
+
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

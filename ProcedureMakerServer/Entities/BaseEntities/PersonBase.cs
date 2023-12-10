@@ -9,10 +9,6 @@ public abstract class PersonBase : EntityBase
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-
-    public string LowerCaseFormattedFullName => $"{this.FirstName} {this.LastName}";
-    public string UppercaseFormattedFullName => ($"{this.FirstName} {this.LastName}").ToUpper();
-
     public string PostalCode { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
@@ -25,6 +21,15 @@ public abstract class PersonBase : EntityBase
     public string PostalCase { get; set; } = string.Empty;
     public string Fax { get; set; } = string.Empty;
     public Genders Gender { get; set; }
+
+
+
+
+
+
+
+    public string LowerCaseFormattedFullName => $"{this.FirstName} {this.LastName}";
+    public string UppercaseFormattedFullName => ($"{this.FirstName} {this.LastName}").ToUpper();
 
     [TsDate]
     public DateTime DateOfBirth { get; set; } = DateTime.MinValue;

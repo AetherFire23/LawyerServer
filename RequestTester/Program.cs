@@ -1,15 +1,17 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.AspNetCore.Mvc;
+﻿
 using Newtonsoft.Json;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.ReturnModels;
 using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Dtos;
-using ProcedureMakerServer.Initialization;
 using ProcedureMakerServer.Models;
-using ProcedureMakerServer.Utils;
+using ProcedureMakerServer.Trusts;
 using RestSharp;
+using DotLiquid;
+using System.Text.RegularExpressions;
+// https://next-auth.js.org/providers/google
+// https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-8.0
 
 public class Program
 {
@@ -17,6 +19,128 @@ public class Program
     public static async Task Main(string[] args)
     {
         await Task.Delay(450);
+
+        //Test the dotliquid thingy:
+
+        var f = File.ReadAllText("test.html");
+        var p = Template.Parse(f);
+
+
+       // les else
+        string r = p.Render(Hash.FromAnonymousObject(new {user = new {name = "opps"}}));
+        string d = p.Render();
+
+
+        // les loops
+
+        string looptest = p.Render(Hash.FromAnonymousObject(new { stuff = new List<string>{"allo", "bonsoir"}}));
+
+        // la questions a 100%: jpeux tu faire des component aek ca 
+
+
+
+
+
+
+
+
+        //LoginResult? loginResBody;
+        //Guid lawyerId;
+        //RegisterPhase(out loginResBody, out lawyerId);
+        //CaseDto caseToModifiy = CreatingCasePhase(loginResBody, lawyerId);
+        //TestTrustDto(caseToModifiy);
+        // TestInvoicePhase(caseToModifiy);
+    }
+
+    private static void TestTrustDto(CaseDto caseToModifiy)
+    {
+        // manipulate the trust
+        var dto = Client.SendRequestWithReturn<TrustDto>(Method.Get, $"http://localhost:5099/invoice/gettrustdto?clientId={caseToModifiy.Client.Id}");
+
+        // modify the trusts content
+        dto.Disburses.Add(new TrustDisburseDto()
+        {
+            Amount = 100,
+            Date = DateTime.UtcNow,
+        });
+        dto.Disburses.Add(new TrustDisburseDto()
+        {
+            Amount = 200,
+            Date = DateTime.UtcNow,
+        });
+        dto.Payments.Add(new TrustPaymentDto()
+        {
+            Amount = 100,
+            Date = DateTime.UtcNow,
+        });
+
+        // save it
+        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/savetrustdto", dto);
+
+
+        // remove some stuff then save
+        dto.Disburses.RemoveAt(0);
+        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/savetrustdto", dto);
+
+        var dto2 = Client.SendRequestWithReturn<TrustDto>(Method.Get, $"http://localhost:5099/invoice/gettrustdto?clientId={caseToModifiy.Client.Id}");
+        // modify stuff
+
+
+        dto2.Payments.First().Amount = 1000;
+
+        // save it 
+        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/savetrustdto", dto2);
+
+
+        var checkDtoBack = Client.SendRequestWithReturn<TrustDto>(Method.Get, $"http://localhost:5099/invoice/gettrustdto?clientId={caseToModifiy.Client.Id}");
+    }
+
+    private static void TestInvoicePhase(CaseDto caseToModifiy)
+    {
+        var accountStatementDto = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountdto");
+
+        // create invoice
+
+        // add activity to invoice
+
+        // add payment to invoice
+
+
+        var invoice = accountStatementDto.Invoices.First();
+
+        // Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/updateinvoiceactivites", accountStatementDto.i);
+    }
+
+    private static CaseDto CreatingCasePhase(LoginResult? loginResBody, Guid lawyerId)
+    {
+        var caseCreationInfo = new CaseCreationInfo()
+        {
+            LawyerId = lawyerId,
+            CaseNumber = "01",
+            ClientFirstName = "Roger",
+            ClientLastName = "Durand",
+        };
+
+        GetCaseResponse getCaseResposne = Client.SendRequestWithBodyAndReturn<GetCaseResponse, CaseCreationInfo>(Method.Post, $"http://localhost:5099/case/createnewcase", caseCreationInfo);
+
+        Client.AddDefaultHeader("Authorization", $"Bearer {loginResBody.Token}");
+        var caseContextabcd = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext");
+
+        // get cases
+        var caseContext = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext?lawyerId={lawyerId}");
+
+        // then update a case info
+
+        var caseToModifiy = caseContext.Cases.First();
+        caseToModifiy.CourtAffairNumber = "GrosCube";
+        Client.SendRequestNoReturnWithBody(Method.Put, $"http://localhost:5099/case/savecontextdto", caseToModifiy);
+
+        var regottenContext = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext?lawyerId={lawyerId}");
+        return caseToModifiy;
+    }
+
+    private static void RegisterPhase(out LoginResult? loginResBody, out Guid lawyerId)
+    {
         // register
         var registerRequest = new RegisterRequest()
         {
@@ -43,121 +167,9 @@ public class Program
 
         var loginResponse = Client.Put(loginReq);
 
-        var loginResBody = JsonConvert.DeserializeObject<LoginResult>(loginResponse.Content);
+        loginResBody = JsonConvert.DeserializeObject<LoginResult>(loginResponse.Content);
 
-
-        Guid lawyerId = loginResBody.UserDto.LawyerId;
-
-        // create a case (and invoice)
-
-        var caseCreationInfo = new CaseCreationInfo()
-        {
-            LawyerId = lawyerId,
-            CaseNumber = "01",
-            ClientFirstName = "Roger",
-            ClientLastName = "Durand",
-
-        };
-
-
-        GetCaseResponse getCaseResposne = Client.SendRequestWithBodyAndReturn<GetCaseResponse, CaseCreationInfo>(Method.Post, $"http://localhost:5099/case/createnewcase", caseCreationInfo);
-
-
-        Client.AddDefaultHeader("Authorization", $"Bearer {loginResBody.Token}");
-        var caseContextabcd = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext");
-
-
-
-
-        // get cases
-        var caseContext = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext?lawyerId={lawyerId}");
-
-
-
-        // then update a case info
-
-
-        var caseToModifiy = caseContext.Cases.First();
-        caseToModifiy.CourtAffairNumber = "GrosCube";
-        Client.SendRequestNoReturnWithBody(Method.Put, $"http://localhost:5099/case/savecontextdto", caseToModifiy);
-
-
-        var regottenContext = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext?lawyerId={lawyerId}");
-
-
-
-        // get accoutn satement
-        var statement = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
-
-
-        // add Invoice
-        Client.SendRequestWithReturn<IActionResult>(Method.Post, $"http://localhost:5099/invoice/addinvoice?caseId={caseToModifiy.Id.ToString()}");
-
-        var statement2 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
-
-        // add activity 
-
-        ActivityCreation activityCreation = new()
-        {
-            BillingElementId = statement2.LawyerBillingElements.First().Id,
-            HasPersonalizedBillingElement = false,
-            HoursWorked = 1,
-            InvoiceId = statement2.Invoices.First().Id,
-        };
-
-
-        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/addactivity", activityCreation);
-
-        var statement3 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
-
-        // add payment
-
-        PaymentCreationRequest payment = new PaymentCreationRequest()
-        {
-            AmountPaid = 100,
-            AmountPaidDate = DateTime.UtcNow,
-            InvoiceId = statement3.Invoices.First().Id,
-        };
-
-        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/addpayment", payment);
-        var statement4 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
-
-
-        // add billing element  
-        var statement5 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
-
-        BillingElementCreationRequest billingElemetnRequest = new BillingElementCreationRequest()
-        {
-            AccountStatementId = statement4.Id,
-            IsHourlyRate = true,
-            ActivityName = "Test",
-            Amount = 420,
-            IsPersonalizedBillingElement = false,
-        };
-        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/addbillingelement", billingElemetnRequest);
-
-
-        // update the billing element to another one.
-        // from JuridicalWork to Test
-        var statement6 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
-
-
-        statement6.Invoices.First().Activities.First().BillingElement.Id = statement6.LawyerBillingElements.First(x => x.ActivityName == "Test").Id;
-        Client.SendRequestNoReturnWithBody(Method.Post, "http://localhost:5099/invoice/updateinvoices", statement6.Invoices.First());
-
-        var statement7 = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountstatement?caseId={caseToModifiy.Id}");
-
-        //statement4.Invoices.First().InvoiceStatus = InvoiceStatuses.Paid;
-        //statement4.Invoices.First().Activities.First().BillingElement.Id = 
-
-        // Client.SendRequestNoReturnWithBody(Method.Post, "http://localhost:5099/invoice/updateinvoices", statement4.Invoices.First());
-
-
-
-        // Add personalized billing element
-        // add billing element
-        // add activity
-
+        lawyerId = loginResBody.UserDto.LawyerId;
     }
 }
 

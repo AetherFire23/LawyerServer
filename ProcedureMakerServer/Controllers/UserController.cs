@@ -64,12 +64,12 @@ public class UserController : Controller
     }
 
 
-    [DefaultReturnType(typeof(void))]
-    [HttpPost("LolzidaEndpoint")]
-    public async Task<IActionResult> RegisterUser(string lolzida, string otherParam)
-    {
-        return Ok();
-    }
+    //[DefaultReturnType(typeof(void))]
+    //[HttpPost("LolzidaEndpoint")]
+    //public async Task<IActionResult> RegisterUser(string lolzida, string otherParam)
+    //{
+    //    return Ok();
+    //}
 
 
 

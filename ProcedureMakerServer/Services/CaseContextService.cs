@@ -1,10 +1,11 @@
 ﻿using EFCoreBase.Entities;
-using ProcedureMakerServer.Billing;
+using ProcedureMakerServer.Billing.StatementEntities;
 using ProcedureMakerServer.Dtos;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Models;
+using ProcedureMakerServer.Trusts;
 
 namespace ProcedureMakerServer.Services;
 
@@ -53,8 +54,17 @@ public class CaseContextService : ICaseContextService
             Case = cCase,
             Lawyer = lawyer,
         };
-        await _procedureContext.AddAsync(accountStatement);
+        await _procedureContext.AccountStatements.AddAsync(accountStatement);
         await _procedureContext.SaveChangesAsync();
+
+        var trust = new Trust()
+        {
+            Client = client,
+        };
+
+        await _procedureContext.Trusts.AddAsync(trust);
+        await _procedureContext.SaveChangesAsync();
+
 
         return new GetCaseResponse() { CreatedId = cCase.Id };
     }

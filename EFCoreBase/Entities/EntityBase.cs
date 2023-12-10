@@ -29,5 +29,23 @@ public abstract class EntityBase : IEntity, IEquatable<IEntity>
         return HashCode.Combine(Id);
     }
 
+    /// <summary>
+    /// useful for when you want to generate an id for an entity that is coming from the client
+    /// </summary>
+    /// <returns></returns>
+    public Guid GenerateIdIfNull()
+    {
+        if (this.Id.Equals(Guid.Empty))
+        {
+            this.Id = Guid.NewGuid();
 
+        }
+        return Id;
+    }
+
+    public bool CompareIds(EntityBase other)
+    {
+        bool matchFound = other.Id == this.Id;
+        return matchFound;
+    }
 }

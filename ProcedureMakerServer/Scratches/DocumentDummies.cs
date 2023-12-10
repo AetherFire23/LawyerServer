@@ -6,7 +6,7 @@ namespace ProcedureMakerServer.Scratches;
 
 public static class DocumentDummies
 {
-    private static CaseDto CaseDto { get; set; } = new CaseDto()
+    private static CaseDto CaseDto { get; set; } = new()
     {
         CaseNumber = "20 015",
         Client = FirstClient,
@@ -17,7 +17,7 @@ public static class DocumentDummies
             Opposite,
         },
     };
-    private static Lawyer ExampleLawyer = new Lawyer()
+    private static readonly Lawyer ExampleLawyer = new()
     {
         FirstName = "Roger",
         LastName = "TheLawyer",
@@ -29,7 +29,7 @@ public static class DocumentDummies
 
     };
 
-    private static CasePart Opposite = new CasePart()
+    private static readonly CasePart Opposite = new()
     {
         FirstName = "Madame",
         LastName = "Chose",
@@ -37,7 +37,7 @@ public static class DocumentDummies
         CourtRole = CourtRoles.Defender,
     };
 
-    private static Client FirstClient = new Client()
+    private static readonly Client FirstClient = new()
     {
         FirstName = "Roger",
         LastName = "Durand",
@@ -52,8 +52,7 @@ public static class DocumentDummies
 
         dto.ManagerLawyer = ExampleLawyer;
         dto.Client = FirstClient;
-        dto.Participants = new List<CasePart>();
-        dto.Participants.Add(Opposite);
+        dto.Participants = new List<CasePart> { Opposite };
 
         return dto;
     }

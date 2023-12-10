@@ -1,10 +1,10 @@
 ﻿using EFCoreBase.Entities;
 using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Authentication;
-using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Entities;
 using System.Reflection;
 using ProcedureMakerServer.Trusts;
+using ProcedureMakerServer.Billing.StatementEntities;
 
 namespace ProcedureMakerServer;
 
@@ -21,7 +21,6 @@ public class ProcedureContext : DbContext
     public DbSet<Activity> Activities { get; set; }
     public DbSet<BillingElement> BillingElements { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
-    public DbSet<LawyerBillingOptions> LawyerBillingOptions { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<Trust> Trusts { get; set; }
     public DbSet<TrustPayment> TrustPayments { get; set; }

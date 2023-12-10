@@ -2,8 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Entities;
-
-namespace ProcedureMakerServer.Billing;
+namespace ProcedureMakerServer.Billing.StatementEntities;
 
 
 
@@ -13,7 +12,7 @@ public partial class AccountStatement : EntityBase
     public Case? Case { get; set; }
 
     public Guid LawyerId { get; set; }
-    public Lawyer? Lawyer { get; set; } 
+    public Lawyer? Lawyer { get; set; }
 
     public virtual List<Invoice> Invoices { get; set; } = new List<Invoice>();
 
@@ -23,6 +22,6 @@ public class AccountStatementConfiguration : IEntityTypeConfiguration<AccountSta
 {
     public void Configure(EntityTypeBuilder<AccountStatement> builder)
     {
-            
+
     }
 }

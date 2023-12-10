@@ -1,4 +1,4 @@
-﻿using ProcedureMakerServer.Billing;
+﻿using ProcedureMakerServer.Billing.StatementEntities;
 
 namespace ProcedureMakerServer.Scratches;
 

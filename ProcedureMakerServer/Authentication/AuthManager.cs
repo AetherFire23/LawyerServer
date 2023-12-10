@@ -1,7 +1,7 @@
 ﻿using ProcedureMakerServer.Authentication.AuthModels;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Authentication.ReturnModels;
-using ProcedureMakerServer.Billing;
+using ProcedureMakerServer.Billing.StatementEntities;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 using Crypt = BCrypt.Net.BCrypt;
@@ -72,13 +72,8 @@ public class AuthManager : IAuthManager
             User = user,
         };
 
-
-
-
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-
-
 
         var lawyer = new Lawyer()
         {
@@ -90,26 +85,17 @@ public class AuthManager : IAuthManager
         await _context.SaveChangesAsync();
 
 
-        var lawyerBillingOptions = new LawyerBillingOptions()
-        {
-            Lawyer = lawyer,
-            
-           
-        };
-        await _context.LawyerBillingOptions.AddAsync(lawyerBillingOptions);
-        await _context.SaveChangesAsync();
-
-        var defaultBillingElement = new BillingElement()
-        {
-            ActivityName ="JuridicalWork",
-            Amount = 100,
-            Lawyer = lawyer,
-            LawyerBillingOptions = lawyerBillingOptions,
-        };
+        //// should be atable 
+        //var defaultBillingElement = new BillingElement
+        //{
+        //    AccountStatement =
+        //        ActivityName = "JuridicalWork",
+        //    Amount = 100,
+        //};
 
 
-        await _context.BillingElements.AddAsync(defaultBillingElement);
-        await _context.SaveChangesAsync();
+        //await _context.BillingElements.AddAsync(defaultBillingElement);
+        //await _context.SaveChangesAsync();
 
 
 

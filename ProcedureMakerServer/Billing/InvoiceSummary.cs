@@ -1,6 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using ProcedureMakerServer.Billing.InvoiceDtos;
 using ProcedureMakerServer.Dtos;
-using ProcedureMakerServer.Entities;
 
 namespace ProcedureMakerServer.Billing;
 
@@ -14,6 +13,6 @@ public class InvoiceSummary
     public decimal Balance { get; set; }
     public decimal TotalHours { get; set; }
 
-    public List<ActivityDto> Activities { get; set; } = new List<ActivityDto>();
+    public List<ActivityEntryDto> Activities { get; set; } = new List<ActivityEntryDto>();
 
 }
