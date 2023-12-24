@@ -8,6 +8,6 @@ public class CasePartProfile : Profile
 
     public CasePartProfile()
     {
-        CreateMap<CasePart, CasePart>();
+        _ = CreateMap<CaseParticipant, CaseParticipant>();
     }
 }

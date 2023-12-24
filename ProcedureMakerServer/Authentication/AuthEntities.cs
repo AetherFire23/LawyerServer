@@ -1,20 +1,17 @@
 ﻿using EFCoreBase.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Reinforced.Typings.Attributes;
+
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ProcedureMakerServer.Authentication;
 
-[TsClass]
+
 public class User : EntityBase
 {
     public string Name { get; set; } = string.Empty;
-
     public string HashedPassword { get; set; } = string.Empty;
-
-
     public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
     [NotMapped]
@@ -22,24 +19,23 @@ public class User : EntityBase
 }
 
 
-[TsClass]
+
 public class Role : EntityBase
 {
-    public RoleTypes RoleType { get; set; }
+    public RoleTypes RoleType { get; set; } = RoleTypes.Normal;
 
     [JsonIgnore]
-    public virtual ICollection<UserRole> UserRoles { get; set; }
+    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }
 
-[TsClass]
+
 public class UserRole : EntityBase
 {
-    [TsProperty(StrongType = typeof(string))]
     public Guid RoleId { get; set; }
 
     public Role Role { get; set; }
 
-    [TsProperty(StrongType = typeof(string))]
+
     public Guid UserId { get; set; }
     public User User { get; set; }
 }

@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ProcedureMakerServer;
 
 #nullable disable
@@ -12,7 +12,7 @@ using ProcedureMakerServer;
 namespace ProcedureMakerServer.Migrations
 {
     [DbContext(typeof(ProcedureContext))]
-    [Migration("20231206020514_initial")]
+    [Migration("20231224002429_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -20,40 +20,40 @@ namespace ProcedureMakerServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("EFCoreBase.Entities.Case", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CaseNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ChamberName")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("ClientId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CourtAffairNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CourtNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CourtType")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("DistrictName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ManagerLawyerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -68,10 +68,10 @@ namespace ProcedureMakerServer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("RoleType")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -82,15 +82,15 @@ namespace ProcedureMakerServer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("HashedPassword")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -101,13 +101,13 @@ namespace ProcedureMakerServer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -122,20 +122,14 @@ namespace ProcedureMakerServer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CaseId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("LawyerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CaseId")
-                        .IsUnique();
-
-                    b.HasIndex("LawyerId");
+                    b.HasIndex("CaseId");
 
                     b.ToTable("AccountStatements");
                 });
@@ -144,19 +138,20 @@ namespace ProcedureMakerServer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ActivityDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("BillingElementId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("HasPersonalizedBillingElement")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("HoursWorked")
-                        .HasColumnType("numeric");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("InvoiceId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -171,30 +166,27 @@ namespace ProcedureMakerServer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AccountStatementGuid")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AccountStatementId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ActivityName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDisburse")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsHourlyRate")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsPersonalizedBillingElement")
-                        .HasColumnType("boolean");
+                    b.Property<Guid>("ManagerLawyerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountStatementId");
+                    b.HasIndex("ManagerLawyerId");
 
                     b.ToTable("BillingElements");
                 });
@@ -203,203 +195,217 @@ namespace ProcedureMakerServer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("AccountStatementId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DefaultBillingElementId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("InvoiceStatus")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccountStatementId");
 
+                    b.HasIndex("DefaultBillingElementId");
+
                     b.ToTable("Invoices");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Payment", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.InvoicePayment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("AmountPaid")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("AmountPaidDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("InvoiceId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsPaymentComingFromTrust")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
                     b.HasIndex("InvoiceId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("InvoicePayments");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Entities.CasePart", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Entities.CaseParticipant", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CaseId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CourtRole")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Fax")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Gender")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<bool>("HasJuridicalAid")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<string>("HomePhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MobilePhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("MustNotify")
+                        .HasColumnType("bit");
 
                     b.Property<string>("NotificationEmail")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCase")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SocialSecurityNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WorkPhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CaseId");
 
-                    b.ToTable("CaseParts");
+                    b.ToTable("CaseParticipants");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Entities.Client", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CourtRole")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Fax")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Gender")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<bool>("HasJuridicalAid")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<string>("HomePhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("LawyerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("MobilePhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("MustNotify")
+                        .HasColumnType("bit");
 
                     b.Property<string>("NotificationEmail")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCase")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SocialSecurityNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WorkPhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -412,84 +418,98 @@ namespace ProcedureMakerServer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("BaseHourlyRate")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CourtLockerNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CourtRole")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DefaultHourlyElementId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DefaultHourlyRateId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Fax")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Gender")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<bool>("HasJuridicalAid")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<string>("HomePhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MobilePhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("MustNotify")
+                        .HasColumnType("bit");
 
                     b.Property<string>("NotificationEmail")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCase")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SocialSecurityNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("WorkPhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DefaultHourlyElementId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -497,58 +517,37 @@ namespace ProcedureMakerServer.Migrations
                     b.ToTable("Lawyers");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Trusts.Trust", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustClientCard", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ClientId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClientId")
+                        .IsUnique();
 
-                    b.ToTable("Trusts");
-                });
-
-            modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustDisburse", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("TrustId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrustId");
-
-                    b.ToTable("TrustDisburses");
+                    b.ToTable("TrustClientCards");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustPayment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("TrustId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -568,7 +567,7 @@ namespace ProcedureMakerServer.Migrations
                     b.HasOne("ProcedureMakerServer.Entities.Lawyer", "ManagerLawyer")
                         .WithMany("Cases")
                         .HasForeignKey("ManagerLawyerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Client");
@@ -598,20 +597,12 @@ namespace ProcedureMakerServer.Migrations
             modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.AccountStatement", b =>
                 {
                     b.HasOne("EFCoreBase.Entities.Case", "Case")
-                        .WithOne("AccountStatement")
-                        .HasForeignKey("ProcedureMakerServer.Billing.StatementEntities.AccountStatement", "CaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProcedureMakerServer.Entities.Lawyer", "Lawyer")
                         .WithMany()
-                        .HasForeignKey("LawyerId")
+                        .HasForeignKey("CaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Case");
-
-                    b.Navigation("Lawyer");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Activity", b =>
@@ -625,7 +616,7 @@ namespace ProcedureMakerServer.Migrations
                     b.HasOne("ProcedureMakerServer.Billing.StatementEntities.Invoice", "Invoice")
                         .WithMany("Activities")
                         .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("BillingElement");
@@ -635,13 +626,13 @@ namespace ProcedureMakerServer.Migrations
 
             modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.BillingElement", b =>
                 {
-                    b.HasOne("ProcedureMakerServer.Billing.StatementEntities.AccountStatement", "AccountStatement")
-                        .WithMany()
-                        .HasForeignKey("AccountStatementId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("ProcedureMakerServer.Entities.Lawyer", "ManagerLawyer")
+                        .WithMany("BillingElement")
+                        .HasForeignKey("ManagerLawyerId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("AccountStatement");
+                    b.Navigation("ManagerLawyer");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Invoice", b =>
@@ -652,10 +643,18 @@ namespace ProcedureMakerServer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ProcedureMakerServer.Billing.StatementEntities.BillingElement", "DefaultBillingElement")
+                        .WithMany()
+                        .HasForeignKey("DefaultBillingElementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AccountStatement");
+
+                    b.Navigation("DefaultBillingElement");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.Payment", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Billing.StatementEntities.InvoicePayment", b =>
                 {
                     b.HasOne("ProcedureMakerServer.Billing.StatementEntities.Invoice", "Invoice")
                         .WithMany("Payments")
@@ -666,10 +665,10 @@ namespace ProcedureMakerServer.Migrations
                     b.Navigation("Invoice");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Entities.CasePart", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Entities.CaseParticipant", b =>
                 {
                     b.HasOne("EFCoreBase.Entities.Case", "Case")
-                        .WithMany("Participants")
+                        .WithMany("CaseParticipants")
                         .HasForeignKey("CaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -690,40 +689,35 @@ namespace ProcedureMakerServer.Migrations
 
             modelBuilder.Entity("ProcedureMakerServer.Entities.Lawyer", b =>
                 {
+                    b.HasOne("ProcedureMakerServer.Billing.StatementEntities.BillingElement", "DefaultHourlyElement")
+                        .WithMany()
+                        .HasForeignKey("DefaultHourlyElementId");
+
                     b.HasOne("ProcedureMakerServer.Authentication.User", "User")
                         .WithOne()
                         .HasForeignKey("ProcedureMakerServer.Entities.Lawyer", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("DefaultHourlyElement");
+
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Trusts.Trust", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustClientCard", b =>
                 {
                     b.HasOne("ProcedureMakerServer.Entities.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
+                        .WithOne("TrustClientCard")
+                        .HasForeignKey("ProcedureMakerServer.Trusts.TrustClientCard", "ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustDisburse", b =>
-                {
-                    b.HasOne("ProcedureMakerServer.Trusts.Trust", "Trust")
-                        .WithMany("Disburses")
-                        .HasForeignKey("TrustId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Trust");
-                });
-
             modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustPayment", b =>
                 {
-                    b.HasOne("ProcedureMakerServer.Trusts.Trust", "Trust")
+                    b.HasOne("ProcedureMakerServer.Trusts.TrustClientCard", "Trust")
                         .WithMany("Payments")
                         .HasForeignKey("TrustId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -734,10 +728,7 @@ namespace ProcedureMakerServer.Migrations
 
             modelBuilder.Entity("EFCoreBase.Entities.Case", b =>
                 {
-                    b.Navigation("AccountStatement")
-                        .IsRequired();
-
-                    b.Navigation("Participants");
+                    b.Navigation("CaseParticipants");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Authentication.Role", b =>
@@ -765,19 +756,21 @@ namespace ProcedureMakerServer.Migrations
             modelBuilder.Entity("ProcedureMakerServer.Entities.Client", b =>
                 {
                     b.Navigation("Cases");
+
+                    b.Navigation("TrustClientCard");
                 });
 
             modelBuilder.Entity("ProcedureMakerServer.Entities.Lawyer", b =>
                 {
+                    b.Navigation("BillingElement");
+
                     b.Navigation("Cases");
 
                     b.Navigation("Clients");
                 });
 
-            modelBuilder.Entity("ProcedureMakerServer.Trusts.Trust", b =>
+            modelBuilder.Entity("ProcedureMakerServer.Trusts.TrustClientCard", b =>
                 {
-                    b.Navigation("Disburses");
-
                     b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618

@@ -25,15 +25,15 @@ public abstract class DocumentFillerBase : IDocumentFiller
         DocumentType = this.GetType().GetCustomAttribute<DocumentFillerAttribute>().DocumentType;
     }
 
-    public virtual WordDocInfo FillDocument(CaseDto dto, DocumentTypes documentType, object? additionalParams = null)
+    public virtual WordDocGenerationInfo FillDocument(CaseDto dto, DocumentTypes documentType, object? additionalParams = null)
     {
-        WordDocInfo docINfo = DocumentCache.GetDocumentCopy(documentType);
-        var keywords = new List<(string From, string To)>();
+        WordDocGenerationInfo docxGenerationInfo = DocumentCache.GetDocumentCopy(documentType);
 
+        List<(string From, string To)> keywords = new List<(string From, string To)>();
         CreateFixedReplacementKeywords(dto, keywords, additionalParams);
-        SearchAndReplace(docINfo.FilePath, keywords);
-
-        return docINfo;
+        SearchAndReplace(docxGenerationInfo.FilePath, keywords);
+         
+        return docxGenerationInfo;
     }
 
     public static void SearchAndReplace(string document, List<(string From, string To)> keywords)

@@ -11,6 +11,6 @@ public class ArgumentInvalidException : HttpExceptionBase
 
     public ArgumentInvalidException(string message)
     {
-        base.Message = message;
+        base.HttpMessage = message;
     }
 }

@@ -6,7 +6,7 @@ public static class TestScope
         using (IServiceScope scope = app.Services.CreateScope())
         {
 
-           
+
         }
     }
 

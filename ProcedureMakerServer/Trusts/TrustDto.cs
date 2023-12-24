@@ -20,7 +20,7 @@ public class TrustDto : EntityBase
     {
         Disburses.Add(new TrustDisburseDto()
         {
-            Amount = amount,
+            AmountPaid = amount,
             Date = DateTime.UtcNow,
         });
     }
@@ -28,7 +28,7 @@ public class TrustDto : EntityBase
     public decimal GetTrustBalance()
     {
         decimal totalPayments = Payments.Sum(x => x.Amount);
-        decimal totalDisburses = Disburses.Sum(x => x.Amount);
+        decimal totalDisburses = Disburses.Sum(x => x.AmountPaid);
         decimal balance = totalPayments - totalDisburses;
         return balance;
     }
@@ -38,20 +38,23 @@ public class TrustDto : EntityBase
         bool canPay = amount >= GetTrustBalance();
         return canPay;
     }
+
+
 }
 
 
 public class TrustPaymentDto : EntityBase
 {
     public decimal Amount { get; set; }
-    public DateTime Date { get; set; }
+    public DateTime? Date { get; set; }
 
 }
 
 public class TrustDisburseDto : EntityBase
 {
-    public decimal Amount { get; set; }
+    public decimal AmountPaid { get; set; }
     public DateTime Date { get; set; }
+
 
 
 }

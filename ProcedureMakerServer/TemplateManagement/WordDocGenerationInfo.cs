@@ -1,18 +1,16 @@
 ﻿using ProcedureMakerServer.Constants;
-
 namespace ProcedureMakerServer.TemplateManagement;
 
-public class WordDocInfo
+public class WordDocGenerationInfo
 {
-    public readonly string FileName;
+    public readonly string RandomlyGenerated;
     public readonly string FilePath;
-
     private readonly Guid _filedId;
-    public WordDocInfo()
+    public WordDocGenerationInfo()
     {
         _filedId = Guid.NewGuid();
-        FileName = _filedId.ToString();
-        FilePath = Path.Combine(ConstantPaths.TemporaryFilesPath, $"{FileName}.docx");
+        RandomlyGenerated = _filedId.ToString();
+        FilePath = Path.Combine(ConstantPaths.TemporaryFilesPath, $"{RandomlyGenerated}.docx");
     }
 
     //public void ExecuteOnOpen(Action<WordprocessingDocument> onOpen)

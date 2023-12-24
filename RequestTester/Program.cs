@@ -1,213 +1,165 @@
-﻿
+﻿using DotLiquid.Util;
 using Newtonsoft.Json;
-using ProcedureMakerServer.Authentication;
-using ProcedureMakerServer.Authentication.AuthModels;
-using ProcedureMakerServer.Authentication.ReturnModels;
-using ProcedureMakerServer.Billing;
-using ProcedureMakerServer.Dtos;
-using ProcedureMakerServer.Models;
-using ProcedureMakerServer.Trusts;
+using RequestTester;
 using RestSharp;
-using DotLiquid;
-using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
 // https://next-auth.js.org/providers/google
 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-8.0
 
 public class Program
 {
-    public static RestClient Client = new RestClient();
+    private static HttpClient _client = new HttpClient();
+    private static NSwagCaller _caller;
+
     public static async Task Main(string[] args)
     {
-        await Task.Delay(450);
+        // Register & Login
+        await Task.Delay(3500);
+        _caller = new NSwagCaller("http://localhost:5099/", _client);
 
-        //Test the dotliquid thingy:
+        var registerResult = await RegisterTest();
+        var logResult = await LoginTest(registerResult);
 
-        var f = File.ReadAllText("test.html");
-        var p = Template.Parse(f);
+        await PrepareAndTestAuthenticationHeaders(logResult.Token);
 
+        await CaseManagement();
 
-       // les else
-        string r = p.Render(Hash.FromAnonymousObject(new {user = new {name = "opps"}}));
-        string d = p.Render();
+        // NOTIFY 
 
-
-        // les loops
-
-        string looptest = p.Render(Hash.FromAnonymousObject(new { stuff = new List<string>{"allo", "bonsoir"}}));
-
-        // la questions a 100%: jpeux tu faire des component aek ca 
-
-
-
-
-
-
-
-
-        //LoginResult? loginResBody;
-        //Guid lawyerId;
-        //RegisterPhase(out loginResBody, out lawyerId);
-        //CaseDto caseToModifiy = CreatingCasePhase(loginResBody, lawyerId);
-        //TestTrustDto(caseToModifiy);
-        // TestInvoicePhase(caseToModifiy);
+        await SendNotificationPdfOnlyAndGetProofOfNotificationBack();
     }
 
-    private static void TestTrustDto(CaseDto caseToModifiy)
+    private static async Task CaseManagement()
     {
-        // manipulate the trust
-        var dto = Client.SendRequestWithReturn<TrustDto>(Method.Get, $"http://localhost:5099/invoice/gettrustdto?clientId={caseToModifiy.Client.Id}");
+        // UpdateLawyer
+        await UpdateLawyer();
 
-        // modify the trusts content
-        dto.Disburses.Add(new TrustDisburseDto()
-        {
-            Amount = 100,
-            Date = DateTime.UtcNow,
-        });
-        dto.Disburses.Add(new TrustDisburseDto()
-        {
-            Amount = 200,
-            Date = DateTime.UtcNow,
-        });
-        dto.Payments.Add(new TrustPaymentDto()
-        {
-            Amount = 100,
-            Date = DateTime.UtcNow,
-        });
+        // create new client
+        await CreateInitialClient();
 
-        // save it
-        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/savetrustdto", dto);
+        // create new case for client
+        await CreateInitialCase();
 
+        // update information for case
+        await UpdateCase();
 
-        // remove some stuff then save
-        dto.Disburses.RemoveAt(0);
-        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/savetrustdto", dto);
+        // add CaseParticipant
+        await AddCaseParticipant();
 
-        var dto2 = Client.SendRequestWithReturn<TrustDto>(Method.Get, $"http://localhost:5099/invoice/gettrustdto?clientId={caseToModifiy.Client.Id}");
-        // modify stuff
-
-
-        dto2.Payments.First().Amount = 1000;
-
-        // save it 
-        Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/savetrustdto", dto2);
-
-
-        var checkDtoBack = Client.SendRequestWithReturn<TrustDto>(Method.Get, $"http://localhost:5099/invoice/gettrustdto?clientId={caseToModifiy.Client.Id}");
+        await UpdateCaseParticipant();
     }
 
-    private static void TestInvoicePhase(CaseDto caseToModifiy)
+    private static async Task<RegisterRequest> RegisterTest()
     {
-        var accountStatementDto = Client.SendRequestWithReturn<AccountStatementDto>(Method.Get, $"http://localhost:5099/invoice/getaccountdto");
-
-        // create invoice
-
-        // add activity to invoice
-
-        // add payment to invoice
-
-
-        var invoice = accountStatementDto.Invoices.First();
-
-        // Client.SendRequestNoReturnWithBody(Method.Post, $"http://localhost:5099/invoice/updateinvoiceactivites", accountStatementDto.i);
-    }
-
-    private static CaseDto CreatingCasePhase(LoginResult? loginResBody, Guid lawyerId)
-    {
-        var caseCreationInfo = new CaseCreationInfo()
-        {
-            LawyerId = lawyerId,
-            CaseNumber = "01",
-            ClientFirstName = "Roger",
-            ClientLastName = "Durand",
-        };
-
-        GetCaseResponse getCaseResposne = Client.SendRequestWithBodyAndReturn<GetCaseResponse, CaseCreationInfo>(Method.Post, $"http://localhost:5099/case/createnewcase", caseCreationInfo);
-
-        Client.AddDefaultHeader("Authorization", $"Bearer {loginResBody.Token}");
-        var caseContextabcd = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext");
-
-        // get cases
-        var caseContext = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext?lawyerId={lawyerId}");
-
-        // then update a case info
-
-        var caseToModifiy = caseContext.Cases.First();
-        caseToModifiy.CourtAffairNumber = "GrosCube";
-        Client.SendRequestNoReturnWithBody(Method.Put, $"http://localhost:5099/case/savecontextdto", caseToModifiy);
-
-        var regottenContext = Client.SendRequestWithReturn<CasesContext>(Method.Get, $"http://localhost:5099/case/getcasescontext?lawyerId={lawyerId}");
-        return caseToModifiy;
-    }
-
-    private static void RegisterPhase(out LoginResult? loginResBody, out Guid lawyerId)
-    {
-        // register
         var registerRequest = new RegisterRequest()
         {
-            Password = "password",
+            Username = "FredLeChaud",
+            Password = "MotDePasse",
             Role = RoleTypes.Normal,
-            Username = "username",
         };
-        var req = new RestRequest("http://localhost:5099/User/register")
-            .AddJsonBody(registerRequest);
 
+        await _caller.RegisterAsync(registerRequest);
 
-        var res = Client.Post(req);
+        return registerRequest;
+    }
 
-
-
-        var login = new LoginRequest()
+    private static async Task<LoginResult> LoginTest(RegisterRequest requested)
+    {
+        var loginRequest = new LoginRequest
         {
-            Password = "password",
-            Username = "username",
+            Username = requested.Username,
+            Password = requested.Password,
+        };
+        var loginResult = await _caller.CredentialsloginAsync(loginRequest);
+        return loginResult;
+    }
+    private static async Task PrepareAndTestAuthenticationHeaders(string token)
+    {
+        _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+
+        await _caller.AuthorizedrequestblablaAsync();
+    }
+
+    private static async Task UpdateLawyer()
+    {
+        var caseContext = await _caller.GetcasescontextAsync();
+
+        caseContext.Lawyer.Country = "sieks";
+        caseContext.Lawyer.DateOfBirth = DateTime.Now;
+        caseContext.Lawyer.Address = "MyAdressIsGreat";
+
+        await _caller.UpdatelawyerAsync(caseContext.Lawyer);
+    }
+
+    private static async Task CreateInitialClient()
+    {
+        var clientDto = new ClientDto()
+        {
+            Id = Guid.Empty,
+            NotificationEmail = "piotrullo@polish.com",
+            FirstName = "Piotr",
+            LastName = "Alexandrovich",
+            Country = "Poland",
+        };
+        await _caller.AddclientAsync(clientDto);
+    }
+
+    private static async Task CreateInitialCase()
+    {
+        var caseContext = await _caller.GetcasescontextAsync();
+        var firstclient = caseContext.Lawyer.Clients.First();
+
+        var caseCreation = new CaseCreationInfo()
+        {
+            CaseNumber = "20 001",
+            ClientId = firstclient.Id,
         };
 
-        var loginReq = new RestRequest("http://localhost:5099/user/credentialslogin")
-            .AddJsonBody(login);
-
-        var loginResponse = Client.Put(loginReq);
-
-        loginResBody = JsonConvert.DeserializeObject<LoginResult>(loginResponse.Content);
-
-        lawyerId = loginResBody.UserDto.LawyerId;
+        await _caller.CreatenewcaseAsync(caseCreation);
     }
-}
-
-
-public static class RestSharpExtensions
-{
-    public static T GetBody<T>(this RestResponse self)
+    private static async Task UpdateCase()
     {
-        return JsonConvert.DeserializeObject<T>(self.Content);
+        var caseContext = await _caller.GetcasescontextAsync();
+
+        var modifiedCase = caseContext.Cases.First();
+        modifiedCase.CaseNumber = "4444";
+
+        await _caller.SavecaseAsync(modifiedCase);
     }
 
-    public static TReturn SendRequestWithReturn<TReturn>(this RestClient self, Method method, string uri)
+    private static async Task AddCaseParticipant()
     {
+        var caseContext = await _caller.GetcasescontextAsync();
+        var lcase = caseContext.Cases.First();
+        var participant = new CaseParticipantDto()
+        {
+            WorkPhoneNumber = "sex",
+            FirstName = "Mother",
+            LastName = "Of Pitor",
+            Address = "333, Bitchass Avenue",
+        };
 
-        var req = new RestRequest(uri);
-        req.Method = method;
-        var res = self.Execute(req);
-
-
-        Console.WriteLine(res.StatusCode);
-        return res.GetBody<TReturn>();
-    }
-    public static TReturn SendRequestWithBodyAndReturn<TReturn, TBody>(this RestClient self, Method method, string uri, TBody body) where TBody : class
-    {
-        var req = new RestRequest(uri);
-        req.Method = method;
-        req.AddJsonBody(body);
-        var res = self.Execute(req);
-        Console.WriteLine(res.ErrorMessage);
-        return res.GetBody<TReturn>();
+        await _caller.CreatecaseparticipantAsync(lcase.Id, participant);
     }
 
-    public static void SendRequestNoReturnWithBody<TBody>(this RestClient self, Method method, string uri, TBody body) where TBody : class
+    private static async Task UpdateCaseParticipant()
     {
-        var req = new RestRequest(uri);
-        req.Method = method;
-        req.AddJsonBody(body);
-        var res = self.Execute(req);
-        Console.WriteLine(res.ErrorMessage);
+        var caseContext = await _caller.GetcasescontextAsync();
+        var participant = caseContext.Cases.First().Participants.First();
+        participant.Address = "Piotrek Lord";
+
+        await _caller.UpdatecaseparticipantAsync(participant);
+    }
+
+    private static async Task SendNotificationPdfOnlyAndGetProofOfNotificationBack()
+    {
+        var caseContext = await _caller.GetcasescontextAsync();
+        var lcase = caseContext.Cases.First();
+
+
+        string path = "FunFiles/ville_et_la_prison.pdf";
+        using var fileStream = File.Open(path, FileMode.Open);
+        var fileParameter = new RequestTester.FileParameter(fileStream);
+        await _caller.NotifypdfAsync(lcase.Id, "Ville et Prison", fileParameter);
     }
 }

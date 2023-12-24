@@ -6,7 +6,7 @@ public static class CamelCaser
 {
     public static string LowerCaseFirstLetter(this string self)
     {
-        var s = self.ToLower().ToCharArray()[0];
+        char s = self.ToLower().ToCharArray()[0];
 
         StringBuilder builder = new StringBuilder();
 
@@ -14,12 +14,12 @@ public static class CamelCaser
         {
             if (i == 0)
             {
-                builder.Append(s);
+                _ = builder.Append(s);
             }
             else
             {
                 char current = self[i];
-                builder.Append(current);
+                _ = builder.Append(current);
             }
         }
 

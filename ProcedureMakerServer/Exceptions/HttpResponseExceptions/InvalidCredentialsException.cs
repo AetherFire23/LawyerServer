@@ -9,6 +9,6 @@ public class InvalidCredentialsException : HttpExceptionBase
 
     public InvalidCredentialsException()
     {
-        base.Message = "The provided credentials were invalid.";
+        base.HttpMessage = "The provided credentials were invalid.";
     }
 }

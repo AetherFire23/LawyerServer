@@ -15,13 +15,13 @@ public abstract class CrudRepositoryBase<TContext, TEntity> : EntityRepositoryBa
 
     public virtual async Task<TEntity> GetEntityById(Guid id)
     {
-        var entity = await Set.FirstOrDefaultAsync(x => x.Id == id);
+        TEntity entity = await Set.FirstAsync(x => x.Id == id);
         return entity;
     }
 
     public async Task CreateLawyer(TEntity entity)
     {
-        await Set.AddAsync(entity);
+        _ = await Set.AddAsync(entity);
     }
 
     public async Task CreateRange(List<TEntity> entity)
@@ -31,12 +31,12 @@ public abstract class CrudRepositoryBase<TContext, TEntity> : EntityRepositoryBa
 
     public async Task Remove(Guid id)
     {
-        var entity = await GetEntityById(id);
-        Set.Remove(entity);
+        TEntity entity = await GetEntityById(id);
+        _ = Set.Remove(entity);
     }
 
     public async Task Remove(TEntity entity)
     {
-        Set.Remove(entity);
+        _ = Set.Remove(entity);
     }
 }

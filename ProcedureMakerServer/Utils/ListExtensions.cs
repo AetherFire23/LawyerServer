@@ -1,9 +1,5 @@
-﻿using DocumentFormat.OpenXml.InkML;
-using DocumentFormat.OpenXml.Wordprocessing;
-using EFCoreBase.Entities;
-using EFCoreBase.Interfaces;
+﻿using EFCoreBase.Entities;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Tls;
 
 namespace ProcedureMakerServer.Utils;
 
@@ -43,7 +39,7 @@ public static class ListExtensions
         where TEntity : EntityBase
         where TContext : DbContext
     {
-        var diff = current.GetDifferences(updated);
+        EnumerableDifferenceResult<TDto> diff = current.GetDifferences(updated);
         await diff.HandleUpdate(updateCommon, handleAdded, handleRemoved, context);
     }
 
@@ -55,7 +51,7 @@ public static class ListExtensions
         where TEntity : EntityBase, ICopyFromAbleDto<TDto>
         where TDto : EntityBase
     {
-        var diff = current.GetDifferences(updated);
+        EnumerableDifferenceResult<TDto> diff = current.GetDifferences(updated);
         await diff.MapEnumerableToEntities(handleAdded, context);
     }
 
@@ -82,21 +78,21 @@ public static class ListExtensions
         public async Task HandleUpdate1(Func<T, T, Task> updateCommon, Func<T, Task> handleAdded,
             Func<T, Task> handleRemoved)
         {
-            foreach (var current in Common)
+            foreach (T current in Common)
             {
-                var updated = Updated.FirstOrDefault(x => x.Id == current.Id);
+                T? updated = Updated.FirstOrDefault(x => x.Id == current.Id);
                 // I am sending back always the old one.
                 // therefore the information never gets passed.
                 // I will inject both then. 
                 await updateCommon(current, updated);
             }
 
-            foreach (var item in Added)
+            foreach (T item in Added)
             {
                 await handleAdded(item);
             }
 
-            foreach (var item in Removed)
+            foreach (T item in Removed)
             {
                 await handleRemoved(item);
             }
@@ -113,25 +109,25 @@ public static class ListExtensions
             where TContext : DbContext
             where TEntity : EntityBase
         {
-            var set = context.Set<TEntity>();
-            foreach (var current in Common)
+            DbSet<TEntity> set = context.Set<TEntity>();
+            foreach (T current in Common)
             {
-                var updated = Updated.FirstOrDefault(x => x.Id == current.Id);
+                T? updated = Updated.FirstOrDefault(x => x.Id == current.Id);
                 await updateCommon(current, updated);
             }
 
-            foreach (var item in Added)
+            foreach (T item in Added)
             {
                 await handleAdded(item);
             }
 
-            foreach (var item in Removed)
+            foreach (T item in Removed)
             {
-                var entity = await set.FirstAsync(x => x.Id == item.Id);
+                TEntity entity = await set.FirstAsync(x => x.Id == item.Id);
                 await handleRemoved(item, entity);
             }
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -146,29 +142,29 @@ public static class ListExtensions
             where TEntity : EntityBase, ICopyFromAbleDto<T>
         {
             // gets the associated enttiy automatically and saves it
-            var set = context.Set<TEntity>();
-            foreach (var current in Common) // i think the problem is that I need to get the old one. 
+            DbSet<TEntity> set = context.Set<TEntity>();
+            foreach (T current in Common) // i think the problem is that I need to get the old one. 
             {
-                var entity = await set.FirstAsync(x => x.Id == current.Id);
-                var updated = Updated.FirstOrDefault(x => x.Id == current.Id);
+                TEntity entity = await set.FirstAsync(x => x.Id == current.Id);
+                T? updated = Updated.FirstOrDefault(x => x.Id == current.Id);
                 entity.CopyFromDto(updated);
             }
 
             //
-            foreach (var item in Added)
+            foreach (T item in Added)
             {
-                var entity = await handleAdded(item);
-                set.Add(entity);
+                TEntity entity = await handleAdded(item);
+                _ = set.Add(entity);
             }
 
-            foreach (var item in Removed)
+            foreach (T item in Removed)
             {
-                var entity = await set.FirstAsync(x => x.Id == item.Id);
+                TEntity entity = await set.FirstAsync(x => x.Id == item.Id);
                 //  await onRemoved(item);
-                set.Remove(entity);
+                _ = set.Remove(entity);
             }
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
         }
         // should take an overload that creates the entity from the dto
     }

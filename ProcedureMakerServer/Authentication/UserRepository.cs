@@ -16,14 +16,14 @@ public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
 
     public async Task<User> GetUserById(Guid id)
     {
-        var user = await Set
+        User? user = await Set
             .FirstOrDefaultAsync(u => u.Id == id);
         return user;
     }
 
     public async Task<User> GetUserByName(string name)
     {
-        var user = await Set
+        User? user = await Set
             .Include(p => p.UserRoles)
             .ThenInclude(p => p.Role)
             .FirstOrDefaultAsync(u => u.Name == name);
@@ -43,7 +43,7 @@ public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
 
         if (user is null || lawyer is null) throw new InvalidTokenException();
 
-        var userDto = new UserDto()
+        UserDto userDto = new UserDto()
         {
             Name = user.Name,
             Roles = user.Roles,

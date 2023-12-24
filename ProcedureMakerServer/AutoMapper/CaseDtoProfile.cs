@@ -8,7 +8,7 @@ public class CaseDtoProfile : Profile
 {
     public CaseDtoProfile()
     {
-        CreateMap<Case, CaseDto>();
+        _ = CreateMap<Case, CaseDto>();
     }
 
 }

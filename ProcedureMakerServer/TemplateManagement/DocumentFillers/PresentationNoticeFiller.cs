@@ -9,14 +9,13 @@ public class PresentationNoticeFiller : DocumentFillerBase
 {
     public override string FormatEmailSubjectTitle(CaseDto dto)
     {
-        var builder = new StringBuilder();
-        builder.Append("NOTIFICATION PAR COURRIEL ");
-        builder.Append($"({dto.CourtNumber}) ");
-        builder.Append(dto.Plaintiff.LowerCaseFormattedFullName ?? "");
-        builder.Append(" c. ");
-        builder.Append(dto.Plaintiff.LowerCaseFormattedFullName ?? "");
-
-        var subject = $"NOTIFICATION PAR COURRIEL ({dto.CourtNumber}) {dto.Defender.LowerCaseFormattedFullName} c. {dto.Plaintiff.LowerCaseFormattedFullName}";
+        StringBuilder builder = new StringBuilder();
+        _ = builder.Append("NOTIFICATION PAR COURRIEL ");
+        _ = builder.Append($"({dto.CourtNumber}) ");
+        _ = builder.Append(dto.Plaintiff.LowerCaseFormattedFullName ?? "");
+        _ = builder.Append(" c. ");
+        _ = builder.Append(dto.Plaintiff.LowerCaseFormattedFullName ?? "");
+        _ = $"NOTIFICATION PAR COURRIEL ({dto.CourtNumber}) {dto.Defender.LowerCaseFormattedFullName} c. {dto.Plaintiff.LowerCaseFormattedFullName}";
         return builder.ToString();
     }
 

@@ -25,22 +25,22 @@ public class JwtTokenManager : IJwtTokenManager
     {
         await Task.Delay(0);
 
-        var roles = user.UserRoles.Select(x => x.Role.RoleType).ToList();
+        List<RoleTypes> roles = user.UserRoles.Select(x => x.Role.RoleType).ToList();
 
-        var roleClaims = user.Roles.Select(x => new Claim(ClaimTypes.Role, x.ToString()));
-        var claims = new List<Claim>(roleClaims)
+        IEnumerable<Claim> roleClaims = user.Roles.Select(r => new Claim(ClaimTypes.Role, r.ToString()));
+        List<Claim> claims = new List<Claim>(roleClaims)
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Name)
+            new Claim(ClaimTypes.Name, user.Name),
         };
 
         // store security key
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.SecretKey));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.SecretKey));
+        SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var expires = DateTime.Now.AddDays(Convert.ToDouble(_config.ExpirationDays));
+        DateTime expires = DateTime.Now.AddDays(Convert.ToDouble(_config.ExpirationDays));
 
-        var securityToken = new JwtSecurityToken(
+        JwtSecurityToken securityToken = new JwtSecurityToken(
             _config.Issuer,
             _config.Audience,
             claims,
@@ -48,7 +48,7 @@ public class JwtTokenManager : IJwtTokenManager
             signingCredentials: creds
         );
 
-        var writenToken = new JwtSecurityTokenHandler().WriteToken(securityToken);
+        string writenToken = new JwtSecurityTokenHandler().WriteToken(securityToken);
         return writenToken;
     }
 
@@ -56,7 +56,7 @@ public class JwtTokenManager : IJwtTokenManager
     {
         try
         {
-            var validationParameters = new TokenValidationParameters
+            TokenValidationParameters validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
@@ -68,7 +68,7 @@ public class JwtTokenManager : IJwtTokenManager
             };
 
             // Validate and parse the token
-            var principal = _tokenHandler.ValidateToken(token, validationParameters, out _);
+            ClaimsPrincipal principal = _tokenHandler.ValidateToken(token, validationParameters, out _);
 
             // Ensure the token has the required claims or perform additional validations
 
@@ -77,7 +77,7 @@ public class JwtTokenManager : IJwtTokenManager
         catch (Exception)
         {
             // Token validation failed
-            return null;
+            return null!;
         }
     }
 }

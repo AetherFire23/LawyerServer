@@ -6,11 +6,11 @@ public partial class TrustRepository : ProcedureRepositoryContextBase
 {
     public async Task<TrustDto> ConstructTrustDto(Guid clientId)
     {
-        Trust trust = await GetTrust(clientId);
-        var payments = await ConstructTrustPaymentsDtos(trust.Id);
-        var disbursements = await ConstructTrustDisbursesDtos(trust.Id);
+        TrustClientCard trust = await GetTrust(clientId);
+        IEnumerable<TrustPaymentDto> payments = await ConstructTrustPaymentsDtos(trust.Id);
+        IEnumerable<TrustDisburseDto> disbursements = await ConstructTrustDisbursesDtos(trust.Id);
 
-        var trustDto = new TrustDto()
+        TrustDto trustDto = new TrustDto()
         {
             Id = trust.Id,
             ClientId = trust.ClientId,
@@ -30,16 +30,15 @@ public partial class TrustRepository : ProcedureRepositoryContextBase
 
     private async Task<IEnumerable<TrustDisburseDto>> ConstructTrustDisbursesDtos(Guid trustId)
     {
-        List<TrustDisburse> trustDisburses = await Context.TrustDisburses.Where(x => x.TrustId == trustId).ToListAsync();
-        IEnumerable<TrustDisburseDto> payments = trustDisburses.Select(d => d.ToDto());
+        var trustDisburses = await Context.InvoicePayments.Where(x => x.IsPaymentComingFromTrust).ToListAsync();
+        var payments = trustDisburses.Select(x => x.ToTrustDisburseDto());
         return payments;
     }
 
-    private async Task<Trust> GetTrust(Guid clientId)
+    private async Task<TrustClientCard> GetTrust(Guid clientId)
     {
-        var trust = await Context.Trusts
+        TrustClientCard trust = await Context.TrustClientCards
             .Include(x => x.Payments)
-            .Include(x => x.Disburses)
             .FirstAsync(x => x.ClientId == clientId);
         return trust;
     }

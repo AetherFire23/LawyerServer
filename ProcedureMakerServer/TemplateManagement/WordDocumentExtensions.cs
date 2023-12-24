@@ -11,28 +11,29 @@ public static class WordDocumentExtensions
 
     public static List<Run> GetRuns(this WordprocessingDocument self)
     {
-        var rs = self.MainDocumentPart.Document.Descendants<Run>().ToList();
+        List<Run> rs = self.MainDocumentPart.Document.Descendants<Run>().ToList();
         return rs;
     }
 
     public static Run FindRunWithChildInnerText(this WordprocessingDocument self, string childInnerText)
     {
-        var run = self.GetRuns()
+        Run? run = self.GetRuns()
             .FirstOrDefault(r => r.ChildElements.Any(x => x.InnerText.Contains(childInnerText)));
 
         return run;
     }
-    public static async Task<string> ConvertToPdf(WordDocInfo documentPath)
+
+    public static async Task<string> ConvertToPdf(WordDocGenerationInfo documentPath)
     {
-        (string pdfSaveDirectoryPath, string outFileName) = GenerateOutPaths(documentPath.FileName, ".pdf");
+        (string pdfSaveDirectoryPath, string outFileName) = GenerateOutPaths(documentPath.RandomlyGenerated, ".pdf");
 
         await DocxToPdfConverter.CreatePdf(documentPath.FilePath, pdfSaveDirectoryPath);
         return outFileName;
     }
 
-    public static async Task<string> ConvertToHtml(WordDocInfo documentPath)
+    public static async Task<string> ConvertToHtml(WordDocGenerationInfo documentPath)
     {
-        (string tempDirectoryPath, string outFileName) = GenerateOutPaths(documentPath.FileName, ".html");
+        (string tempDirectoryPath, string outFileName) = GenerateOutPaths(documentPath.RandomlyGenerated, ".html");
 
         await DocxToHtmlConverer.ConvertToHtml(documentPath.FilePath, tempDirectoryPath);
         return outFileName;
@@ -54,36 +55,31 @@ public static class WordDocumentExtensions
 
     public static void FillAnArrayField<T>(this WordprocessingDocument self, string markerText, List<T> contentToFill, Func<T, Paragraph> paragraphTextToAdd)
     {
-        var run = self.FindRunWithChildInnerText("bccReceivers");
+        Run run = self.FindRunWithChildInnerText("bccReceivers");
 
-        var paragraph = run.Parent;
+        DocumentFormat.OpenXml.OpenXmlElement? paragraph = run.Parent;
 
         paragraph.RemoveAllChildren();
 
         foreach (T content in contentToFill)
         {
-            paragraph.InsertAfterSelf(paragraphTextToAdd(content));
+            _ = paragraph.InsertAfterSelf(paragraphTextToAdd(content));
         }
         paragraph.Remove();
     }
 
+    // out can be pdf, etc.
     private static (string OutSavePath, string OutFilePath) GenerateOutPaths(string docxFileName, string outExtension)
     {
-        string outDirectory = ConstantPaths.TemporaryFilesPath;
-        string outFilePath = outDirectory + docxFileName + outExtension;
-        (string OutPath, string OutFileName) paths = (outDirectory, outFilePath);
+        string outFilePath = ConstantPaths.TemporaryFilesPath + docxFileName + outExtension;
+        (string OutPath, string OutFileName) paths = (ConstantPaths.TemporaryFilesPath, outFilePath);
         return paths;
     }
 
-    private static (string FromPath, string OutSavePath, string OutFilePath) GenerateTemporaryPaths(string fromExtension, string outExtension)
-    {
-        string fileName = Guid.NewGuid().ToString();
-        string fromPath = Path.Combine(ConstantPaths.TemporaryFilesPath, fileName + fromExtension);
-        string outDirectory = ConstantPaths.TemporaryFilesPath;
-        string outFilePath = outDirectory + fileName + outExtension;
-        (string FromPath, string OutPath, string OutFileName) paths = (fromPath, outDirectory, outFilePath);
-        return paths;
-    }
+    /// <summary>
+    /// dont include the . in the extension
+    /// </summary>
+
 }
 
 

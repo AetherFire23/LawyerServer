@@ -22,16 +22,16 @@ public static class IContextReferenceExtensions
         (IEnumerable<T> removed, IEnumerable<T> updated) = EntitiesRefesher.GetRefreshResultGeneric<T>(updatedEntities, storedEntities);
 
         DbSet<T> set = self.ProcedureContext.Set<T>();
-        foreach (var rem in removed)
+        foreach (T rem in removed)
         {
             T entity = await set.FirstAsync(x => x.Id == rem.Id);
-            set.Remove(entity);
+            _ = set.Remove(entity);
         }
-        foreach (var upd in updated)
+        foreach (T upd in updated)
         {
             T entity = await set.FirstAsync(x => x.Id == upd.Id);
             await onUpdate(updatedEntities, storedEntities, upd, entity);
-            await self.ProcedureContext.SaveChangesAsync();
+            _ = await self.ProcedureContext.SaveChangesAsync();
         }
     }
 
@@ -45,17 +45,17 @@ public static class IContextReferenceExtensions
 
         DbSet<T> set = self.ProcedureContext.Set<T>();
 
-        foreach (var rem in removed)
+        foreach (T rem in removed)
         {
             T entity = await set.FirstAsync(x => x.Id == rem.Id);
-            set.Remove(entity);
+            _ = set.Remove(entity);
         }
 
-        foreach (var upd in updated)
+        foreach (T upd in updated)
         {
             T entity = await set.FirstAsync(x => x.Id == upd.Id);
             await onUpdate(upd, entity);
-            await self.ProcedureContext.SaveChangesAsync();
+            _ = await self.ProcedureContext.SaveChangesAsync();
         }
     }
 
@@ -70,19 +70,19 @@ public static class IContextReferenceExtensions
         where T : EntityBase
         where T2 : EntityBase
     {
-        var (removed, updated) = EntitiesRefesher.GetRefreshResultGeneric(updatedEntities, storedEntities);
+        (IEnumerable<T2> removed, IEnumerable<T> updated) = EntitiesRefesher.GetRefreshResultGeneric(updatedEntities, storedEntities);
 
-        var set = self.ProcedureContext.Set<T2>();
-        foreach (var rem in removed)
+        DbSet<T2> set = self.ProcedureContext.Set<T2>();
+        foreach (T2 rem in removed)
         {
-            var entity = await set.FirstAsync(x => x.Id == rem.Id);
-            set.Remove(entity);
+            T2 entity = await set.FirstAsync(x => x.Id == rem.Id);
+            _ = set.Remove(entity);
         }
-        foreach (var upd in updated)
+        foreach (T upd in updated)
         {
-            var entity = await set.FirstAsync(x => x.Id == upd.Id);
+            T2 entity = await set.FirstAsync(x => x.Id == upd.Id);
             await onUpdate(updatedEntities, storedEntities, upd, entity);
-            await self.ProcedureContext.SaveChangesAsync();
+            _ = await self.ProcedureContext.SaveChangesAsync();
         }
     }
 
@@ -94,21 +94,21 @@ public static class IContextReferenceExtensions
         where T : EntityBase
         where T2 : EntityBase
     {
-        var (removed, updated) = EntitiesRefesher.GetRefreshResultGeneric(updatedEntities, storedEntities);
+        (IEnumerable<T2> removed, IEnumerable<T> updated) = EntitiesRefesher.GetRefreshResultGeneric(updatedEntities, storedEntities);
 
-        var set = self.ProcedureContext.Set<T2>();
+        DbSet<T2> set = self.ProcedureContext.Set<T2>();
 
-        foreach (var rem in removed)
+        foreach (T2 rem in removed)
         {
-            var entity = await set.FirstAsync(x => x.Id == rem.Id);
-            set.Remove(entity);
+            T2 entity = await set.FirstAsync(x => x.Id == rem.Id);
+            _ = set.Remove(entity);
         }
 
-        foreach (var upd in updated)
+        foreach (T upd in updated)
         {
-            var entity = await set.FirstAsync(x => x.Id == upd.Id);
+            T2 entity = await set.FirstAsync(x => x.Id == upd.Id);
             await onUpdate(upd, entity);
-            await self.ProcedureContext.SaveChangesAsync();
+            _ = await self.ProcedureContext.SaveChangesAsync();
         }
     }
 }

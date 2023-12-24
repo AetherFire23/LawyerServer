@@ -1,21 +1,23 @@
 ﻿using ProcedureMakerServer.Enums;
-using Reinforced.Typings.Attributes;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProcedureMakerServer.Entities.BaseEntities;
 
-[TsClass]
+
 public abstract class CourtMemberBase : PersonBase
 {
     // if string.empty, means that the target is not notifiabvle
     public string NotificationEmail { get; set; } = string.Empty;
 
-    [TsIgnore]
+
+    [NotMapped]
     public string FullName => $"{FirstName} {LastName}";
-    public CourtRoles CourtRole { get; set; }
+    public CourtRoles CourtRole { get; set; } = CourtRoles.Intimated;
 
-    public bool IsNotifiable => NotificationEmail != string.Empty;
+    [NotMapped]
+    public bool IsNotifiable => NotificationEmail != string.Empty && MustNotify;
 
-
+    public bool MustNotify { get; set; } = false;
 
     public string GetGenderedCourtRoleName()
     {
@@ -32,4 +34,30 @@ public abstract class CourtMemberBase : PersonBase
             default: return string.Empty;
         }
     }
+
+    public void CopyFromCourtMember(CourtMemberBase other)
+    {
+        // Copy properties individually
+        this.FirstName = other.FirstName;
+        this.LastName = other.LastName;
+        this.PostalCode = other.PostalCode;
+        this.Country = other.Country;
+        this.Email = other.Email;
+        this.Address = other.Address;
+        this.City = other.City;
+        this.MobilePhoneNumber = other.MobilePhoneNumber;
+        this.WorkPhoneNumber = other.WorkPhoneNumber;
+        this.HomePhoneNumber = other.HomePhoneNumber;
+        this.HasJuridicalAid = other.HasJuridicalAid;
+        this.PostalCase = other.PostalCase;
+        this.Fax = other.Fax;
+        this.Gender = other.Gender;
+        this.DateOfBirth = other.DateOfBirth;
+        this.SocialSecurityNumber = other.SocialSecurityNumber;
+
+        // Additional properties specific to CourtMemberBase
+        this.NotificationEmail = other.NotificationEmail;
+        this.CourtRole = other.CourtRole;
+    }
+
 }

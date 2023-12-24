@@ -9,9 +9,7 @@ namespace ProcedureMakerServer.Repository;
 
 public class LawyerRepository : ProcedureCrudBase<Lawyer>, ILawyerRepository
 {
-    private IIncludableQueryable<Lawyer, List<Client>> SetWithIncludes => base.Set
-            .Include(l => l.Cases)
-            .Include(l => l.Clients);
+
 
     public LawyerRepository(ProcedureContext context, IMapper mapper) : base(context, mapper)
     {
@@ -20,7 +18,12 @@ public class LawyerRepository : ProcedureCrudBase<Lawyer>, ILawyerRepository
 
     public override async Task<Lawyer> GetEntityById(Guid id)
     {
-        var lawyer = await SetWithIncludes
+        Lawyer? lawyer = await Set
+            .Include(l => l.DefaultHourlyElement)
+            .Include(l => l.Cases)
+            .Include(l => l.User)
+            .Include(l => l.Clients)
+                .ThenInclude(c => c.TrustClientCard)
             .FirstOrDefaultAsync(l => l.Id == id);
 
         return lawyer;
@@ -28,28 +31,21 @@ public class LawyerRepository : ProcedureCrudBase<Lawyer>, ILawyerRepository
 
     public async Task<Lawyer> GetLawyerFromUserId(Guid userId)
     {
-        Lawyer lawyer = await SetWithIncludes
+        Lawyer lawyer = await this.Set
+            .Include(l => l.Cases)
             .FirstAsync(l => l.UserId == userId);
         return lawyer;
     }
 
-    // no real update atm
-    public async Task ModifyLawyer(Lawyer lawyer)
+    public async Task UpdateLawyer(Lawyer updatedLawyer)
     {
-        var entity = await GetEntityById(lawyer.Id);
-        entity.CourtRole = lawyer.CourtRole;
-        entity.Address = entity.Address;
-        entity.City = lawyer.City;
-        entity.Country = lawyer.Country;
-        entity.LastName = lawyer.LastName;
-        entity.FirstName = lawyer.FirstName;
-        entity.DateOfBirth = lawyer.DateOfBirth;
+        Lawyer entity = await GetEntityById(updatedLawyer.Id);
 
-        // Do i really need a profile - yep
-        // proceduralement creer les profiles?
-        //Mapper.Map(lawyer, entity); // new goes into the old
-        // _mapper.Map<Lawyer>(entity);
-        // can also already pass the existing object
+        entity.CopyFromCourtMember(updatedLawyer);
+
+        entity.CourtLockerNumber = updatedLawyer.CourtLockerNumber;
+        entity.BaseHourlyRate = updatedLawyer.BaseHourlyRate;
+
         await Context.SaveChangesAsync();
     }
 }

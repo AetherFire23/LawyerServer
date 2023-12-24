@@ -11,9 +11,5 @@ public class AccountStatementDto : EntityBase
     public List<BillingElementDto> AvailableBillingElements = new List<BillingElementDto>();
 
 
-    public Guid GetBillingElementIdByName(string name)
-    {
-        Guid id = this.AvailableBillingElements.FirstOrDefault(x => x.Name == name).Id;
-        return id;
-    }
+
 }

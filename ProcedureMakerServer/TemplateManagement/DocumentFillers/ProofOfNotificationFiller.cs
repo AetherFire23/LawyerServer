@@ -13,8 +13,8 @@ public class ProofOfNotificationFiller : DocumentFillerBase
 
     protected override void CreateFixedReplacementKeywords(CaseDto caseDto, List<(string From, string To)> keywordMap, object? additional = null)
     {
-        var email = additional as MimeMessage;
-        var attachment = email.Attachments.FirstOrDefault();
+        MimeMessage? email = additional as MimeMessage;
+        MimeEntity? attachment = email.Attachments.FirstOrDefault();
 
         // specific to proof 
         long size = MeasureAttachmentSize(attachment as MimePart);
@@ -36,10 +36,9 @@ public class ProofOfNotificationFiller : DocumentFillerBase
 
     }
 
-
-    static long MeasureAttachmentSize(MimePart part)
+    private static long MeasureAttachmentSize(MimePart part)
     {
-        using (var measure = new MeasuringStream())
+        using (MeasuringStream measure = new MeasuringStream())
         {
             part.Content.DecodeTo(measure);
             return measure.Length;
@@ -48,17 +47,16 @@ public class ProofOfNotificationFiller : DocumentFillerBase
 
     protected override void FillArrayFields(CaseDto caseDto, WordprocessingDocument document, object? additional = null)
     {
-        var document2 = document.MainDocumentPart.Document;
-        var email = additional as MimeMessage;
-        var bccs = email.Bcc.Select(x => x as MailboxAddress).ToList();
+        Document document2 = document.MainDocumentPart.Document;
+        MimeMessage? email = additional as MimeMessage;
+        List<MailboxAddress?> bccs = email.Bcc.Select(x => x as MailboxAddress).ToList();
 
         Func<MailboxAddress, Paragraph> paragraphFactory = message =>
         {
-            var paragraph = WordParagraphExtensions.CreateBlankParagraph(message.Address);
+            Paragraph paragraph = WordParagraphExtensions.CreateBlankParagraph(message.Address);
             return paragraph;
         };
 
         document.FillAnArrayField("bccReceivers", bccs, paragraphFactory);
-        int x = 0;
     }
 }

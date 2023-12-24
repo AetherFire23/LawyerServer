@@ -10,16 +10,16 @@ public static class DocxToHtmlConverer
     {
         // if (!File.Exists(fromDocxPath)) throw new Exception();
 
-        var stdOutBuffer = new StringBuilder();
+        StringBuilder stdOutBuffer = new StringBuilder();
         // hardcoed executable path
 
 
         // using relative pathing now for toPdfPath
         string cliPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "LibreOffice", "program", "soffice.exe"); ;
-        var result = await Cli.Wrap(cliPath)
+        CommandResult result = await Cli.Wrap(cliPath)
             .WithArguments(args =>
             {
-                args
+                _ = args
                 .Add("--convert-to")
                 .Add("html")
                 .Add(fromDocxPath)

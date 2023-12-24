@@ -10,13 +10,13 @@ public class AccountStatementDummy
         {
             new Invoice()
             {
-                Payments = new List<Payment>()
+                Payments = new List<InvoicePayment>()
                 {
-                    new Payment()
+                    new InvoicePayment()
                     {
                         AmountPaid = 420,
                     },
-                    new Payment()
+                    new InvoicePayment()
                     {
                         AmountPaid = 550,
                     }
@@ -25,14 +25,14 @@ public class AccountStatementDummy
                 {
                     new Activity()
                     {
-                        HoursWorked = 12
+                        Quantity = 12
                     },
                     new Activity()
                     {
-                        HoursWorked = 1
+                        Quantity = 1
                     }
                 }
-                
+
             }
         };
 

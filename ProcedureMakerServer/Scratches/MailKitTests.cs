@@ -1,7 +1,7 @@
-﻿using Google.Apis.Util;
-using Google.Apis.Util.Store;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Util;
+using Google.Apis.Util.Store;
 using MailKit.Net.Imap;
 using MailKit.Security;
 
@@ -9,21 +9,21 @@ namespace ProcedureMakerServer.Scratches;
 
 public static class MailKitTests
 {
-    const string GMailAccount = "richerf3212@gmail.com";
+    private const string GMailAccount = "richerf3212@gmail.com";
     public static async Task DoTest()
     {
 
     }
 
-    static async Task OAuthAsync(ImapClient client)
+    private static async Task OAuthAsync(ImapClient client)
     {
-        var clientSecrets = new ClientSecrets
+        ClientSecrets clientSecrets = new ClientSecrets
         {
             ClientId = "XXX.apps.googleusercontent.com",
             ClientSecret = "XXX"
         };
 
-        var codeFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+        GoogleAuthorizationCodeFlow codeFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
             DataStore = new FileDataStore("CredentialCacheFolder", false),
             Scopes = new[] { "https://mail.google.com/" },
@@ -31,13 +31,13 @@ public static class MailKitTests
         });
 
         // Note: For a web app, you'll want to use AuthorizationCodeWebApp instead.
-        var codeReceiver = new LocalServerCodeReceiver();
-        var authCode = new AuthorizationCodeInstalledApp(codeFlow, codeReceiver);
+        LocalServerCodeReceiver codeReceiver = new LocalServerCodeReceiver();
+        AuthorizationCodeInstalledApp authCode = new AuthorizationCodeInstalledApp(codeFlow, codeReceiver);
 
-        var credential = await authCode.AuthorizeAsync(GMailAccount, CancellationToken.None);
+        UserCredential credential = await authCode.AuthorizeAsync(GMailAccount, CancellationToken.None);
 
         if (credential.Token.IsExpired(SystemClock.Default))
-            await credential.RefreshTokenAsync(CancellationToken.None);
+            _ = await credential.RefreshTokenAsync(CancellationToken.None);
 
         // Note: We use credential.UserId here instead of GMailAccount because the user *may* have chosen a
         // different GMail account when presented with the browser window during the authentication process.

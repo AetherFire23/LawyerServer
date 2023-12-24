@@ -18,17 +18,17 @@ public static class AppConfigHelper
     }
     public static async Task ConfigureMigration(WebApplication app)
     {
-        using (var scope = app.Services.CreateScope())
+        using (IServiceScope scope = app.Services.CreateScope())
         {
-            var context = scope.ServiceProvider.GetRequiredService<ProcedureContext>();
+            ProcedureContext context = scope.ServiceProvider.GetRequiredService<ProcedureContext>();
 
-            context.Database.EnsureDeleted();
+            _ = context.Database.EnsureDeleted();
             context.Database.Migrate();
         }
     }
     public static async Task ConfigureCors(WebApplication app)
     {
-        app.UseCors(x => x
+        _ = app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true) // allow any origin

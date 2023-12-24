@@ -26,7 +26,7 @@ public class AuthManager : IAuthManager
     // should rechange everything to the atualy datatypes i wanna send I guess
     public async Task<LoginResult> GenerateTokenIfCorrectCredentials(LoginRequest loginRequest)
     {
-        var user = await _userRepository.GetUserByName(loginRequest.Username);
+        User? user = await _userRepository.GetUserByName(loginRequest.Username);
 
         if (user is null) throw new InvalidCredentialsException();
         if (!Crypt.Verify(loginRequest.Password, user.HashedPassword)) throw new InvalidCredentialsException();
@@ -37,7 +37,7 @@ public class AuthManager : IAuthManager
         string token = await _jwtTokenManager.GenerateToken(user);
         UserDto userDto = await _userRepository.MapUserDto(user.Id);
 
-        var req = new LoginResult()
+        LoginResult req = new LoginResult()
         {
             Token = token,
             UserDto = userDto,
@@ -48,25 +48,25 @@ public class AuthManager : IAuthManager
 
     public async Task TryRegister(RegisterRequest registerRequest)
     {
-        var testedUser = await _userRepository.GetUserByName(registerRequest.Username);
+        User? testedUser = await _userRepository.GetUserByName(registerRequest.Username);
         bool isUserExists = testedUser is not null;
 
         if (isUserExists) throw new InvalidCredentialsException();
 
         string hashedPassword = Crypt.HashPassword(registerRequest.Password);
 
-        User user = new User()
+        User user = new()
         {
             HashedPassword = hashedPassword,
             Name = registerRequest.Username,
         };
 
-        Role role = new Role()
+        Role role = new()
         {
             RoleType = registerRequest.Role,
         };
 
-        UserRole userRole = new UserRole()
+        UserRole userRole = new()
         {
             Role = role,
             User = user,
@@ -75,36 +75,34 @@ public class AuthManager : IAuthManager
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        var lawyer = new Lawyer()
+        Lawyer lawyer = new()
         {
             User = user,
             FirstName = user.Name,
-
         };
+
         await _context.Lawyers.AddAsync(lawyer);
         await _context.SaveChangesAsync();
 
+        // default billing element here
+        var defaultBillingElementAtRegistration = new BillingElement
+        {
+            ActivityName = user.Name,
+            Amount = 100,
+            ManagerLawyer = lawyer,
+            IsHourlyRate = true,
+        };
 
-        //// should be atable 
-        //var defaultBillingElement = new BillingElement
-        //{
-        //    AccountStatement =
-        //        ActivityName = "JuridicalWork",
-        //    Amount = 100,
-        //};
+        _context.BillingElements.Add(defaultBillingElementAtRegistration);
+        await _context.SaveChangesAsync();
 
-
-        //await _context.BillingElements.AddAsync(defaultBillingElement);
-        //await _context.SaveChangesAsync();
-
-
+        lawyer.DefaultHourlyElement = defaultBillingElementAtRegistration;
+        await _context.SaveChangesAsync();
 
         await _context.Roles.AddAsync(role);
         await _context.SaveChangesAsync();
 
         await _context.UserRoles.AddAsync(userRole);
         await _context.SaveChangesAsync();
-
-        var userDto = await _userRepository.MapUserDto(user.Id);
     }
 }

@@ -27,9 +27,8 @@ public class UserController : Controller
         _JwtTokenManager = jwtTokenManager;
     }
 
-    [DefaultReturnType(typeof(LoginResult))]
     [HttpPut(UserEndpoints.CredentialsLogin)]
-    public async Task<IActionResult> CredentialsLoginRequest([FromBody] LoginRequest loginRequest)
+    public async Task<ActionResult<LoginResult>> CredentialsLoginRequest([FromBody] LoginRequest loginRequest)
     {
         Console.WriteLine($"token login request procced{loginRequest.Username}");
         LoginResult result = await _authManager.GenerateTokenIfCorrectCredentials(loginRequest);
@@ -37,14 +36,13 @@ public class UserController : Controller
     }
 
     [HttpPost(UserEndpoints.TokenLogin)]
-    [DefaultReturnType(typeof(LoginResult))]
     [Authorize(Roles = nameof(RoleTypes.Admin))] // token still valid but user got deleted when db dropped
     public async Task<IActionResult> TokenLogin() // bad cos parametres often get cached and-or expoised
     {
         // work in progress 
         Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-        var userDto = await _userRepository.MapUserDto(userId);
+        UserDto userDto = await _userRepository.MapUserDto(userId);
 
         LoginResult result = new LoginResult()
         {
@@ -63,44 +61,10 @@ public class UserController : Controller
         return Ok();
     }
 
-
-    //[DefaultReturnType(typeof(void))]
-    //[HttpPost("LolzidaEndpoint")]
-    //public async Task<IActionResult> RegisterUser(string lolzida, string otherParam)
-    //{
-    //    return Ok();
-    //}
-
-
-
-    [HttpGet("authorizedrequest")]
+    [HttpGet("authorizedrequestblabla")]
     [Authorize(Roles = nameof(RoleTypes.Normal))]
-    public async Task<IActionResult> AuthorizedTesst() // just for test
+    public async Task<ActionResult> AuthorizedTesst() // just for test
     {
         return Ok();
     }
-
-
-
-    //[HttpGet("test2")]
-    //public async Task<IActionResult> test(string token, string token2) // just for test
-    //{
-    //    return Ok();
-    //}
-
-    //public static int Counter = 0;
-    //[HttpGet("getcount")]
-    //public async Task<IActionResult> Test() // just for test
-    //{
-    //    Console.WriteLine($"Get {Counter}");
-    //    return Ok(Counter);
-    //}
-
-    //[HttpPost("setcount")]
-    //public async Task<IActionResult> Test(int count) // just for test
-    //{
-    //    Counter = count;
-    //    Console.WriteLine($"Set${Counter}");
-    //    return Ok(new {Counter = count});
-    //}
 }

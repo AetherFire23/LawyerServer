@@ -6,6 +6,7 @@ using ProcedureMakerServer.Dtos;
 using ProcedureMakerServer.EmailMaker;
 using ProcedureMakerServer.TemplateManagement.DocumentFillers;
 using System.Reflection;
+using System.Text;
 
 namespace ProcedureMakerServer.TemplateManagement;
 
@@ -19,73 +20,80 @@ namespace ProcedureMakerServer.TemplateManagement;
 
 
 // also DI these classes instead of static
-public static class DocumentMaker
+public class DocumentMaker
 {
-    private static Dictionary<DocumentTypes, DocumentFillerBase> _documentsMap
-        = InitializeDocumentFillers();
+    // declare as static for caching
+    private static Dictionary<DocumentTypes, DocumentFillerBase> _documentsMap = InitializeDocumentFillers();
 
-    public static WordDocInfo GenerateDocument(CaseDto dto, DocumentTypes documentType, object? additional)
+    public WordDocGenerationInfo GenerateDocxAndFill(CaseDto dto, DocumentTypes documentType, object? additional)
     {
         DocumentFillerBase documentFiller = _documentsMap[documentType];
-        WordDocInfo documentPath = documentFiller.FillDocument(dto, documentType, additional);
-        return documentPath;
+        WordDocGenerationInfo docxInfo = documentFiller.FillDocument(dto, documentType, additional);
+        return docxInfo;
     }
 
-    public static async Task<string> GenerateDocumentAsPdf(CaseDto dto, DocumentTypes documentType, object? additional = null)
+    public async Task<string> GenerateDocumentAsPdf(CaseDto dto, DocumentTypes documentType, object? additional = null)
     {
-        WordDocInfo documentPath = GenerateDocument(dto, documentType, additional);
+        WordDocGenerationInfo documentPath = GenerateDocxAndFill(dto, documentType, additional);
         string pdfPath = await WordDocumentExtensions.ConvertToPdf(documentPath);
         return pdfPath;
     }
 
-    public static async Task<string> GenerateDocumentAsHtml(CaseDto dto, DocumentTypes documentType, object? additional = null)
+    public async Task<string> GenerateDocumentAsHtml(CaseDto dto, DocumentTypes documentType, object? additional = null)
     {
-        WordDocInfo documentPath = GenerateDocument(dto, documentType, additional);
+        WordDocGenerationInfo documentPath = GenerateDocxAndFill(dto, documentType, additional);
         string htmlPath = await WordDocumentExtensions.ConvertToHtml(documentPath);
         return htmlPath;
     }
 
-    public static async Task<string> GenerateEmailSubject(CaseDto dto, DocumentTypes documentTypes)
+    // This will need to change whether or not its about youth, family, etc.
+    public async Task<string> GenerateNotificationSubject(CaseDto dto)
     {
-        DocumentFillerBase documentFiller = _documentsMap[documentTypes];
-        string subject = documentFiller.FormatEmailSubjectTitle(dto);
-        return subject;
+        StringBuilder builder = new StringBuilder();
+        _ = builder.Append("NOTIFICATION PAR COURRIEL ");
+        _ = builder.Append($"({dto.CourtNumber}) ");
+        _ = builder.Append(dto.Plaintiff.LowerCaseFormattedFullName ?? string.Empty);
+        _ = builder.Append(" c. ");
+        _ = builder.Append(dto.Plaintiff.LowerCaseFormattedFullName ?? string.Empty);
+
+        return builder.ToString();
     }
 
-    public static async Task<string> GenerateNotificationBorderAsHtml(CaseDto dto, string signedDocumentPdfPath, string signedPdfName)
+    public async Task<string> GenerateNotificationBorderAsHtml(CaseDto dto, string pdfFilePath, string documentName)
     {
-        using PdfDocument pdfDoc = PdfReader.Open(signedDocumentPdfPath, PdfDocumentOpenMode.ReadOnly);
+        using PdfDocument pdfDoc = PdfReader.Open(pdfFilePath, PdfDocumentOpenMode.ReadOnly);
+
         var notificationSlipParams = new NotificationSlipParams()
         {
             PageCount = pdfDoc.Pages.Count,
-            DocumentName = signedPdfName,
+            DocumentName = documentName,
         };
+
         string htmlPath = await GenerateDocumentAsHtml(dto, DocumentTypes.TransmissionSlip, notificationSlipParams);
         return htmlPath;
-    }
+    } 
 
-    public static async Task<string> GenerateProofOfNotificationAsPdf(CaseDto dto,
-        string emailSubject,
-        EmailCredentials creds)
+    public async Task<string> GenerateProofOfNotificationAsPdf(CaseDto dto, string emailSubject, EmailCredentials creds)
     {
-        ImapClient client = await EmailReceiver.GetClient(creds);
+        var client = await EmailReceiver.GetClient(creds);
         using MimeMessage emailMessage = await EmailReceiver.FindLastMessageWithTitle(client, emailSubject);
-
-        string pdfPath = await DocumentMaker.GenerateDocumentAsPdf(dto, DocumentTypes.ProofOfNotification, emailMessage);
+        string pdfPath = await GenerateDocumentAsPdf(dto, DocumentTypes.ProofOfNotification, emailMessage);
         return pdfPath;
     }
 
     private static Dictionary<DocumentTypes, DocumentFillerBase> InitializeDocumentFillers()
     {
-        var documentFillers = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(x => CustomAttributeExtensions.GetCustomAttribute<DocumentFillerAttribute>(x) is not null
-                && x.IsClass && !x.IsAbstract)
+        List<DocumentFillerBase?> documentFillers = Assembly.GetExecutingAssembly().GetTypes()
+            .Where(x =>
+                CustomAttributeExtensions.GetCustomAttribute<DocumentFillerAttribute>(x) is not null
+                && x.IsClass
+                && !x.IsAbstract)
             .Select(x => (Activator.CreateInstance(x)) as DocumentFillerBase).ToList();
 
 
         var map = new Dictionary<DocumentTypes, DocumentFillerBase>();
 
-        foreach (var documentFiller in documentFillers)
+        foreach (DocumentFillerBase? documentFiller in documentFillers)
         {
             map.Add(documentFiller.GetType().GetCustomAttribute<DocumentFillerAttribute>().DocumentType, documentFiller);
         }

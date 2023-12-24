@@ -7,7 +7,7 @@ public static class FormFileExtensions
     {
         int indexOfFileExtensionBegin = formFile.ContentDisposition.IndexOf('.');
 
-        var formExtension = new string(formFile.ContentDisposition
+        string formExtension = new string(formFile.ContentDisposition
             .SkipWhile(x => x != '.')
             .ToArray());
 
@@ -20,7 +20,7 @@ public static class FormFileExtensions
         bool directoryExists = Path.Exists(Path.GetDirectoryName(filePath));
         if (!directoryExists) throw new Exception("Directory dont exist lol!");
 
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        using (FileStream stream = new FileStream(filePath, FileMode.Create))
         {
             await formFile.CopyToAsync(stream);
         }

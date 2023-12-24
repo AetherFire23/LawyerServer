@@ -7,6 +7,6 @@ public class ClientProfile : Profile
 {
     public ClientProfile()
     {
-        CreateMap<Client, Client>();
+        _ = CreateMap<Client, Client>();
     }
 }

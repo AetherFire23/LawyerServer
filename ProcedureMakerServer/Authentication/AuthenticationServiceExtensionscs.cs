@@ -9,8 +9,8 @@ public static class AuthenticationServiceExtensionscs
 {
     public static void ConfigureJwt(this WebApplicationBuilder builder)
     {
-        var jwtSection = builder.Configuration.GetSection("Jwt");
-        var jwtConfig = new JwtConfig();
+        IConfigurationSection jwtSection = builder.Configuration.GetSection("Jwt");
+        JwtConfig jwtConfig = new JwtConfig();
         jwtSection.Bind(jwtConfig);
         _ = builder.Services.Configure<JwtConfig>(jwtSection);
 

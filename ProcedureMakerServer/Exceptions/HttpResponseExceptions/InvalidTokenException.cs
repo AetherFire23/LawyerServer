@@ -9,6 +9,6 @@ public class InvalidTokenException : HttpExceptionBase
 
     public InvalidTokenException()
     {
-        base.Message = "The provided token was invalid";
+        base.HttpMessage = "The provided token was invalid";
     }
 }

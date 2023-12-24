@@ -1,11 +1,13 @@
 ﻿using EFCoreBase.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProcedureMakerServer.Billing.InvoiceDtos;
 using ProcedureMakerServer.Utils;
 
 
 namespace ProcedureMakerServer.Billing.StatementEntities;
 
-public partial class Activity : EntityBase, ListExtensions.ICopyFromAbleDto<ActivityEntryDto>
+public partial class Activity : EntityBase
 {
     public Guid InvoiceId { get; set; }
     public Invoice Invoice { get; set; }
@@ -13,32 +15,16 @@ public partial class Activity : EntityBase, ListExtensions.ICopyFromAbleDto<Acti
     public Guid BillingElementId { get; set; }
     public BillingElement BillingElement { get; set; }
 
-    public bool HasPersonalizedBillingElement { get; set; } = false;
-    public decimal HoursWorked { get; set; } = 0;
-
-    public ActivityEntryDto ToDto()
-    {
-        var dto = new ActivityEntryDto()
-        {
-            Id = Id,
-            BillingElementName = BillingElement.ActivityName,
-            HasPersonalizedBillingElement = HasPersonalizedBillingElement,
-            HoursWorked = HoursWorked
-        };
-        return dto;
-    }
-
-    public void CopyFromDto(ActivityEntryDto dto)
-    {
-        this.HoursWorked = dto.HoursWorked;
-        this.HasPersonalizedBillingElement = dto.HasPersonalizedBillingElement;
-    }
+    public string ActivityDescription { get; set; } = string.Empty;
+    public decimal Quantity { get; set; } = 0;
 }
 
-public class ActivityCreation
+public class ActivityConfiguration : IEntityTypeConfiguration<Activity>
 {
-    public Guid BillingElementId { get; set; }
-    public Guid InvoiceId { get; set; }
-    public decimal HoursWorked { get; set; } = 0;
-    public bool IsPayableByTrust { get; set; } = false;
+    public void Configure(EntityTypeBuilder<Activity> builder)
+    {
+        _ = builder.HasOne(x => x.Invoice)
+        .WithMany(x => x.Activities)
+        .OnDelete(DeleteBehavior.NoAction);
+    }
 }

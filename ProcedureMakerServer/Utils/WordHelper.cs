@@ -11,21 +11,21 @@ public static class WordHelper
 
     public static byte[] ReadDocumentBytesAt(string wordDocumentName)
     {
-        var path = DocumentFolderPath + wordDocumentName;
+        string path = DocumentFolderPath + wordDocumentName;
         if (!File.Exists(path)) throw new Exception("Template did not exist, file should match enum type value");
 
-        var bytes = File.ReadAllBytes(path);
+        byte[] bytes = File.ReadAllBytes(path);
 
         return bytes;
     }
 
-    public static WordDocInfo OpenDocumentFromBytes(byte[] bytes)
+    public static WordDocGenerationInfo OpenDocumentFromBytes(byte[] bytes)
     {
-        var wordInfo = new WordDocInfo();
-        using (var stream = new MemoryStream(bytes, 0, (int)bytes.Length))
+        WordDocGenerationInfo wordInfo = new WordDocGenerationInfo();
+        using (MemoryStream stream = new MemoryStream(bytes, 0, (int)bytes.Length))
         {
-            using var readonlyCopy = WordprocessingDocument.Open(stream, false);
-            using var pack = readonlyCopy.Clone(wordInfo.FilePath);
+            using WordprocessingDocument readonlyCopy = WordprocessingDocument.Open(stream, false);
+            using WordprocessingDocument pack = readonlyCopy.Clone(wordInfo.FilePath);
         }
 
 

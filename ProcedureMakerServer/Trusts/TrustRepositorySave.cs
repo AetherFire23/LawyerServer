@@ -11,35 +11,42 @@ public partial class TrustRepository : ProcedureRepositoryContextBase
     {
     }
 
-    public async Task AddPayment(Guid clientId, TrustPaymentDto newPayment)
+    public async Task AddFundsToTrust(Guid clientId, TrustPaymentDto trustPayment)
     {
-        var currentTrust = await GetTrustAccount(clientId);
+        var client = (await Context.Clients.FirstByIdAsync(clientId)).TrustClientCard;
+        //var trustClientCard = await Context.TrustClientCards.FirstAsync(x => x.Id == client.TrustClientCardId);
 
-        var newTrust = new TrustPayment
+
+        var payment = new TrustPayment()
         {
-            Id = Guid.NewGuid(),
-            Trust = currentTrust,
-            Amount = newPayment.Amount,
-            Date = newPayment.Date,
+            Amount = trustPayment.Amount,
+            Date = trustPayment.Date,
+            Trust = client,
         };
 
-        Context.TrustPayments.Add(newTrust);
+        Context.TrustPayments.Add(payment);
         await Context.SaveChangesAsync();
     }
 
-    public async Task ModifyPayment(Guid clientId, TrustPaymentDto modifiedPayment)
+    public async Task UpdateTrustFund(TrustPaymentDto updatedPayment)
     {
-        var payment = await Context.TrustPayments.FirstByIdAsync(modifiedPayment.Id);
-        payment.Amount = modifiedPayment.Amount;
-        payment.Date = modifiedPayment.Date;
-
+        var trustPayment = await Context.TrustPayments.FirstByIdAsync(updatedPayment.Id);
+        trustPayment.Amount = updatedPayment.Amount;
+        trustPayment.Date = updatedPayment.Date;
     }
 
-    private async Task<Trust> GetTrustAccount(Guid clientId)
+    public async Task RemoveTrustFund(Guid trustPaymentId)
     {
-        var accountStatement = await Context.Trusts
+        var payment = await Context.TrustPayments.FirstAsync(x => x.Id == trustPaymentId);
+
+        Context.TrustPayments.Remove(payment);
+        await Context.SaveChangesAsync();
+    }
+
+    private async Task<TrustClientCard> GetTrustAccount(Guid clientId)
+    {
+        TrustClientCard accountStatement = await Context.TrustClientCards
             .Include(x => x.Client)
-            .Include(x => x.Disburses)
             .Include(x => x.Payments)
             .FirstAsync(x => x.Id == clientId);
 

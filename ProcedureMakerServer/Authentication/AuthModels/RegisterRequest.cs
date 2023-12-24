@@ -1,8 +1,7 @@
-﻿using Reinforced.Typings.Attributes;
-
+﻿
 namespace ProcedureMakerServer.Authentication.AuthModels;
 
-[TsClass]
+
 public class RegisterRequest
 {
     public string Username { get; set; } = string.Empty;

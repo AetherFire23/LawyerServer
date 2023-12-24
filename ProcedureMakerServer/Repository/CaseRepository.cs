@@ -1,26 +1,29 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.EMMA;
 using EFCoreBase.Entities;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Dtos;
+using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository.ProcedureRepo;
 
 namespace ProcedureMakerServer.Repository;
 
-public class CaseRepository : ProcedureCrudBase<Case>, ICaseRepository
+public class CaseRepository : ProcedureCrudBase<Case>
 {
     private readonly IUserRepository _userRepository;
     private readonly ILawyerRepository _lawyerRepository;
-    private readonly ICasePartRepository _casePartRepository;
-    private readonly IClientRepository _clientRepository;
+    private readonly CasePartRepository _casePartRepository;
+    private readonly ClientRepository _clientRepository;
 
     private ProcedureContext c2;
     public CaseRepository(ProcedureContext context, IMapper mapper,
         IUserRepository userRepository,
         ILawyerRepository lawyerRepository,
-        ICasePartRepository casePartRepository,
-        IClientRepository clientRepository) : base(context, mapper)
+        CasePartRepository casePartRepository,
+        ClientRepository clientRepository) : base(context, mapper)
     {
         _userRepository = userRepository;
         _lawyerRepository = lawyerRepository;
@@ -29,26 +32,36 @@ public class CaseRepository : ProcedureCrudBase<Case>, ICaseRepository
         c2 = context;
     }
 
+    public async Task<CaseDto> MapCaseDto(Guid caseId)
+    {
+        Case lcase = await GetEntityById(caseId);
+        var participants = await GetCaseParticipantsDto(caseId);
+
+        CaseDto caseDto = new CaseDto
+        {
+            Id = lcase.Id,
+            Client = lcase.Client,
+            ManagerLawyer = lcase.ManagerLawyer,
+            Participants = participants,
+            CaseNumber = lcase.CaseNumber,
+            CourtAffairNumber = lcase.CourtAffairNumber,
+            CourtNumber = lcase.CourtNumber,
+            ChamberName = lcase.ChamberName,
+            DistrictName = lcase.DistrictName,
+        };
+        return caseDto;
+    }
+
     public override async Task<Case> GetEntityById(Guid id)
     {
-        var lcase = await c2.Cases
-            //.Include(p => p.Client)
-            .Include(c => c.Participants)
-            //.Include(c => c.ManagerLawyer)
-            .FirstOrDefaultAsync(c => c.Id == id);
+        Case lcase = await c2.Cases
+            .Include(c => c.CaseParticipants)
+            .FirstAsync(c => c.Id == id);
 
         return lcase;
     }
 
-    public async Task ModifyCase(Case lcase)
-    {
-        var retrieved = await GetEntityById(lcase.Id);
-        Mapper.Map(lcase, retrieved);
-
-        await Context.SaveChangesAsync();
-    }
-
-    public async Task ModifyCaseFromDto(CaseDto caseDto)
+    public async Task UpdateCase(CaseDto caseDto)
     {
         Case retrieved = await GetEntityById(caseDto.Id);
 
@@ -56,32 +69,30 @@ public class CaseRepository : ProcedureCrudBase<Case>, ICaseRepository
         retrieved.DistrictName = caseDto.DistrictName;
         retrieved.CourtAffairNumber = caseDto.CourtAffairNumber;
         retrieved.CaseNumber = caseDto.CaseNumber;
-        retrieved.CourtType = caseDto.ChamberName;
+        retrieved.ChamberName = caseDto.ChamberName;
         retrieved.CourtNumber = caseDto.CourtNumber;
 
         await Context.SaveChangesAsync();
     }
 
-    public async Task<CaseDto> MapCaseDto(Guid caseId)
+    public async Task<List<string>> GetEmailsToNotify(Guid caseId)
     {
-        Case lcase = await GetEntityById(caseId);
+        var notifiableInCase = await Context.CaseParticipants
+            .Where(c => c.MustNotify)
+            .Where(c => c.NotificationEmail != "")
+            .Select(c => c.NotificationEmail)
+            .ToListAsync();
 
+        return notifiableInCase;
+    }
 
-        CaseDto caseDto = new CaseDto()
-        {
-            Id = lcase.Id,
-            Client = lcase.Client,
-            ManagerLawyer = lcase.ManagerLawyer,
-            Participants = lcase.Participants.ToList(),
-            CaseNumber = lcase.CaseNumber,
-            CourtAffairNumber = lcase.CourtAffairNumber,
-            CourtNumber = lcase.CourtNumber,
-            ChamberName = lcase.CourtType,
-            DistrictName = lcase.DistrictName,
+    private async Task<List<CaseParticipantDto>> GetCaseParticipantsDto(Guid caseId)
+    {
+        var lcase = await GetEntityById(caseId);
+        var participants = lcase.CaseParticipants.ToList()
+            .Select(x => x.ToDto())
+            .ToList();
 
-        };
-
-
-        return caseDto;
+        return participants;
     }
 }

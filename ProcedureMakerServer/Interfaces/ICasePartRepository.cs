@@ -3,9 +3,9 @@ using ProcedureMakerServer.Entities;
 
 namespace ProcedureMakerServer.Interfaces;
 
-public interface ICasePartRepository : IProcedureCrudRepositoryBase<CasePart>
+public interface ICasePartRepository : IProcedureCrudRepositoryBase<CaseParticipant>
 {
-    Task<List<CasePart>> GetParticipantsForCase(Guid caseId);
-    Task ModifyCasePart(CasePart casePart);
-    Task CreateOrModifyCasePart(Case cCase, CasePart casePart);
+    Task<List<CaseParticipant>> GetParticipantsForCase(Guid caseId);
+    Task ModifyCasePart(CaseParticipant casePart);
+    Task CreateOrModifyCasePart(Case cCase, CaseParticipant casePart);
 }

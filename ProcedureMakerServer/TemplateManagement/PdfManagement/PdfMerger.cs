@@ -1,5 +1,5 @@
-﻿using PdfSharp.Pdf.IO;
-using PdfSharp.Pdf;
+﻿using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 using ProcedureMakerServer.Constants;
 
 namespace ProcedureMakerServer.TemplateManagement.PdfManagement;
@@ -8,7 +8,7 @@ public static class PdfMerger
 {
     public static string MergePdfs(List<string> pdfPaths)
     {
-        var documents = pdfPaths.Select(p => PdfReader.Open(p, PdfDocumentOpenMode.Import)).ToList();
+        List<PdfDocument> documents = pdfPaths.Select(p => PdfReader.Open(p, PdfDocumentOpenMode.Import)).ToList();
 
         using PdfDocument outPdf = new PdfDocument();
 

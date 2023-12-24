@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Billing.Services;
+using ProcedureMakerServer.EmailMaker;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Repository;
 using ProcedureMakerServer.Services;
+using ProcedureMakerServer.TemplateManagement;
 using ProcedureMakerServer.Trusts;
 using System.Reflection;
 namespace ProcedureMakerServer.Initialization;
-
-
 
 public static class AppBuilderHelper
 {
@@ -24,9 +24,8 @@ public static class AppBuilderHelper
         ConfigureServices(builder);
         ConfigureAutoMapper(builder);
         ConfigureHTTPLogging(builder);
-
-
     }
+
     private static void ConfigureConventions(WebApplicationBuilder builder) // required for my library for endpoints
     {
         _ = builder.Services.AddControllers(options =>
@@ -37,7 +36,7 @@ public static class AppBuilderHelper
 
     private static void ConfigureAutoMapper(WebApplicationBuilder builder)
     {
-        builder.Services.AddAutoMapper(x =>
+        _ = builder.Services.AddAutoMapper(x =>
         {
             x.AddMaps(Assembly.GetExecutingAssembly());
         });
@@ -45,24 +44,29 @@ public static class AppBuilderHelper
 
     public static void ConfigureNpgsql(WebApplicationBuilder builder)
     {
-        builder.Services.AddDbContext<ProcedureContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("ProcedureConnection"))
-            .EnableSensitiveDataLogging(true));
+        //builder.Services.AddDbContext<ProcedureContext>(options =>
+        //    options.UseNpgsql(builder.Configuration.GetConnectionString("ProcedureConnection"))
+        //    .EnableSensitiveDataLogging(true));
+
+        _ = builder.Services.AddSqlServer<ProcedureContext>(builder.Configuration.GetConnectionString("ProcedureConnection"));
     }
 
     public static void ConfigureServices(WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<ILawyerRepository, LawyerRepository>();
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IAuthManager, AuthManager>();
-        builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
-        builder.Services.AddScoped<ICaseContextService, CaseContextService>();
-        builder.Services.AddScoped<ICasesContextRepository, CasesContextRepository>();
-        builder.Services.AddScoped<ICasePartRepository, CasePartRepository>();
-        builder.Services.AddScoped<ICaseRepository, CaseRepository>();
-        builder.Services.AddScoped<IClientRepository, ClientRepository>();
-        builder.Services.AddTransient<AccountStatementRepository>();
-        builder.Services.AddTransient<TrustRepository>();
+        _ = builder.Services.AddScoped<ILawyerRepository, LawyerRepository>();
+        _ = builder.Services.AddScoped<IUserRepository, UserRepository>();
+        _ = builder.Services.AddScoped<IAuthManager, AuthManager>();
+        _ = builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
+        _ = builder.Services.AddScoped<CaseContextService>();
+        _ = builder.Services.AddScoped<CasesContextRepository>();
+        _ = builder.Services.AddScoped<CasePartRepository>();
+        _ = builder.Services.AddScoped<CaseRepository>();
+        _ = builder.Services.AddScoped<ClientRepository>();
+        _ = builder.Services.AddTransient<AccountStatementRepository>();
+        _ = builder.Services.AddTransient<TrustRepository>();
+        _ = builder.Services.AddTransient<NotificationEmailSender>();
+        _ = builder.Services.AddTransient<DocumentMaker>();
+        _ = builder.Services.AddTransient<NotificationService>();
     }
 
     private static void ConfigureHTTPLogging(WebApplicationBuilder builder)
@@ -76,9 +80,5 @@ public static class AppBuilderHelper
             logging.RequestBodyLogLimit = 4096;
             logging.ResponseBodyLogLimit = 4096;
         });
-    }
-
-    private static void ConfigureDeserialization()
-    {
     }
 }

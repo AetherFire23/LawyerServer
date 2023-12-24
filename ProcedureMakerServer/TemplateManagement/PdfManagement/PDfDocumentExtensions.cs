@@ -8,7 +8,7 @@ public static class PDfDocumentExtensions
     {
         foreach (PdfPage page in other.Pages)
         {
-            self.AddPage(page);
+            _ = self.AddPage(page);
         }
     }
 

@@ -22,6 +22,8 @@ public class Program
     public static async Task Main(string[] args)
     {
         // //// 1. DOC GEN
+        //
+
 
         //    // 2. NOTIFY
         //// document part
@@ -30,12 +32,12 @@ public class Program
         //string mergedNotificationPath = PdfMerger.MergePdfs(new() { presentationNoticePath, backingPdfPath });
 
 
-        //// Send email part
-        //EmailCredentials credentials = new EmailCredentials()
-        //{
-        //    Email = "richerf3212@gmail.com",
-        //    AppPassword = MyPassword.Pass,
-        //};
+        // Send email part
+        // EmailCredentials credentials = new EmailCredentials()
+        // {
+        //     Email = "richerf3212@gmail.com",
+        //     AppPassword = MyPassword.Pass,
+        // };
 
         //SendEmailInfo sendingInfo = new SendEmailInfo();
         //sendingInfo.Subject = await DocumentMaker.GenerateEmailSubject(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
@@ -56,40 +58,40 @@ public class Program
 
         //int ixyz = 0;
 
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-
-
-
-
-
-
-
-        var builder = WebApplication.CreateBuilder(args);
-
-        builder.Services.AddControllers()
+        _ = builder.Services.AddControllers()
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                
             });
 
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        _ = builder.Services.AddEndpointsApiExplorer();
+        _ = builder.Services.AddSwaggerGen(c =>
+        {
+            c.SchemaFilter<XEnumNamesSchemaFilter>();
+            c.UseAllOfToExtendReferenceSchemas();
+            //c.UseInlineDefinitionsForEnums();
+            //    c.DescribeAllEnumsAsStrings(); // this will do the trick
+        });
+
         builder.ConfigureJwt();
 
         // removes errors where aspnet sends bad request if a nonnullable is sent 
-        builder.Services.AddControllers(
+        _ = builder.Services.AddControllers(
                 options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
-        builder.Services.AddRouting(options =>
+        _ = builder.Services.AddRouting(options =>
         {
             options.LowercaseUrls = true;
         }); // omgf
         AppBuilderHelper.Configure(builder);
 
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
-        app.UseExceptionHandler(exceptionHandler =>
+        _ = app.UseExceptionHandler(exceptionHandler =>
         {
             exceptionHandler.Run(async context =>
             {
@@ -101,8 +103,8 @@ public class Program
 
                     ExceptionResponseData responseData = new()
                     {
-                        Data = exBase.Data,
-                        Message = exBase.Message,
+                        Data = exBase.ExceptionData,
+                        Message = exBase.HttpMessage,
                     };
 
                     await context.Response.WriteAsJsonAsync(responseData);
@@ -114,15 +116,15 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            _ = app.UseSwagger();
+            _ = app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        _ = app.UseHttpsRedirection();
 
-        app.UseAuthorization();
+        _ = app.UseAuthorization();
 
-        app.MapControllers();
+        _ = app.MapControllers();
 
         app.Run();
     }
@@ -130,23 +132,10 @@ public class Program
     // only in var is cannot be  implicitly changed
     public async Task SendEmailAsync()
     {
-        string senderEmail = "richerf3212@gmail.com";
-        string senderName;
-        string recipientEmail = "richerf3212@gmail.com";
-        string subject = "test";
-        string body = "<h1> test </h1>";
-        string clientId;
-        string clientSecret;
-        string refreshToken;
-
-
-
-
-        var secrets = new ClientSecrets
+        _ = new ClientSecrets
         {
             ClientId = Environment.GetEnvironmentVariable("GMailClientId"),
             ClientSecret = Environment.GetEnvironmentVariable("GMailClientSecret")
         };
     }
-
 }

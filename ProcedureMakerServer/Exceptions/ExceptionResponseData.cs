@@ -1,8 +1,6 @@
-﻿using Reinforced.Typings.Attributes;
+﻿namespace ProcedureMakerServer.Exceptions;
 
-namespace ProcedureMakerServer.Exceptions;
 
-[TsClass]
 public class ExceptionResponseData
 {
     public string Message { get; set; } = string.Empty;

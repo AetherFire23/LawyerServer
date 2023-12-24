@@ -45,10 +45,11 @@ public class TransmissionSlipFiller : DocumentFillerBase
             string iteratedEmailReplacer = $"notifiedEmail{IndexToLetter(i)}";
 
 
-            bool isAccessibleNotifiableMembers = i < caseDto.NotifiableMembers.Count;
+            bool isAccessibleNotifiableMembers = i < caseDto.GetNotifiableEmails().Count;
             if (isAccessibleNotifiableMembers)
             {
-                CasePart iteratedMember = caseDto.NotifiableMembers[i];
+                var iteratedMember = caseDto.GetNotifiableParticipants()[i];
+
                 keywordMap.Add((iteratedNotifiedIdentifier, iteratedMember.FirstName));
 
                 keywordMap.Add((iteratedEmailReplacer, iteratedMember.NotificationEmail));

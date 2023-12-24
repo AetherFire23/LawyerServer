@@ -7,40 +7,44 @@ using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 using ProcedureMakerServer.Interfaces;
 using ProcedureMakerServer.Models;
+using ProcedureMakerServer.Repository;
+using ProcedureMakerServer.Services;
 using System.Security.Claims;
 
-
 namespace ProcedureMakerServer.Controllers;
+
 [ApiController]
 [Route("[controller]")]
 public class CaseController : Controller
 {
-    private readonly ICaseContextService _caseContextService;
+    private readonly CaseContextService _caseContextService;
     private readonly ILawyerRepository _lawyerRepository;
     private readonly ProcedureContext _procedureContext;
-
-    public CaseController(ICaseContextService caseContextService,
-        ILawyerRepository lawyerRepository, ProcedureContext procedureContext)
+    private readonly ClientRepository _clientRepository;
+    private readonly CasesContextRepository _casesContextRepository;
+    public CaseController(CaseContextService caseContextService,
+                          ILawyerRepository lawyerRepository,
+                          ProcedureContext procedureContext,
+                          ClientRepository clientRepository,
+                          CasesContextRepository casesContextRepository)
     {
         _caseContextService = caseContextService;
         _lawyerRepository = lawyerRepository;
         _procedureContext = procedureContext;
+        _clientRepository = clientRepository;
+        _casesContextRepository = casesContextRepository;
     }
 
+    // Register lawyer
+    // Create Client
+    // Create Case (many cases for 1 client)
+    // Edit client, edit case
     // I wanna create 
-    [HttpPost(CasesEndpoints.CreateNewCase)]
-    public async Task<IActionResult> CreateCaseContext([FromBody] CaseCreationInfo caseInfo)
-    {
-        GetCaseResponse createdId = await _caseContextService.CreateNewCase(caseInfo);
-
-        return Ok(createdId);
-    }
 
     [HttpGet(CasesEndpoints.GetCasesContext)]
     [Authorize(Roles = nameof(RoleTypes.Normal))]
-    public async Task<IActionResult> GetCaseContext()
+    public async Task<ActionResult<CasesContext>> GetCaseContext()
     {
-
         Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
         Guid lawyerId = _procedureContext.Lawyers.First(x => x.UserId == userId).Id;
 
@@ -50,44 +54,72 @@ public class CaseController : Controller
         return Ok(caseContext);
     }
 
-    //[HttpGet("getcasestoken")]
-    //public async Task<IActionResult> GetCaseContext()
-    //{
-    //    Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-    //    Guid lawyerId = _procedureContext.Lawyers.First(x => x.UserId == userId).Id;
-
-    //    if (lawyerId.Equals(Guid.Empty)) throw new ArgumentInvalidException("lawyer id null");
-    //    CasesContext caseContext = await _caseContextService.GetCaseContext(lawyerId);
-    //    return Ok(caseContext);
-    //}
-
-    [HttpPut(CasesEndpoints.SaveContextDto)]
-    public async Task<IActionResult> ModifyCaseContext([FromBody] CaseDto caseDto)
+    [HttpPost("CreateNewCase")]
+    [Authorize(Roles = nameof(RoleTypes.Normal))]
+    public async Task<ActionResult<GetCaseResponse>> CreateNewCase([FromBody] CaseCreationInfo caseInfo)
     {
-        await _caseContextService.SaveCaseDto(caseDto);
+        Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        Guid lawyerId = _procedureContext.Lawyers.First(x => x.UserId == userId).Id;
+        GetCaseResponse createdId = await _caseContextService.CreateNewCase(lawyerId, caseInfo);
+
+        return Ok(createdId);
+    }
+
+
+
+    [HttpPut("savecase")]
+    public async Task<ActionResult> UpdateCasePrimitiveProperties([FromBody] CaseDto caseDto)
+    {
+        await _caseContextService.UpdateCasePrimitiveProps(caseDto);
         return Ok();
     }
 
-    [HttpPut("modifylawyer")]
-    public async Task<IActionResult> ModifyLawyer([FromBody] Lawyer lawyer)
+    [HttpPut("updatelawyer")]
+    public async Task<ActionResult> UpdateLawyer([FromBody] Lawyer lawyer)
     {
-        await _lawyerRepository.ModifyLawyer(lawyer);
+        await _lawyerRepository.UpdateLawyer(lawyer);
+        return Ok();
+    }
+
+    [HttpPut("addclient")]
+    public async Task<ActionResult> AddClient([FromBody] ClientDto newClient)
+    {
+        Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        Guid lawyerId = _procedureContext.Lawyers.First(x => x.UserId == userId).Id;
+        await _clientRepository.CreateClient(lawyerId, newClient);
+        return Ok();
+    }
+
+    [HttpGet("CreateCaseParticipant")]
+    [Authorize(Roles = nameof(RoleTypes.Normal))]
+    public async Task<ActionResult> CreateCaseParticipant([FromBody] CaseParticipantDto caseParticipant, [FromQuery] Guid caseId)
+    {
+        await _casesContextRepository.AddCaseParticipant(caseId, caseParticipant);
+        return Ok();
+    }
+
+
+    [HttpGet("UpdateCaseParticipant")]
+    [Authorize(Roles = nameof(RoleTypes.Normal))]
+    public async Task<ActionResult> UpdateCaseParticipant([FromBody] CaseParticipantDto caseParticipant)
+    {
+        await _casesContextRepository.UpdateCaseParticipant(caseParticipant);
         return Ok();
     }
 
     [HttpGet("authorizedrequest")]
     [Authorize(Roles = nameof(RoleTypes.Normal))]
-    public async Task<IActionResult> AuthorizedRequest()
+    public async Task<ActionResult> AuthorizedRequest()
     {
         return Ok();
     }
 
     [HttpGet("createcase4")]
-    public async Task<IActionResult> DoStuff()
+    public async Task<ActionResult<CasesContext>> DoStuff()
     {
-        var s2 = new List<CaseDto>();
+        List<CaseDto> s2 = new List<CaseDto>();
 
-        var context = new CasesContext()
+        CasesContext context = new CasesContext()
         {
             Cases = s2,
         };

@@ -1,8 +1,6 @@
-﻿using Reinforced.Typings.Attributes;
+﻿namespace ProcedureMakerServer.Authentication.AuthModels;
 
-namespace ProcedureMakerServer.Authentication.AuthModels;
 
-[TsInterface]
 public class LoginRequest
 {
     public string Username { get; set; } = string.Empty;

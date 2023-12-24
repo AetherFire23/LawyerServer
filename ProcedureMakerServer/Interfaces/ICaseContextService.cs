@@ -7,5 +7,5 @@ public interface ICaseContextService
 {
     Task<GetCaseResponse> CreateNewCase(CaseCreationInfo creationInfo);
     Task<CasesContext> GetCaseContext(Guid lawyerId);
-    Task SaveCaseDto(CaseDto caseDto);
+    Task UpdateCasePrimitiveProps(CaseDto caseDto);
 }
