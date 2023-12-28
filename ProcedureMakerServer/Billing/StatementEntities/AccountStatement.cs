@@ -6,21 +6,19 @@ namespace ProcedureMakerServer.Billing.StatementEntities;
 
 public partial class AccountStatement : EntityBase
 {
-    // doesnt like cascade or doesnt like non-null?
-    public Guid CaseId { set; get; }
-    public Case Case { get; set; }
+	// doesnt like cascade or doesnt like non-null?
+	public Guid CaseId { set; get; }
+	public Case Case { get; set; }
 
+	public virtual List<Invoice> Invoices { get; set; } = new List<Invoice>();
 
-    public virtual List<Invoice> Invoices { get; set; } = new List<Invoice>();
-
-    public Lawyer Lawyer => this.Case.ManagerLawyer;
-
+	public Lawyer Lawyer => this.Case.ManagerLawyer;
 }
 
 public class AccountStatementConfiguration : IEntityTypeConfiguration<AccountStatement>
 {
-    public void Configure(EntityTypeBuilder<AccountStatement> builder)
-    {
+	public void Configure(EntityTypeBuilder<AccountStatement> builder)
+	{
 
-    }
+	}
 }

@@ -3,5 +3,5 @@
 
 public class GetCaseResponse
 {
-    public Guid CreatedId { get; set; } = Guid.Empty;
+	public Guid CreatedId { get; set; } = Guid.Empty;
 }

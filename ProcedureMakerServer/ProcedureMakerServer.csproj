@@ -27,12 +27,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EFCoreBase\EFCoreBase.csproj" />
+    <ProjectReference Include="..\HtmlRenderFun\HtmlRenderFun.csproj" />
+    <ProjectReference Include="..\ProcedureShared\ProcedureShared.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="Billing\StatementDtos\" />
     <Folder Include="DocsTemplates\Temporary\" />
+    <Folder Include="HtmlToPdf\" />
     <Folder Include="Notifications\" />
   </ItemGroup>
 </Project>

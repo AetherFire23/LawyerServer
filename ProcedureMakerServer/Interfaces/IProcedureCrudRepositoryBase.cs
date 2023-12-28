@@ -5,6 +5,6 @@ using EFCoreBase.Interfaces;
 using ProcedureMakerServer;
 
 public interface IProcedureCrudRepositoryBase<T> : ICrudRepositoryBase<ProcedureContext, T>
-    where T : EntityBase
+	where T : EntityBase
 {
 }

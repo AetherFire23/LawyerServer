@@ -13,7 +13,7 @@ internal class InvoiceTester
 	{
 		var lcaseCtx = await _caller.GetcasescontextAsync();
 
-		var lcase = lcaseCtx.Cases.FirstOrDefault();
+		var lcase = lcaseCtx.GetFirstCase();
 
 		await _caller.CreateinvoiceAsync(lcase.Id);
 		await _caller.CreateinvoiceAsync(lcase.Id);
@@ -22,7 +22,7 @@ internal class InvoiceTester
 	public async Task TestUpdateInvoice()
 	{
 		var lcaseCtx = await _caller.GetcasescontextAsync();
-		var invoice = lcaseCtx.Cases.First().Invoices.First();
+		var invoice = lcaseCtx.GetFirstCase().Invoices.First();
 
 		invoice.InvoiceStatus = InvoiceStatuses.Paid;
 
@@ -32,7 +32,7 @@ internal class InvoiceTester
 	public async Task RemoveInvoice()
 	{
 		var lcaseCtx = await _caller.GetcasescontextAsync();
-		var invoice = lcaseCtx.Cases.First().Invoices.First();
+		var invoice = lcaseCtx.GetFirstCase().Invoices.First();
 
 
 		await _caller.ArchiveinvoiceAsync(invoice.Id);
@@ -41,7 +41,7 @@ internal class InvoiceTester
 	public async Task DeleteInvoice()
 	{
 		var lcaseCtx = await _caller.GetcasescontextAsync();
-		var invoice = lcaseCtx.Cases.First().Invoices.First();
+		var invoice = lcaseCtx.GetFirstCase().Invoices.First();
 
 		invoice.InvoiceStatus = InvoiceStatuses.Paid;
 
@@ -52,7 +52,7 @@ internal class InvoiceTester
 	{
 		var lcaseCtx = await _caller.GetcasescontextAsync();
 
-		var lcase = lcaseCtx.Cases.First();
+		var lcase = lcaseCtx.GetFirstCase();
 		var invoice = lcase.Invoices.First();
 
 		var activity = new ActivityDto
@@ -95,7 +95,7 @@ internal class InvoiceTester
 	{
 		var lcaseCtx = await _caller.GetcasescontextAsync();
 
-		var lcase = lcaseCtx.Cases.First();
+		var lcase = lcaseCtx.GetFirstCase();
 		var activity = lcase.Invoices.First().Activities.First();
 		activity.Quantity = 420;
 
@@ -105,7 +105,7 @@ internal class InvoiceTester
 	public async Task RemoveActivity()
 	{
 		var lcaseCtx = await _caller.GetcasescontextAsync();
-		var activityId = lcaseCtx.Cases.First().Invoices.First().Activities.First().Id;
+		var activityId = lcaseCtx.GetFirstCase().Invoices.First().Activities.First().Id;
 		await _caller.RemoveactivityAsync(activityId);
 	}
 
@@ -163,7 +163,7 @@ internal class InvoiceTester
 	public async Task RemoveInvoicePayment()
 	{
 		var lcaseCtx = await _caller.GetcasescontextAsync();
-		var payment = lcaseCtx.Cases.First().Invoices.First().Payments.First();
+		var payment = lcaseCtx.GetFirstCase().Invoices.First().Payments.First();
 
 		await _caller.RemoveinvoicepaymentAsync(payment.Id);
 	}

@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EFCoreBase\EFCoreBase.csproj" />
-    <ProjectReference Include="..\ProcedureMakerServer\ProcedureMakerServer.csproj" />
+    <ProjectReference Include="..\ProcedureShared\ProcedureShared.csproj" />
   </ItemGroup>
 
 </Project>

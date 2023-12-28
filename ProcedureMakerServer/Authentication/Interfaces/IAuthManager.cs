@@ -5,7 +5,7 @@ namespace ProcedureMakerServer.Authentication.Interfaces;
 
 public interface IAuthManager
 {
-    Task<LoginResult> GenerateTokenIfCorrectCredentials(LoginRequest loginRequest);
+	Task<LoginResult> GenerateTokenIfCorrectCredentials(LoginRequest loginRequest);
 
-    Task TryRegister(RegisterRequest registerRequest);
+	Task TryRegister(RegisterRequest registerRequest);
 }

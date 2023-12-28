@@ -1,14 +1,16 @@
-﻿namespace ProcedureMakerServer.Authentication.ReturnModels;
+﻿using ProcedureShared.Authentication;
+
+namespace ProcedureMakerServer.Authentication.ReturnModels;
 
 
 
 
 public class RegisterResult
 {
-    public UserDto User { get; set; }
+	public UserDto User { get; set; }
 
-    public RegisterResult(UserDto user)
-    {
-        User = user;
-    }
+	public RegisterResult(UserDto user)
+	{
+		User = user;
+	}
 }

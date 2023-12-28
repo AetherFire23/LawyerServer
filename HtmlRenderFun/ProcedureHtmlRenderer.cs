@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Billing.StatementDtos;
-using ProcedureMakerServer.Dtos;
-using System.Runtime.InteropServices.Marshalling;
+using ProcedureShared.Dtos;
 namespace HtmlRenderFun;
 
 
@@ -42,13 +42,13 @@ public static class RendererServices
 public class ProcedureHtmlRenderer // technically teh renderer could be in another project hehe 
 {
 	/// <returns> Html as string </returns>
-	public async Task<string> RenderInvoiceToHtml(CaseDto caseDto, InvoiceDto invoice)
+	public async Task<string> RenderInvoiceToHtml(InvoiceSummary invoiceSummary)
 	{
 		var parameters = new Dictionary<string, object?>()
 		{
-			{ nameof(Component1.CaseDto), caseDto },
-			{ nameof(Component1.InvoiceDto), invoice },
+			{ nameof(Component1.InvoiceSummary), invoiceSummary },
 		};
+
 		var html = await RendererServices.RenderView<Component1>(parameters);
 		return html;
 	}

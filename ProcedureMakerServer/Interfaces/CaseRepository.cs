@@ -1,7 +1,4 @@
-﻿using EFCoreBase.Entities;
-using ProcedureMakerServer.Dtos;
-
-namespace ProcedureMakerServer.Interfaces;
+﻿namespace ProcedureMakerServer.Interfaces;
 
 //public interface CaseRepository : IProcedureCrudRepositoryBase<Case>
 //{

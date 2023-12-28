@@ -5,10 +5,10 @@ namespace ProcedureMakerServer.Exceptions.HttpResponseExceptions;
 
 public class InvalidTokenException : HttpExceptionBase
 {
-    public override HttpStatusCode StatusCode { get; set; } = HttpStatusCode.BadRequest;
+	public override HttpStatusCode StatusCode { get; set; } = HttpStatusCode.BadRequest;
 
-    public InvalidTokenException()
-    {
-        base.HttpMessage = "The provided token was invalid";
-    }
+	public InvalidTokenException()
+	{
+		base.HttpMessage = "The provided token was invalid";
+	}
 }

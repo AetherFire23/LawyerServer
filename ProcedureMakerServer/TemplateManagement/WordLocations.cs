@@ -5,5 +5,5 @@ namespace ProcedureMakerServer.TemplateManagement;
 public class WordLocations
 {
 
-    public static Dictionary<WordprocessingDocument, string> wordPathMap = new Dictionary<WordprocessingDocument, string>();
+	public static Dictionary<WordprocessingDocument, string> wordPathMap = new Dictionary<WordprocessingDocument, string>();
 }

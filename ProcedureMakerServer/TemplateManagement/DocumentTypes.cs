@@ -2,10 +2,10 @@
 
 public enum DocumentTypes
 {
-    Backing,
-    TransmissionSlip,
-    ProofOfNotification,
-    PresentationNotice,
+	Backing,
+	TransmissionSlip,
+	ProofOfNotification,
+	PresentationNotice,
 
 
 }

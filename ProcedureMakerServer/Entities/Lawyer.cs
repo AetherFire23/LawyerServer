@@ -3,13 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Billing.StatementEntities;
-using ProcedureMakerServer.Entities.BaseEntities;
+using ProcedureShared.Entities.BaseEntities;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ProcedureMakerServer.Entities;
-
-
 
 public class Lawyer : CourtMemberBase
 {

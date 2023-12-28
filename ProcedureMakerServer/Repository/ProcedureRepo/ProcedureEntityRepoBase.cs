@@ -5,12 +5,12 @@ using EFCoreBase.Repositories;
 namespace ProcedureMakerServer.Repository.ProcedureRepo;
 
 public class ProcedureEntityRepoBase<T> : EntityRepositoryBase<ProcedureContext, T>
-    where T : EntityBase
+	where T : EntityBase
 {
-    public readonly IMapper Mapper;
+	public readonly IMapper Mapper;
 
-    public ProcedureEntityRepoBase(IMapper mapper, ProcedureContext context) : base(context)
-    {
-        Mapper = mapper;
-    }
+	public ProcedureEntityRepoBase(IMapper mapper, ProcedureContext context) : base(context)
+	{
+		Mapper = mapper;
+	}
 }

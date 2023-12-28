@@ -3,5 +3,5 @@
 
 public class MyOtherClass
 {
-    public string Caca { get; set; }
+	public string Caca { get; set; }
 }

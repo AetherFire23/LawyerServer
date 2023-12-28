@@ -4,5 +4,5 @@ namespace ProcedureMakerServer.Interfaces;
 
 public interface IClientRepository : IProcedureCrudRepositoryBase<Client>
 {
-    Task UpdateClient(Client client);
+	Task UpdateClient(Client client);
 }

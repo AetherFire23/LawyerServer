@@ -1,11 +1,10 @@
-﻿using DocumentFormat.OpenXml.Office2010.Drawing;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Billing.InvoiceDtos;
 using ProcedureMakerServer.Billing.Services;
 using ProcedureMakerServer.Billing.StatementDtos;
-using ProcedureMakerServer.Billing.StatementEntities;
 using ProcedureMakerServer.Trusts;
+using ProcedureShared.Dtos;
 namespace ProcedureMakerServer.Controllers;
 
 [ApiController]
@@ -151,6 +150,8 @@ public class InvoiceController : Controller
 	[HttpGet("GetInvoice")]
 	public async Task<ActionResult> DownloadInvoice(Guid invoiceId)
 	{
+		string path = await _invoiceRepository.GetInvoicePdf(invoiceId);
 
+		return Ok();
 	}
 }

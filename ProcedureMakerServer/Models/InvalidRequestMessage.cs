@@ -4,10 +4,10 @@ namespace ProcedureMakerServer.Models;
 
 public class InvalidRequestMessage : IMessageResult
 {
-    public string Message { get; set; } = string.Empty;
+	public string Message { get; set; } = string.Empty;
 
-    public InvalidRequestMessage(string message)
-    {
-        Message = message;
-    }
+	public InvalidRequestMessage(string message)
+	{
+		Message = message;
+	}
 }

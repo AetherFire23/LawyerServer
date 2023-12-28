@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EFCoreBase.Utils;
+using HtmlRenderFun;
 using Microsoft.EntityFrameworkCore;
 using ProcedureMakerServer.Billing.InvoiceDtos;
 using ProcedureMakerServer.Billing.StatementDtos;
@@ -7,18 +8,21 @@ using ProcedureMakerServer.Billing.StatementEntities;
 using ProcedureMakerServer.Constants;
 using ProcedureMakerServer.Repository;
 using ProcedureMakerServer.Repository.ProcedureRepo;
+using ProcedureShared.Dtos;
 
 namespace ProcedureMakerServer.Billing.Services;
 
 public class InvoiceRepository : ProcedureRepositoryContextBase
 {
 	private AccountStatementRepository _accountStatementRepository;
-	private readonly CasesContextRepository _caseRepository;
+	private readonly CaseContextRepository _caseRepository;
+	private readonly ProcedureHtmlRenderer _procedureHtmlRenderer;
 
-	public InvoiceRepository(IMapper mapper, ProcedureContext context, AccountStatementRepository accountStatemetnRepo, CasesContextRepository caseRepository) : base(mapper, context)
+	public InvoiceRepository(IMapper mapper, ProcedureContext context, AccountStatementRepository accountStatemetnRepo, CaseContextRepository caseRepository, ProcedureHtmlRenderer procedureHtmlRenderer) : base(mapper, context)
 	{
 		_accountStatementRepository = accountStatemetnRepo;
 		_caseRepository = caseRepository;
+		_procedureHtmlRenderer = procedureHtmlRenderer;
 	}
 
 	public async Task CreateInvoice(Guid caseId)
@@ -187,10 +191,17 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
 		Context.BillingElements.Remove(billingElement);
 	}
 
-	public async Task GetInvoicePdf(Guid invoiceId)
+
+	/// <returns> Path to the pdf files :) </returns>
+	public async Task<string> GetInvoicePdf(Guid invoiceId)
 	{
 		var invoiceSummary = await GetInvoiceSummary(invoiceId);
-		string invoiceHtml = await ProcedureHtmlRenderer
+		var html = await _procedureHtmlRenderer.RenderInvoiceToHtml(invoiceSummary);
+
+		string randomFilePath = Path.Combine(ConstantPaths.TemporaryFilesPath, $"{Guid.NewGuid()}.html");
+
+
+		return string.Empty;
 	}
 
 	public async Task<InvoiceSummary> GetInvoiceSummary(Guid invoiceId)
