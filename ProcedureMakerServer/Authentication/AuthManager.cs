@@ -10,11 +10,11 @@ namespace ProcedureMakerServer.Authentication;
 
 public class AuthManager : IAuthManager
 {
-    private readonly IUserRepository _userRepository;
+    private readonly UserRepository _userRepository;
     private readonly IJwtTokenManager _jwtTokenManager;
     private readonly ProcedureContext _context;
 
-    public AuthManager(IUserRepository userRepository,
+    public AuthManager(UserRepository userRepository,
                        IJwtTokenManager jwtTokenManager,
                        ProcedureContext context)
     {

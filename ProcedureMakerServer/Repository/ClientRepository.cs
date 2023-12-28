@@ -9,9 +9,12 @@ namespace ProcedureMakerServer.Repository;
 
 public class ClientRepository : ProcedureCrudBase<Client>
 {
-    public ClientRepository(ProcedureContext context, IMapper mapper) : base(context, mapper)
+    private readonly CaseRepository _caseRepository;
+    private readonly TrustRepository _trustRepository;
+    public ClientRepository(ProcedureContext context, IMapper mapper, CaseRepository caseRepository, TrustRepository trustRepository) : base(context, mapper)
     {
-
+        _caseRepository = caseRepository;
+        _trustRepository = trustRepository;
     }
 
     public async Task CreateClient(Guid lawyerId, ClientDto clientDto)
@@ -52,6 +55,36 @@ public class ClientRepository : ProcedureCrudBase<Client>
 
         Context.Clients.Remove(client);
         await Context.SaveChangesAsync();
+    }
+
+    public async Task<List<ClientDto>> MapClientDtos(List<Client> clients)
+    {
+        var clientDtos = new List<ClientDto>();
+
+        foreach (var client in clients)
+        {
+            var clientDto = await MapClientDto(client.Id);
+            clientDtos.Add(clientDto);
+        }
+        return clientDtos;
+    }
+    public async Task<ClientDto> MapClientDto(Guid clientId)
+    {
+        var client = await Context.Clients
+            .Include(x => x.Cases)
+            .FirstAsync(x => x.Id == clientId);
+
+
+        var caseDtos = await _caseRepository.MapCaseDtos(client.Cases.Select(x => x.Id));
+        var trustClientCardDto = await _trustRepository.ConstrustTrustClientCard(clientId);
+        var clientDto = new ClientDto
+        {
+            Cases = caseDtos,
+            TrustClientCard = trustClientCardDto,
+        };
+        clientDto.CopyFromCourtMember(client);
+
+        return clientDto;
     }
 
     /// <summary> trust is created when client is created. Returns the created trust as tracked  </summary>

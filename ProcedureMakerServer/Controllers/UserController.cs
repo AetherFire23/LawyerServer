@@ -15,11 +15,11 @@ namespace ProcedureMakerServer.Controllers;
 public class UserController : Controller
 {
     private readonly IAuthManager _authManager;
-    private readonly IUserRepository _userRepository;
+    private readonly UserRepository _userRepository;
     private readonly IJwtTokenManager _JwtTokenManager;
 
     public UserController(IAuthManager authManager,
-                          IUserRepository userRepository,
+                          UserRepository userRepository,
                           IJwtTokenManager jwtTokenManager)
     {
         _authManager = authManager;

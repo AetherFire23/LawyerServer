@@ -46,13 +46,13 @@ public class InvoicePayment : EntityBase
     /// Trust disburses are mapped to invoice payments. Therefore a trust disburse is nothing but an invoicepayment with a IsTrustDisburse. 
     /// But we are creating this distinction for the client-side for clarity sake.
     /// </summary>
-    public TrustDisburseDto ToTrustDisburseDto()
+    public TrustWithdrawDto ToTrustDisburseDto()
     {
         // TODO: 
         // specifiy for which account / case / invoice this was paid for so that we can log it
-        var trustDisburse = new TrustDisburseDto
+        var trustDisburse = new TrustWithdrawDto
         {
-            AmountPaid = this.AmountPaid,
+            Amount = this.AmountPaid,
             Date = DateTime.UtcNow,
             Id = this.Id,
         };

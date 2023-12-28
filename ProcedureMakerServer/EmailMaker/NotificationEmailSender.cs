@@ -55,6 +55,7 @@ public class NotificationEmailSender
     private void ConfigureEmailHeaders(MimeMessage mimeMessage, EmailCredentials credentials, SendEmailInfo sendEmailInfo)
     {
         mimeMessage.From.Add(MailboxAddress.Parse(credentials.Email));
+        mimeMessage.AddTos(sendEmailInfo.Tos);
         mimeMessage.AddCc(sendEmailInfo.Cc);
         mimeMessage.AddBcc(sendEmailInfo.Bccs);
         mimeMessage.Subject = sendEmailInfo.Subject;

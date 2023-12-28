@@ -37,6 +37,7 @@ public abstract class CourtMemberBase : PersonBase
 
     public void CopyFromCourtMember(CourtMemberBase other)
     {
+        this.Id = other.Id;
         // Copy properties individually
         this.FirstName = other.FirstName;
         this.LastName = other.LastName;
@@ -58,6 +59,7 @@ public abstract class CourtMemberBase : PersonBase
         // Additional properties specific to CourtMemberBase
         this.NotificationEmail = other.NotificationEmail;
         this.CourtRole = other.CourtRole;
+        this.MustNotify = other.MustNotify;
     }
 
 }

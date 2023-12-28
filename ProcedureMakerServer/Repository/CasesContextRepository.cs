@@ -1,83 +1,92 @@
 ﻿using EFCoreBase.Entities;
 using EFCoreBase.Utils;
 using Microsoft.EntityFrameworkCore;
+using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Dtos;
 using ProcedureMakerServer.Entities;
-using ProcedureMakerServer.Interfaces;
-
 namespace ProcedureMakerServer.Repository;
 
 public class CasesContextRepository
 {
-    private readonly CaseRepository _caseRepository;
-    private readonly ILawyerRepository _lawyerRepository;
-    private readonly ProcedureContext _context;
-    public CasesContextRepository(
-        CaseRepository caseRepository,
-        ILawyerRepository lawyerRepository,
-        ProcedureContext context)
-    {
-        _caseRepository = caseRepository;
-        _lawyerRepository = lawyerRepository;
-        _context = context;
-    }
+	private readonly CaseRepository _caseRepository;
+	private readonly LawyerRepository _lawyerRepository;
+	private readonly ProcedureContext _context;
+	private readonly ClientRepository _clientRepository;
+	private readonly UserRepository _userRepository;
+	public CasesContextRepository(
+		CaseRepository caseRepository,
+		LawyerRepository lawyerRepository,
+		ProcedureContext context,
+		ClientRepository clientRepository,
+		UserRepository userRepository)
+	{
+		_caseRepository = caseRepository;
+		_lawyerRepository = lawyerRepository;
+		_context = context;
+		_clientRepository = clientRepository;
+		_userRepository = userRepository;
+	}
 
-    public async Task<CasesContext> MapCasesContext(Guid lawyerId)
-    {
-        var lawyer = await _lawyerRepository.GetEntityById(lawyerId);
-        var cases = await MapCasesDtos(lawyer);
+	public async Task<CaseContextDto> MapCasesContext(Guid lawyerId)
+	{
+		var lawyer = await _lawyerRepository.GetEntityById(lawyerId);
+		var cases = await MapCasesDtos(lawyer);
+		var lawyerDto = await _lawyerRepository.MapLawyerDto(lawyerId);
+		var clientDtos = await _clientRepository.MapClientDtos(lawyer.Clients.ToList());
+		var userDto = await _userRepository.MapUserDto(lawyer.UserId);
 
-        var context = new CasesContext
-        {
-            Cases = cases,
-            Lawyer = lawyer,
-        };
+		var context = new CaseContextDto
+		{
+			Cases = cases,
+			Lawyer = lawyerDto,
+			Clients = clientDtos,
+			User = userDto,
+		};
 
-        return context;
-    }
+		return context;
+	}
 
-    private async Task<List<CaseDto>> MapCasesDtos(Lawyer lawyer)
-    {
-        var cases = new List<CaseDto>();
-        foreach (Case c in lawyer.Cases)
-        {
-            cases.Add(await _caseRepository.MapCaseDto(c.Id));
-        }
+	private async Task<List<CaseDto>> MapCasesDtos(Lawyer lawyer)
+	{
+		var cases = new List<CaseDto>();
+		foreach (Case c in lawyer.Cases)
+		{
+			cases.Add(await _caseRepository.MapCaseDto(c.Id));
+		}
+		return cases;
+	}
 
-        return cases;
-    }
+	public async Task AddCaseParticipant(Guid caseId, CaseParticipantDto updatedCaseParticipantDto)
+	{
+		var lcase = await _context.Cases.FirstAsync(c => c.Id == caseId);
 
-    public async Task AddCaseParticipant(Guid caseId, CaseParticipantDto updatedCaseParticipantDto)
-    {
-        var lcase = await _context.Cases.FirstAsync(c=> c.Id == caseId);
+		var caseParticipant = new CaseParticipant()
+		{
+			Id = updatedCaseParticipantDto.GenerateIdIfNull(),
+			Case = lcase,
+		};
 
-        var caseParticipant = new CaseParticipant()
-        {
-            Id = updatedCaseParticipantDto.GenerateIdIfNull(),
-            Case = lcase,
-        };
+		caseParticipant.CopyFromCourtMember(updatedCaseParticipantDto);
 
-        updatedCaseParticipantDto.CopyFromCourtMember(caseParticipant);
+		_context.CaseParticipants.Add(caseParticipant);
 
-        _context.CaseParticipants.Add(caseParticipant);
+		await _context.SaveChangesAsync();
+	}
 
-        await _context.SaveChangesAsync();
-    }
+	public async Task UpdateCaseParticipant(CaseParticipantDto updatedCaseParticipant)
+	{
+		//var caseParticipant = await _context.CaseParticipants.FirstByIdAsync(updatedCaseParticipant.Id);
+		var caseParticipant = await _context.CaseParticipants.FirstAsync(x => x.Id == updatedCaseParticipant.Id);
 
-    public async Task UpdateCaseParticipant(CaseParticipantDto updatedCaseParticipant)
-    {
-        //var caseParticipant = await _context.CaseParticipants.FirstByIdAsync(updatedCaseParticipant.Id);
-        var caseParticipant = await _context.CaseParticipants.FirstAsync(x=> x.Id == updatedCaseParticipant.Id);
+		caseParticipant.CopyFromCourtMember(caseParticipant);
+		await _context.SaveChangesAsync();
+	}
 
-        caseParticipant.CopyFromCourtMember(caseParticipant);
-        await _context.SaveChangesAsync();
-    }
+	public async Task RemoveCaseParticipant(Guid caseParticipantId)
+	{
+		var caseParticipant = await _context.CaseParticipants.FirstByIdAsync(caseParticipantId);
 
-    public async Task RemoveCaseParticipant(Guid caseParticipantId)
-    {
-        var caseParticipant = await _context.CaseParticipants.FirstByIdAsync(caseParticipantId);
-
-        _context.CaseParticipants.Remove(caseParticipant);
-        await _context.SaveChangesAsync();
-    }
+		_context.CaseParticipants.Remove(caseParticipant);
+		await _context.SaveChangesAsync();
+	}
 }

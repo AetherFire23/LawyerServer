@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCoreBase", "EFCoreBase\EF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestTester", "RequestTester\RequestTester.csproj", "{88F6756C-701A-4CF5-8FF6-375955F05CAE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlRenderFun", "HtmlRenderFun\HtmlRenderFun.csproj", "{A918E331-C2C2-497C-8C09-A563EF679F40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{88F6756C-701A-4CF5-8FF6-375955F05CAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88F6756C-701A-4CF5-8FF6-375955F05CAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88F6756C-701A-4CF5-8FF6-375955F05CAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A918E331-C2C2-497C-8C09-A563EF679F40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A918E331-C2C2-497C-8C09-A563EF679F40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A918E331-C2C2-497C-8C09-A563EF679F40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A918E331-C2C2-497C-8C09-A563EF679F40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

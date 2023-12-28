@@ -18,12 +18,12 @@ namespace ProcedureMakerServer.Controllers;
 public class CaseController : Controller
 {
     private readonly CaseContextService _caseContextService;
-    private readonly ILawyerRepository _lawyerRepository;
+    private readonly LawyerRepository _lawyerRepository;
     private readonly ProcedureContext _procedureContext;
     private readonly ClientRepository _clientRepository;
     private readonly CasesContextRepository _casesContextRepository;
     public CaseController(CaseContextService caseContextService,
-                          ILawyerRepository lawyerRepository,
+                          LawyerRepository lawyerRepository,
                           ProcedureContext procedureContext,
                           ClientRepository clientRepository,
                           CasesContextRepository casesContextRepository)
@@ -43,13 +43,13 @@ public class CaseController : Controller
 
     [HttpGet(CasesEndpoints.GetCasesContext)]
     [Authorize(Roles = nameof(RoleTypes.Normal))]
-    public async Task<ActionResult<CasesContext>> GetCaseContext()
+    public async Task<ActionResult<CaseContextDto>> GetCaseContext()
     {
         Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
         Guid lawyerId = _procedureContext.Lawyers.First(x => x.UserId == userId).Id;
 
         if (lawyerId.Equals(Guid.Empty)) throw new ArgumentInvalidException("lawyer id null");
-        CasesContext caseContext = await _caseContextService.GetCaseContext(lawyerId);
+        CaseContextDto caseContext = await _caseContextService.GetCaseContext(lawyerId);
         Console.WriteLine("case hit");
         return Ok(caseContext);
     }
@@ -75,7 +75,7 @@ public class CaseController : Controller
     }
 
     [HttpPut("updatelawyer")]
-    public async Task<ActionResult> UpdateLawyer([FromBody] Lawyer lawyer)
+    public async Task<ActionResult> UpdateLawyer([FromBody] LawyerDto lawyer)
     {
         await _lawyerRepository.UpdateLawyer(lawyer);
         return Ok();
@@ -98,12 +98,19 @@ public class CaseController : Controller
         return Ok();
     }
 
-
     [HttpGet("UpdateCaseParticipant")]
     [Authorize(Roles = nameof(RoleTypes.Normal))]
     public async Task<ActionResult> UpdateCaseParticipant([FromBody] CaseParticipantDto caseParticipant)
     {
         await _casesContextRepository.UpdateCaseParticipant(caseParticipant);
+        return Ok();
+    }
+
+    [HttpDelete("RemoveCaseParticipant")]
+    [Authorize(Roles = nameof(RoleTypes.Normal))]
+    public async Task<ActionResult> RemoveCaseParticipant([FromBody] Guid caseParticipantId)
+    {
+        await _casesContextRepository.RemoveCaseParticipant(caseParticipantId);
         return Ok();
     }
 
@@ -115,11 +122,11 @@ public class CaseController : Controller
     }
 
     [HttpGet("createcase4")]
-    public async Task<ActionResult<CasesContext>> DoStuff()
+    public async Task<ActionResult<CaseContextDto>> DoStuff()
     {
         List<CaseDto> s2 = new List<CaseDto>();
 
-        CasesContext context = new CasesContext()
+        CaseContextDto context = new CaseContextDto()
         {
             Cases = s2,
         };

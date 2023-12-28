@@ -1,5 +1,6 @@
 ﻿using EFCoreBase.Entities;
 using Newtonsoft.Json;
+using ProcedureMakerServer.Billing.StatementDtos;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Entities.BaseEntities;
 using ProcedureMakerServer.Enums;
@@ -10,17 +11,10 @@ public class CaseDto : EntityBase
     public Lawyer ManagerLawyer { get; set; }
     public Client Client { get; set; }
     public List<CaseParticipantDto> Participants { get; set; } = new List<CaseParticipantDto>();
+    public CourtMemberBase Defender { get; set; }
+    public CourtMemberBase Plaintiff { get; set; }
+    public List<InvoiceDto> Invoices { get; set; } = new List<InvoiceDto>();
 
-    // theoretically it should be by alphabetical order then 
-
-
-    [JsonIgnore]
-    public CourtMemberBase? Plaintiff => GetPlaintiffAndDefender().p;
-
-    [JsonIgnore]
-    public CourtMemberBase? Defender => GetPlaintiffAndDefender().d;
-
-    //public List<CaseParticipant> NotifiableMembers => Participants.Where(x => x.IsNotifiable).ToList();
 
     public string DistrictName { get; set; } = string.Empty;
     public string CourtAffairNumber { get; set; } = string.Empty;
@@ -41,6 +35,7 @@ public class CaseDto : EntityBase
             .Where(x => x.NotificationEmail != string.Empty)
             .Where(x => x.MustNotify)
             .ToList();
+
         return participants;
     }
 
@@ -55,7 +50,7 @@ public class CaseDto : EntityBase
 
     // grosse note : quand y va avoir des defenderesses en garantie n shit y va y en avoir plusieurs....
     // va devenir complique de toute demele et faut jpose des questions
-    public (CourtMemberBase? p, CourtMemberBase? d) GetPlaintiffAndDefender() 
+    public (CourtMemberBase? p, CourtMemberBase? d) GetPlaintiffAndDefender()
     {
         if (Client.CourtRole is CourtRoles.Plaintiff)
         {

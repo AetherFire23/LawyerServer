@@ -1,13 +1,14 @@
 ﻿using ProcedureMakerServer.Interfaces;
+using ProcedureMakerServer.Repository;
 
 namespace ProcedureMakerServer.Services;
 
 public class LawyerService : ILawyerService
 {
 
-    private readonly ILawyerRepository _lawyerRepository;
+    private readonly LawyerRepository _lawyerRepository;
 
-    public LawyerService(ILawyerRepository lawyerRepository)
+    public LawyerService(LawyerRepository lawyerRepository)
     {
         _lawyerRepository = lawyerRepository;
     }

@@ -25,7 +25,7 @@ public class TransmissionSlipFiller : DocumentFillerBase
         keywordMap.Add(("dayMonthYear", DateTime.Now.ToString("dd/MMMM/yyyy", fr)));
 
 
-        keywordMap.Add(("lawyerName", caseDto.Client.FirstName));
+        keywordMap.Add(("lawyerName", caseDto.ManagerLawyer.FullName));
         keywordMap.Add(("lawyerFileNumber", caseDto.CaseNumber));
         keywordMap.Add(("lawyerEmail", caseDto.ManagerLawyer.Email));
         keywordMap.Add(("lawyerNotificationEmail", caseDto.ManagerLawyer.NotificationEmail));

@@ -13,5 +13,4 @@ public partial class Invoice : EntityBase
 
     public ICollection<Activity> Activities { get; set; } = new List<Activity>();
     public ICollection<InvoicePayment> Payments { get; set; } = new List<InvoicePayment>();
-
 }

@@ -3,18 +3,17 @@ using ProcedureMakerServer.EmailMaker;
 using ProcedureMakerServer.Repository;
 using ProcedureMakerServer.Scratches;
 using ProcedureMakerServer.TemplateManagement;
-using ProcedureMakerServer.TemplateManagement.PdfManagement;
 using ProcedureMakerServer.Utils;
 
 namespace ProcedureMakerServer.Services;
 
 public class NotificationService
 {
-    private readonly DocumentMaker _documentMaker;
+    private readonly DocumentMakerService _documentMaker;
     private readonly CaseRepository _caseRepository;
     private readonly NotificationEmailSender _notificationEmailSender;
 
-    public NotificationService(DocumentMaker documentMaker, NotificationEmailSender notificationEmailSender, CaseRepository caseRepository)
+    public NotificationService(DocumentMakerService documentMaker, NotificationEmailSender notificationEmailSender, CaseRepository caseRepository)
     {
         _documentMaker = documentMaker;
         _notificationEmailSender = notificationEmailSender;
@@ -23,13 +22,16 @@ public class NotificationService
 
     public async Task<string> SendNotificationWithPdfOnly(IFormFile formFile, Guid caseId, string documentName)
     {
-        string pdfDocumentPath = await CopyFormFileToDisk(formFile);
+        // validate at least that defender and plaintiff exist
         var caseDto = await _caseRepository.MapCaseDto(caseId);
+        if (caseDto.Plaintiff is null || caseDto.Defender is null) throw new Exception();
+
+        string pdfDocumentPath = await CopyFormFileToDisk(formFile);
 
         var credentials = new EmailCredentials() // will put that into appsettings for the app email 
         {
-            Email = "sakamafaka@gmail.com", // mon email 
-            AppPassword = MyPassword.Pass,
+            Email = "richerf3212@gmail.com", // mon email 
+            AppPassword = "tbul xjhr odgm wppq",
         };
 
         var sendEmailInfo = await PrepareEmailInfo(caseDto, credentials, pdfDocumentPath, documentName);
@@ -54,9 +56,7 @@ public class NotificationService
         return randomFilePath;
     }
 
-    // I Should be able to Save the defaultCCs I guess
-    // no Bccs either rn 
-    async Task<SendEmailInfo> PrepareEmailInfo(CaseDto caseDto, EmailCredentials emailCredentials, string pdfDocumentPath, string documentName) // could be a list one day
+    private async Task<SendEmailInfo> PrepareEmailInfo(CaseDto caseDto, EmailCredentials emailCredentials, string pdfDocumentPath, string documentName) // could be a list one day
     {
         var sendingInfo = new SendEmailInfo();
         sendingInfo.Subject = await _documentMaker.GenerateNotificationSubject(caseDto);

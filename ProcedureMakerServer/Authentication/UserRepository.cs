@@ -7,7 +7,7 @@ using ProcedureMakerServer.Repository.ProcedureRepo;
 
 namespace ProcedureMakerServer.Authentication;
 
-public class UserRepository : ProcedureEntityRepoBase<User>, IUserRepository
+public class UserRepository : ProcedureEntityRepoBase<User>
 {
     public UserRepository(IMapper mapper, ProcedureContext context) : base(mapper, context)
     {

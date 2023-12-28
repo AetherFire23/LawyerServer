@@ -5,6 +5,7 @@ using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Exceptions;
 using ProcedureMakerServer.Initialization;
 using ProcedureMakerServer.Scratches;
+using ProcedureMakerServer.TemplateManagement;
 
 namespace ProcedureMakerServer;
 
@@ -60,6 +61,7 @@ public class Program
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+
         _ = builder.Services.AddControllers()
             .AddNewtonsoftJson(options =>
             {
@@ -75,6 +77,8 @@ public class Program
             //c.UseInlineDefinitionsForEnums();
             //    c.DescribeAllEnumsAsStrings(); // this will do the trick
         });
+
+        builder.Services.InitializeAndRegisterDocumentFillers();
 
         builder.ConfigureJwt();
 

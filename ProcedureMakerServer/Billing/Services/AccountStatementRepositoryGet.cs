@@ -64,15 +64,42 @@ public partial class AccountStatementRepository : ProcedureRepositoryContextBase
     {
         var activitiesDto = await MapActivitiesDto(invoice.Id);
         var payments = await MapPaymentsDto(invoice.Id);
+        var availableBillingElements = await MapAvailableBillingElementsForInvoice(invoice.Id);
+
         var invoiceDto = new InvoiceDto()
         {
             Activities = activitiesDto.ToList(),
             InvoiceStatus = invoice.InvoiceStatus,
             Payments = payments.ToList(),
             Id = invoice.Id,
+            AvailableBillingElementsForInvoice = availableBillingElements,
         };
+
         return invoiceDto;
     }
+
+    private async Task<List<BillingElementDto>> MapAvailableBillingElementsForInvoice(Guid invoiceId)
+    {
+        Guid lawyerId = await FindLawyerIdFromInvoiceId(invoiceId);
+
+        var invoiceSpecificBillingElements = await Context.BillingElements
+            .Where(x => x.IsInvoiceSpecific)
+            .Where(x => x.SpecificInvoiceId == invoiceId)
+            .ToListAsync();
+
+        var globalBillingElements = await Context.BillingElements
+            .Where(x => x.ManagerLawyerId == lawyerId)
+            .Where(x => x.IsInvoiceSpecific == false)
+            .ToListAsync();
+
+        var invoiceBillingElements = invoiceSpecificBillingElements
+            .Union(globalBillingElements)
+            .Select(x => x.ToDto())
+            .ToList();
+
+        return invoiceBillingElements;
+    }
+
     private async Task<IEnumerable<InvoicePaymentDto>> MapPaymentsDto(Guid invoiceId)
     {
         var payments = await Context.InvoicePayments.Where(x => x.InvoiceId == invoiceId).ToListAsync();
@@ -83,23 +110,14 @@ public partial class AccountStatementRepository : ProcedureRepositoryContextBase
     private async Task<ActivityDto> MapActivityEntryDto(Guid activityId)
     {
         var activity = await Context.Activities
-            .Include(x => x.BillingElement)
-            .Include(x => x.Invoice)
             .FirstAsync(x => x.Id == activityId);
-
-        var billingElementDto = new BillingElementDto
-        {
-            Amount = activity.BillingElement.Amount,
-            IsHourlyRate = activity.BillingElement.IsHourlyRate,
-            ActivityName = activity.ActivityDescription,
-            Id = activity.BillingElement.Id,
-        };
 
         var activityDto = new ActivityDto
         {
-            HoursWorked = activity.Quantity,
-            BillingElementDto = billingElementDto,
+            Quantity = activity.Quantity,
             Id = activity.Id,
+            CostInDollars = activity.CostInDollars,
+            Description = activity.Description,
         };
 
         return activityDto;
@@ -128,6 +146,7 @@ public partial class AccountStatementRepository : ProcedureRepositoryContextBase
                         .ThenInclude(x => x.Client)
                     .Include(x => x.Case)
                         .ThenInclude(x => x.ManagerLawyer)
+                            .ThenInclude(x => x.DefaultHourlyElement)
                     .Include(x => x.Invoices)
                         .ThenInclude(x => x.Activities)
                     .Include(x => x.Invoices)
@@ -142,5 +161,16 @@ public partial class AccountStatementRepository : ProcedureRepositoryContextBase
         var accountStatementIncludes = await CreateAccountStatementIncludes();
         AccountStatement accountStatement1 = await accountStatementIncludes.FirstAsync(x => x.Id == accountId);
         return accountStatement1;
+    }
+
+    private async Task<Guid> FindLawyerIdFromInvoiceId(Guid invoiceId)
+    {
+        var invoice = await Context.Invoices
+            .Include(x => x.AccountStatement)
+            .ThenInclude(x => x.Lawyer)
+            .FirstAsync(x => x.Id == invoiceId);
+
+        var lawyerId = invoice.AccountStatement.Lawyer.Id;
+        return lawyerId;
     }
 }

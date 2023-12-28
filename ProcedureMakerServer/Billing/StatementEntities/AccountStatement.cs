@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office.PowerPoint.Y2021.M06.Main;
-using EFCoreBase.Entities;
+﻿using EFCoreBase.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProcedureMakerServer.Entities;

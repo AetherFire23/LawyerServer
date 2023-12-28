@@ -5,6 +5,12 @@ namespace ProcedureMakerServer.TemplateManagement.DocumentFillers;
 [DocumentFiller(DocumentTypes.Backing)]
 public class BackingFiller : DocumentFillerBase
 {
+    //private readonly 
+    //public BackingFiller()
+    //{
+        
+    //}
+
     public override string FormatEmailSubjectTitle(CaseDto dto)
     {
         return "";

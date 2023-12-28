@@ -15,10 +15,10 @@ public class CaseContextService
 {
     private readonly ProcedureContext _context;
     private readonly CasesContextRepository _casesContextRepository;
-    private readonly ILawyerRepository _lawyerRepository;
+    private readonly LawyerRepository _lawyerRepository;
     public CaseContextService(ProcedureContext procedureContext,
                               CasesContextRepository casesContextRepository,
-                              ILawyerRepository lawyerRepository)
+                              LawyerRepository lawyerRepository)
     {
         _context = procedureContext;
         _casesContextRepository = casesContextRepository;
@@ -52,6 +52,9 @@ public class CaseContextService
         await _context.AccountStatements.AddAsync(accountStatement);
         await _context.SaveChangesAsync();
 
+        cCase.AccountStatement = accountStatement; // required one-to=one
+        await _context.SaveChangesAsync(); // see if one to one breaks
+
         TrustClientCard trust = new TrustClientCard()
         {
             Client = client,
@@ -66,11 +69,11 @@ public class CaseContextService
         return caseResponse;
     }
 
-    public async Task<CasesContext> GetCaseContext(Guid lawyerId)
+    public async Task<CaseContextDto> GetCaseContext(Guid lawyerId)
     {
         if (lawyerId.Equals(Guid.Empty)) throw new ArgumentInvalidException("LawyerId was empty");
 
-        CasesContext caseContext = await _casesContextRepository.MapCasesContext(lawyerId);
+        CaseContextDto caseContext = await _casesContextRepository.MapCasesContext(lawyerId);
         return caseContext;
     }
 

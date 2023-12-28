@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Extensions;
 using ProcedureMakerServer.Interfaces;
+using ProcedureMakerServer.Repository;
 
 namespace ProcedureMakerServer.Controllers;
 
@@ -9,10 +10,10 @@ namespace ProcedureMakerServer.Controllers;
 [Route("[controller]")]
 public class FileController : ControllerBase
 {
-    private readonly ILawyerRepository _lawyerRepository;
+    private readonly LawyerRepository _lawyerRepository;
     private readonly IClientRepository _clientRepository;
     public FileController(ILogger<FileController> logger,
-        ILawyerRepository lawyerRepository)
+        LawyerRepository lawyerRepository)
     {
         _lawyerRepository = lawyerRepository;
     }

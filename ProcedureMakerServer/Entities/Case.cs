@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ProcedureMakerServer.Billing.StatementEntities;
 using ProcedureMakerServer.Entities;
 using ProcedureMakerServer.Enums;
 
@@ -14,8 +15,8 @@ public class Case : EntityBase
     public Guid ClientId { get; set; }
     public virtual Client Client { get; set; }
 
+    public virtual AccountStatement? AccountStatement { get; set; }
     public ICollection<CaseParticipant> CaseParticipants { get; set; } = new List<CaseParticipant>();
-
     public string DistrictName { get; set; } = string.Empty;
     public string CourtAffairNumber { get; set; } = string.Empty;
     public string CaseNumber { get; set; } = string.Empty; // cases can have different filenumbers if it comes again many times 

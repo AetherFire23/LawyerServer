@@ -34,8 +34,6 @@ public class ProcedureContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder) // denis says fluent api is for advanced shit
     {
         _ = modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        //modelBuilder.Entity<Case>();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

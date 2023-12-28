@@ -13,15 +13,17 @@ public partial class TrustRepository : ProcedureRepositoryContextBase
 
     public async Task AddFundsToTrust(Guid clientId, TrustPaymentDto trustPayment)
     {
-        var client = (await Context.Clients.FirstByIdAsync(clientId)).TrustClientCard;
-        //var trustClientCard = await Context.TrustClientCards.FirstAsync(x => x.Id == client.TrustClientCardId);
+        var client = await Context.Clients
+            .Include(x => x.TrustClientCard)
+            .FirstAsync(x => x.Id == clientId);
 
 
         var payment = new TrustPayment()
         {
+            Id = trustPayment.GenerateIdIfNull(),
             Amount = trustPayment.Amount,
             Date = trustPayment.Date,
-            Trust = client,
+            Trust = client.TrustClientCard,
         };
 
         Context.TrustPayments.Add(payment);

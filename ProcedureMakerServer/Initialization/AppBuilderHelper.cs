@@ -53,8 +53,8 @@ public static class AppBuilderHelper
 
     public static void ConfigureServices(WebApplicationBuilder builder)
     {
-        _ = builder.Services.AddScoped<ILawyerRepository, LawyerRepository>();
-        _ = builder.Services.AddScoped<IUserRepository, UserRepository>();
+        _ = builder.Services.AddScoped<LawyerRepository>();
+        _ = builder.Services.AddScoped<UserRepository>();
         _ = builder.Services.AddScoped<IAuthManager, AuthManager>();
         _ = builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
         _ = builder.Services.AddScoped<CaseContextService>();
@@ -65,9 +65,13 @@ public static class AppBuilderHelper
         _ = builder.Services.AddTransient<AccountStatementRepository>();
         _ = builder.Services.AddTransient<TrustRepository>();
         _ = builder.Services.AddTransient<NotificationEmailSender>();
-        _ = builder.Services.AddTransient<DocumentMaker>();
+        _ = builder.Services.AddTransient<DocumentMakerService>();
         _ = builder.Services.AddTransient<NotificationService>();
-    }
+        _ = builder.Services.AddTransient<InvoiceRepository>();
+        //_ = builder.Services.AddTransient<ProcedureHtmlRenderer>();
+
+
+	}
 
     private static void ConfigureHTTPLogging(WebApplicationBuilder builder)
     {

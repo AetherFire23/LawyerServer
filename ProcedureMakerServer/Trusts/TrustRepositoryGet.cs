@@ -4,18 +4,18 @@ namespace ProcedureMakerServer.Trusts;
 
 public partial class TrustRepository : ProcedureRepositoryContextBase
 {
-    public async Task<TrustDto> ConstructTrustDto(Guid clientId)
+    public async Task<TrustClientCardDto> ConstrustTrustClientCard(Guid clientId)
     {
         TrustClientCard trust = await GetTrust(clientId);
-        IEnumerable<TrustPaymentDto> payments = await ConstructTrustPaymentsDtos(trust.Id);
-        IEnumerable<TrustDisburseDto> disbursements = await ConstructTrustDisbursesDtos(trust.Id);
+        var payments = await ConstructTrustPaymentsDtos(trust.Id);
+        var disbursements = await ConstructTrustDisbursesDtos(clientId);
 
-        TrustDto trustDto = new TrustDto()
+        TrustClientCardDto trustDto = new TrustClientCardDto()
         {
             Id = trust.Id,
             ClientId = trust.ClientId,
             Payments = payments.ToList(),
-            Disburses = disbursements.ToList(),
+            Withdraws = disbursements.ToList(),
         };
 
         return trustDto;
@@ -28,11 +28,21 @@ public partial class TrustRepository : ProcedureRepositoryContextBase
         return payments;
     }
 
-    private async Task<IEnumerable<TrustDisburseDto>> ConstructTrustDisbursesDtos(Guid trustId)
+    private async Task<IEnumerable<TrustWithdrawDto>> ConstructTrustDisbursesDtos(Guid clientId)
     {
-        var trustDisburses = await Context.InvoicePayments.Where(x => x.IsPaymentComingFromTrust).ToListAsync();
-        var payments = trustDisburses.Select(x => x.ToTrustDisburseDto());
-        return payments;
+        // get all accountstatements from the client
+        var payments = await Context.AccountStatements
+            .Include(x => x.Case)
+            .Include(x=> x.Invoices)
+                .ThenInclude(x=> x.Payments)
+            .Where(x => x.Case.ClientId == clientId)
+            .SelectMany(x=> x.Invoices)
+            .SelectMany(x=> x.Payments)
+            .Where(x=> x.IsPaymentComingFromTrust)
+            .ToListAsync();
+
+        var trustDisburses = payments.Select(x => x.ToTrustDisburseDto());
+        return trustDisburses;
     }
 
     private async Task<TrustClientCard> GetTrust(Guid clientId)
