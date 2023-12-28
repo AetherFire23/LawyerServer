@@ -242,6 +242,8 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
 			Total = total,
 			PaymentsTotal = paymentsTotal,
 			Balance = balance,
+			Lawyer = caseDto.ManagerLawyer,
+			Client = caseDto.Client,
 		};
 
 		return invoiceSummary;

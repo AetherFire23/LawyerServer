@@ -18,6 +18,9 @@ namespace ProcedureMakerServer;
 //  en tant que headless console.
 
 
+// chrome = chrome --headless --print-to-pdf="d:\\{{path and file name}}.pdf" https://google.com
+// docs:https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-printToPDF
+
 public class Program
 {
 	public static async Task Main(string[] args)

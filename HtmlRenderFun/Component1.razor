@@ -1,8 +1,40 @@
-﻿@using ProcedureMakerServer.Billing
+﻿@using HtmlRenderFun.Components
+@using ProcedureMakerServer.Billing
 @using ProcedureMakerServer.Billing.StatementDtos
 @using ProcedureShared.Dtos
 
-<div> 
+<style>
+	.flex-row {
+		display: flex;
+		flex: auto;
+		flex-direction: row;
+	}
+
+	.text1 {
+		/* Font styles */
+		font-family: 'Arial', sans-serif;
+		font-size: 10px;
+		font-weight: bold;
+		color: #333;
+		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+</style>
+
+<div style="background-color: lightblue">
+	<div>
+		<h1> Bill# @InvoiceSummary.BillNumber </h1>
+		<div class="flex-row">
+			<div>
+				<h1 class="text1"> From:</h1>
+				<PersonDetails Person="InvoiceSummary.Lawyer" />
+			</div>
+			<div>
+				<h1> To: @InvoiceSummary.Client.FullName </h1>
+				<PersonDetails Person="InvoiceSummary.Client" />
+			</div>
+		</div>
+	</div>
 
 </div>
 
@@ -10,4 +42,8 @@
 	[Parameter]
 	public InvoiceSummary InvoiceSummary { get; set; }
 
+	protected override void OnInitialized()
+	{
+
+	}
 }

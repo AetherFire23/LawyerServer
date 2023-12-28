@@ -1,0 +1,12 @@
+﻿@using ProcedureShared.Entities.BaseEntities;
+
+<div>
+	<h1> Address:  @Person.Address </h1>
+	<h1> Phone Number:  @Person.MobilePhoneNumber </h1>
+	<h1> Email : @Person.Email </h1>
+</div>
+
+@code {
+	[Parameter]
+	public PersonBase Person { get; set; }
+}

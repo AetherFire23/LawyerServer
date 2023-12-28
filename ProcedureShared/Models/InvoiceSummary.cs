@@ -10,6 +10,10 @@ public class InvoiceSummary
 	public DateTime? Created { get; set; }
 	public int BillNumber { get; set; }
 
+
+	public LawyerDto Lawyer { get; set; }
+	public ClientDto Client { get; set; }
+
 	public decimal HourlyRatesTotal { get; set; }
 	public decimal DisbursesTaxableTotal { get; set; }
 	public decimal DisbursesNonTaxableTotal { get; set; }

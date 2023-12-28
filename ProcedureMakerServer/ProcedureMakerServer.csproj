@@ -36,7 +36,6 @@
   <ItemGroup>
     <Folder Include="Billing\StatementDtos\" />
     <Folder Include="DocsTemplates\Temporary\" />
-    <Folder Include="HtmlToPdf\" />
     <Folder Include="Notifications\" />
   </ItemGroup>
 </Project>

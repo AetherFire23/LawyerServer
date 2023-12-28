@@ -1,4 +1,5 @@
 ﻿using RequestTester;
+using System.Diagnostics;
 // https://next-auth.js.org/providers/google
 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-8.0
 
@@ -217,10 +218,8 @@ public class Program
 		var ctx = await _caller.GetcasescontextAsync();
 
 		await _caller.GetinvoiceAsync(ctx.Clients.First().Cases.First().Invoices.First().Id);
+
 	}
-
-
-
 }
 
 public static class StreamExtensions

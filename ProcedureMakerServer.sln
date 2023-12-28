@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestTester", "RequestTes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlRenderFun", "HtmlRenderFun\HtmlRenderFun.csproj", "{A918E331-C2C2-497C-8C09-A563EF679F40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcedureShared", "ProcedureShared\ProcedureShared.csproj", "{A1355F86-FC0E-4B78-9745-2E8887396908}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcedureShared", "ProcedureShared\ProcedureShared.csproj", "{A1355F86-FC0E-4B78-9745-2E8887396908}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
