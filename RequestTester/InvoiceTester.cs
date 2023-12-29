@@ -60,6 +60,7 @@ internal class InvoiceTester
 			Description = "My Activity1",
 			Quantity = 1,
 			CostInDollars = 1,
+			IsTaxable = true,
 		};
 
 		var activity2 = new ActivityDto
@@ -67,6 +68,7 @@ internal class InvoiceTester
 			Description = "My Activity2",
 			Quantity = 2,
 			CostInDollars = 2,
+			IsTaxable = true,
 		};
 		var activity3DisburseNonTaxable = new ActivityDto
 		{
@@ -82,7 +84,7 @@ internal class InvoiceTester
 			Quantity = 2,
 			CostInDollars = 2,
 			IsDisburse = true,
-			IsTaxable = false,
+			IsTaxable = true,
 		};
 
 		await _caller.CreateactivityAsync(invoice.Id, activity);

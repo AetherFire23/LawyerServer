@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using HtmlRenderFun.Components.InvoiceComponents;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -45,10 +46,10 @@ public class ProcedureHtmlRenderer // technically teh renderer could be in anoth
 	{
 		var parameters = new Dictionary<string, object?>()
 		{
-			{ nameof(Component1.InvoiceSummary), invoiceSummary },
+			{ nameof(InvoicePage.InvoiceSummary), invoiceSummary },
 		};
 
-		var html = await RendererServices.RenderView<Component1>(parameters);
+		var html = await RendererServices.RenderView<InvoicePage>(parameters);
 		html.SaveAndLaunch();
 		return html;
 	}

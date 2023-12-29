@@ -16,7 +16,7 @@ public partial class Activity : EntityBase
 	public decimal Quantity { get; set; } = 0;
 	public decimal CostInDollars { get; set; } = 0;
 	public bool IsDisburse { get; set; }
-	public bool IsTaxable { get; set; }
+	public bool IsTaxable { get; set; } = true;
 }
 
 public class ActivityConfiguration : IEntityTypeConfiguration<Activity>

@@ -84,9 +84,30 @@
 		</div>
 
 		@* Disburses *@
-
 		<div style="margin-top: 25px">
 			<h1> Disburses </h1>
+
+			<div class="flex-row" style="justify-content: space-evenly">
+				<h1> # </h1>
+				<h1> Disburse </h1>
+				<h1>  Quantity </h1>
+				<h1>  Unitary Cost </h1>
+				<h1>  Total </h1>
+			</div>
+			<hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
+
+			<div class="flex-row" style="justify-content: space-evenly">
+				<h1> #2 </h1>
+				<h1> DisburseName </h1>
+				<h1> 69 </h1>
+				<h1> 87$ / qt </h1>
+				<h1> Total: ta mere </h1>
+			</div>
+		</div>
+
+		@* Non-taxable Disburses *@
+		<div style="margin-top: 25px">
+			<h1> Non-taxable disburses </h1>
 
 			<div class="flex-row" style="justify-content: space-evenly">
 				<h1> # </h1>
@@ -128,6 +149,15 @@
 
 		@* Balance *@
 		<div id="balance-section">
+			<h1> Taxable activities : @InvoiceSummary.HourlyRatesCostTotal</h1>
+			<h1> Taxable disburses : @InvoiceSummary.DisbursesTaxableTotal</h1>
+			<h1> TPS @InvoiceSummary.TPSTax </h1>
+			<h1> TVQ @InvoiceSummary.TVQTax </h1>
+			<h1> Taxable total @InvoiceSummary.TaxableFeesCost </h1>
+			<h1> non-taxable disburses @InvoiceSummary.DisbursesNonTaxableTotal </h1>
+			<h1> Total @InvoiceSummary.Total</h1>
+			<h1> Payments : @InvoiceSummary.PaymentsTotal</h1>
+			<h1> Balance : @InvoiceSummary.Balance</h1>
 
 		</div>
 	</div>

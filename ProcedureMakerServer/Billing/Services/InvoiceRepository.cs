@@ -225,13 +225,14 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
 		var caseDto = ctx.Cases.First(x => x.Id == lcase.Id);
 		var invoice = caseDto.Invoices.First(x => x.Id == invoiceId);
 
-		var taxableActivitiesCost = invoice.GetDisbursesTaxableTotal() + invoice.GetHourlyRatesTotal();
-		var nonTaxableActivitiesCost = invoice.GetDisbursesNonTaxableTotal();
-		var tps = taxableActivitiesCost * Taxes.TPSInPercentage;
-		var tvq = taxableActivitiesCost * Taxes.TVQInPercentage;
-		var total = taxableActivitiesCost + nonTaxableActivitiesCost + tps + tvq;
-		var paymentsTotal = invoice.GetPaymentsTotal();
-		var balance = total = paymentsTotal;
+		decimal taxableActivitiesCost = invoice.GetDisbursesTaxableTotal() + invoice.GetHourlyRatesTotal();
+		decimal tps = taxableActivitiesCost * Taxes.TPSInPercentage;
+		decimal tvq = taxableActivitiesCost * Taxes.TVQInPercentage;
+		decimal taxableSubtotal = taxableActivitiesCost + tps + tvq;
+		decimal nonTaxableActivitiesCost = invoice.GetDisbursesNonTaxableTotal();
+		decimal total = nonTaxableActivitiesCost + taxableSubtotal;
+		decimal paymentsTotal = invoice.GetPaymentsTotal();
+		decimal balance = total = paymentsTotal;
 
 		// Get the bill number
 		var invoiceSummary = new InvoiceSummary
@@ -240,10 +241,10 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
 			Invoice = invoice,
 			Created = DateTime.Now,
 			BillNumber = lcase.ManagerLawyer.BillsEmittedCount,
-			HourlyRatesTotal = invoice.GetHourlyRatesTotal(),
+			HourlyRatesCostTotal = invoice.GetHourlyRatesTotal(),
 			DisbursesTaxableTotal = invoice.GetDisbursesTaxableTotal(),
 			DisbursesNonTaxableTotal = invoice.GetDisbursesNonTaxableTotal(),
-			TaxableActivitiesCost = taxableActivitiesCost,
+			TaxableFeesCost = taxableActivitiesCost,
 			TPSTax = tps,
 			TVQTax = tvq,
 			Total = total,
