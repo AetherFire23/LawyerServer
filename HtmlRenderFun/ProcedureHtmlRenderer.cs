@@ -41,9 +41,6 @@ public static class RendererServices
 
 public class ProcedureHtmlRenderer // technically teh renderer could be in another project hehe 
 {
-	/// <returns> Html as string </returns>
-	
-
 	public async Task<string> RenderInvoiceToHtml(InvoiceSummary invoiceSummary)
 	{
 		var parameters = new Dictionary<string, object?>()

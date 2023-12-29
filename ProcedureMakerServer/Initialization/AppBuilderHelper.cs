@@ -6,6 +6,7 @@ using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Authentication.Interfaces;
 using ProcedureMakerServer.Billing.Services;
 using ProcedureMakerServer.EmailMaker;
+using ProcedureMakerServer.HtmlToPdf;
 using ProcedureMakerServer.Repository;
 using ProcedureMakerServer.Services;
 using ProcedureMakerServer.TemplateManagement;
@@ -69,10 +70,7 @@ public static class AppBuilderHelper
 		_ = builder.Services.AddTransient<NotificationService>();
 		_ = builder.Services.AddTransient<InvoiceRepository>();
 		_ = builder.Services.AddTransient<ProcedureHtmlRenderer>();
-
-		//_ = builder.Services.AddTransient<ProcedureHtmlRenderer>();
-
-
+		_ = builder.Services.AddTransient<HtmlToPdfConverter>();
 	}
 
 	private static void ConfigureHTTPLogging(WebApplicationBuilder builder)

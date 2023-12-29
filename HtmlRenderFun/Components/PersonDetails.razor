@@ -1,9 +1,17 @@
 ﻿@using ProcedureShared.Entities.BaseEntities;
 
+<style>
+	.text1 {
+		font-size: 13px;
+		font-family: Verdana;
+	}
+</style>
+
+
 <div>
-	<h1> Address:  @Person.Address </h1>
-	<h1> Phone Number:  @Person.MobilePhoneNumber </h1>
-	<h1> Email : @Person.Email </h1>
+	<h1 class="text1"> Address:  @Person.Address </h1>
+	<h1 class="text1"> Phone Number:  @Person.MobilePhoneNumber </h1>
+	<h1 class="text1"> Email : @Person.Email </h1>
 </div>
 
 @code {

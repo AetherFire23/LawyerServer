@@ -4,46 +4,155 @@
 @using ProcedureShared.Dtos
 
 <style>
+	body {
+		margin: 0px;
+	}
+
+	html {
+		-webkit-print-color-adjust: exact;
+	}
+
 	.flex-row {
 		display: flex;
-		flex: auto;
 		flex-direction: row;
 	}
 
-	.text1 {
-		/* Font styles */
-		font-family: 'Arial', sans-serif;
-		font-size: 10px;
-		font-weight: bold;
-		color: #333;
-		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	.header-content {
+		justify-content: space-around;
+	}
+
+	.bg-color {
+		background-color: whitesmoke;
+		width: 100vw;
+		height: 100vh;
+	}
+
+	h1 {
+		font-size: 13px;
+		font-family: Verdana;
 	}
 </style>
 
-<div style="background-color: lightblue">
+<div class="bg-color">
 	<div>
-		<h1> Bill# @InvoiceSummary.BillNumber </h1>
-		<div class="flex-row">
+		@* header content *@
+		<h1 id="bill-number" class="text1"> Bill# @InvoiceSummary.BillNumber </h1>
+		<div class="flex-row header-content">
 			<div>
 				<h1 class="text1"> From:</h1>
 				<PersonDetails Person="InvoiceSummary.Lawyer" />
 			</div>
 			<div>
-				<h1> To: @InvoiceSummary.Client.FullName </h1>
+				<h1 class="text1"> To: @InvoiceSummary.Client.FullName </h1>
 				<PersonDetails Person="InvoiceSummary.Client" />
 			</div>
 		</div>
-	</div>
 
+		@* activities *@
+		<div style="margin-top: 25px">
+			<h1> Activities </h1>
+			<div class="flex-row" style="justify-content: space-evenly">
+				<h1> # </h1>
+				<h1> Description </h1>
+				<h1>  Quantity </h1>
+				<h1>  Unitary Cost </h1>
+				<h1>  Total </h1>
+			</div>
+
+			<hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
+
+			<div>
+				<div class="flex-row" style="justify-content: space-evenly">
+					<h1> #1 </h1>
+					<h1> Dickactivity </h1>
+					<h1> 69 </h1>
+					<h1> 87$ / qt </h1>
+					<h1> Total: ta mere </h1>
+				</div>
+				<hr />
+			</div>
+			<div>
+				<div class="flex-row" style="justify-content: space-evenly">
+					<h1> #2 </h1>
+					<h1> Dickactivity </h1>
+					<h1> 69 </h1>
+					<h1> 87$ / qt </h1>
+					<h1> Total: ta mere </h1>
+				</div>
+				<hr />
+			</div>
+		</div>
+
+		@* Disburses *@
+
+		<div style="margin-top: 25px">
+			<h1> Disburses </h1>
+
+			<div class="flex-row" style="justify-content: space-evenly">
+				<h1> # </h1>
+				<h1> Disburse </h1>
+				<h1>  Quantity </h1>
+				<h1>  Unitary Cost </h1>
+				<h1>  Total </h1>
+			</div>
+			<hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
+
+			<div class="flex-row" style="justify-content: space-evenly">
+				<h1> #2 </h1>
+				<h1> DisburseName </h1>
+				<h1> 69 </h1>
+				<h1> 87$ / qt </h1>
+				<h1> Total: ta mere </h1>
+			</div>
+		</div>
+
+		@* Payments *@
+		<div>
+			<div style="margin-top: 25px">
+				<h1> Payments </h1>
+				<div class="flex-row" style="justify-content: space-evenly">
+					<h1> # </h1>
+					<h1> Payment type </h1>
+					<h1>  Amount </h1>
+				</div>
+				<hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
+
+				<div class="flex-row" style="justify-content: space-evenly">
+					<h1> #2 </h1>
+					<h1> paymentType </h1>
+					<h1> Amount </h1>
+				</div>
+			</div>
+			<h1 style="text-align-last: right; padding-right: 15vw"> Total: </h1>
+		</div>
+
+		@* Balance *@
+		<div id="balance-section">
+
+		</div>
+	</div>
 </div>
 
 @code {
 	[Parameter]
 	public InvoiceSummary InvoiceSummary { get; set; }
 
+	// <link href="@Url.Content("~/Styles/main.css")" rel="stylesheet" type="text/css" />
 	protected override void OnInitialized()
 	{
 
 	}
+
+	// 	@page {
+	//   size: A4;
+	//   margin: 0;
+	// }
+	// @media print {
+	//   html, body {
+	//     width: 210mm;
+	//     height: 297mm;
+	//   }
+	//   /* ... the rest of the rules ... */
+		// }
 }
+

@@ -6,6 +6,7 @@ using ProcedureMakerServer.Billing.InvoiceDtos;
 using ProcedureMakerServer.Billing.StatementDtos;
 using ProcedureMakerServer.Billing.StatementEntities;
 using ProcedureMakerServer.Constants;
+using ProcedureMakerServer.HtmlToPdf;
 using ProcedureMakerServer.Repository;
 using ProcedureMakerServer.Repository.ProcedureRepo;
 using ProcedureShared.Dtos;
@@ -17,12 +18,14 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
 	private AccountStatementRepository _accountStatementRepository;
 	private readonly CaseContextRepository _caseRepository;
 	private readonly ProcedureHtmlRenderer _procedureHtmlRenderer;
+	private readonly HtmlToPdfConverter _htmlToPdfConverter;
 
-	public InvoiceRepository(IMapper mapper, ProcedureContext context, AccountStatementRepository accountStatemetnRepo, CaseContextRepository caseRepository, ProcedureHtmlRenderer procedureHtmlRenderer) : base(mapper, context)
+	public InvoiceRepository(IMapper mapper, ProcedureContext context, AccountStatementRepository accountStatemetnRepo, CaseContextRepository caseRepository, ProcedureHtmlRenderer procedureHtmlRenderer, HtmlToPdfConverter htmlToPdfConverter) : base(mapper, context)
 	{
 		_accountStatementRepository = accountStatemetnRepo;
 		_caseRepository = caseRepository;
 		_procedureHtmlRenderer = procedureHtmlRenderer;
+		_htmlToPdfConverter = htmlToPdfConverter;
 	}
 
 	public async Task CreateInvoice(Guid caseId)
@@ -196,9 +199,13 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
 	public async Task<string> GetInvoicePdf(Guid invoiceId)
 	{
 		var invoiceSummary = await GetInvoiceSummary(invoiceId);
+
 		var html = await _procedureHtmlRenderer.RenderInvoiceToHtml(invoiceSummary);
 
-		string randomFilePath = Path.Combine(ConstantPaths.TemporaryFilesPath, $"{Guid.NewGuid()}.html");
+		await _htmlToPdfConverter.ConvertHtmlToPdf(html);
+
+		// string pdfPath = await _htmlToPdfConverter.ConvertHtmlToPdf(html);
+
 
 
 		return string.Empty;
