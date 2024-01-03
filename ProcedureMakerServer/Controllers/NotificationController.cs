@@ -18,10 +18,7 @@ public class NotificationController : Controller
 	public async Task<FileResult> NotifyPdf(IFormFile pdf, Guid caseId, string documentName) // should 
 	{
 		var filePath = await _notificationService.SendNotificationWithPdfOnly(pdf, caseId, documentName);
-
 		var fileBytes = System.IO.File.ReadAllBytes(filePath);
-
-		//var virtualFile = PhysicalFile(filePath, "application/pdf", "LoveAtFirstSight.pdf");
 		var file = File(fileBytes, "application/pdf");
 		return file;
 	}

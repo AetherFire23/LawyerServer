@@ -1,0 +1,13 @@
+﻿<h1> @this.Title </h1>
+<div class="flex-row" style="justify-content: space-evenly">
+    @ChildContent
+</div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

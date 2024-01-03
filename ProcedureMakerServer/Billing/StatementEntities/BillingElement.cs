@@ -9,6 +9,7 @@ namespace ProcedureMakerServer.Billing.StatementEntities;
 
 // All billing elements will be global - accessible to the lawyer at all times.
 // However some invoices will have a specific, restricted billing element.
+// most of the time it is gonna be 
 public class BillingElement : EntityBase
 {
 	public Guid ManagerLawyerId { get; set; }

@@ -141,6 +141,9 @@ namespace ProcedureMakerServer.Migrations
                     b.Property<decimal>("CostInDollars")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -240,6 +243,10 @@ namespace ProcedureMakerServer.Migrations
 
                     b.Property<bool>("IsPaymentComingFromTrust")
                         .HasColumnType("bit");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

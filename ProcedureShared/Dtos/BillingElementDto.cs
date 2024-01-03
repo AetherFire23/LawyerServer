@@ -8,5 +8,6 @@ public class BillingElementDto : EntityBase
 	public decimal Amount { get; set; } = 0;
 	public bool IsHourlyRate { get; set; } = true;
 	public bool IsDisburse { get; set; } = false;
+	public bool IsInvoiceSpecific { get; set; } = false;
 
 }

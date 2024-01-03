@@ -9,8 +9,10 @@ public class InvoicePayment : EntityBase
 	public Invoice Invoice { get; set; }
 	public decimal AmountPaid { get; set; }
 	public DateTime? AmountPaidDate { get; set; }
+    public string PaymentMethod { get; set; } = "Other";
 
-	public bool IsPaymentComingFromTrust { get; set; } = false;
+
+    public bool IsPaymentComingFromTrust { get; set; } = false;
 	public InvoicePayment()
 	{
 

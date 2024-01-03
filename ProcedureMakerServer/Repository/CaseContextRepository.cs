@@ -45,21 +45,17 @@ public class CaseContextRepository
 		return context;
 	}
 
-	public async Task AddCaseParticipant(Guid caseId, CaseParticipantDto updatedCaseParticipantDto)
+	public async Task<Guid> AddCaseParticipant(Guid caseId)
 	{
 		var lcase = await _context.Cases.FirstAsync(c => c.Id == caseId);
-
 		var caseParticipant = new CaseParticipant()
 		{
-			Id = updatedCaseParticipantDto.GenerateIdIfNull(),
 			Case = lcase,
 		};
 
-		caseParticipant.CopyFromCourtMember(updatedCaseParticipantDto);
-
 		_context.CaseParticipants.Add(caseParticipant);
-
 		await _context.SaveChangesAsync();
+		return lcase.Id;
 	}
 
 	public async Task UpdateCaseParticipant(CaseParticipantDto updatedCaseParticipant)

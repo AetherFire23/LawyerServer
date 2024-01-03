@@ -28,10 +28,11 @@ public class UserController : Controller
 	}
 
 	[HttpPut(UserEndpoints.CredentialsLogin)]
+	[ProducesResponseType(200, Type = typeof(LoginResult))]
 	public async Task<ActionResult<LoginResult>> CredentialsLoginRequest([FromBody] LoginRequest loginRequest)
 	{
 		Console.WriteLine($"token login request procced{loginRequest.Username}");
-		LoginResult result = await _authManager.GenerateTokenIfCorrectCredentials(loginRequest);
+		var result = await _authManager.GenerateTokenIfCorrectCredentials(loginRequest);
 		return Ok(result);
 	}
 
@@ -54,7 +55,8 @@ public class UserController : Controller
 		return Ok(result);
 	}
 
-	[HttpPost(UserEndpoints.Register)]
+	// register, if success get the created objects through credentialsLogin
+	[HttpPost("register")]
 	public async Task<IActionResult> RegisterUser([FromBody] RegisterRequest registerRequest)
 	{
 		await _authManager.TryRegister(registerRequest);

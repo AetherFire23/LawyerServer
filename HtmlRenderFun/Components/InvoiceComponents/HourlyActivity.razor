@@ -3,19 +3,17 @@
 
 <div>
     <div class="flex-row" style="justify-content: space-evenly">
-        <h1> @this.Number </h1>
+        <h1> @this.Activity.CreatedAt.ToShortDateString(); </h1>
         <h1> @this.Activity.Description </h1>
         <h1> @this.Activity.Quantity </h1>
-        <h1> 87$ / qt </h1>
-        <h1> Total: ta mere </h1>
+        <h1> @this.Activity.CostInDollars </h1>
+        <h1> @this.Activity.GetTotalCost() </h1>
     </div>
     <hr />
 </div>
 
 @code {
     [Parameter]
-    public ActivityDto Activity { get; set; } 
+    public ActivityDto Activity { get; set; }
 
-    [Parameter]
-    public int Number { get; set; } 
 }

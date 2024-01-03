@@ -74,6 +74,7 @@ public partial class AccountStatementRepository : ProcedureRepositoryContextBase
 			Payments = payments.ToList(),
 			Id = invoice.Id,
 			AvailableBillingElementsForInvoice = availableBillingElements,
+			
 		};
 
 		return invoiceDto;

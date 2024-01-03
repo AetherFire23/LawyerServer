@@ -4,185 +4,177 @@
 @using ProcedureShared.Dtos
 
 <style>
-	body {
-		margin: 0px;
-	}
+    body {
+        margin: 0px;
+    }
 
-	html {
-		-webkit-print-color-adjust: exact;
-	}
+    html {
+        -webkit-print-color-adjust: exact;
+    }
 
-	.flex-row {
-		display: flex;
-		flex-direction: row;
-	}
+    .flex-row {
+        display: flex;
+        flex-direction: row;
+    }
 
-	.header-content {
-		justify-content: space-around;
-	}
+    .header-content {
+        justify-content: space-around;
+    }
 
-	.bg-color {
-		background-color: whitesmoke;
-		width: 100vw;
-		height: 100vh;
-	}
+    .bg-color {
+        background-color: whitesmoke;
+        width: 100vw;
+        height: 100vh;
+    }
 
-	h1 {
-		font-size: 13px;
-		font-family: Verdana;
-	}
+    h1 {
+        font-size: 13px;
+        font-family: Verdana;
+    }
 </style>
 
 <div class="bg-color">
-	<div>
-		@* header content *@
-		<h1 id="bill-number" class="text1"> Bill# @InvoiceSummary.BillNumber </h1>
-		<div class="flex-row header-content">
-			<div>
-				<h1 class="text1"> From:</h1>
-				<PersonDetails Person="InvoiceSummary.Lawyer" />
-			</div>
-			<div>
-				<h1 class="text1"> To: @InvoiceSummary.Client.FullName </h1>
-				<PersonDetails Person="InvoiceSummary.Client" />
-			</div>
-		</div>
 
-		@* activities *@
-		<div style="margin-top: 25px">
-			<h1> Activities </h1>
-			<div class="flex-row" style="justify-content: space-evenly">
-				<h1> # </h1>
-				<h1> Description </h1>
-				<h1>  Quantity </h1>
-				<h1>  Unitary Cost </h1>
-				<h1>  Total </h1>
-			</div>
+    @* maybe au lieu du number faudrait mettre la date *@
+    <div>
+        @* header content *@
+        <h1 id="bill-number" class="text1"> Bill# @InvoiceSummary.BillNumber </h1>
+        <div class="flex-row header-content">
+            <div>
+                <h1 class="text1"> From:</h1>
+                <PersonDetails Person="InvoiceSummary.Lawyer" />
+            </div>
+            <div>
+                <h1 class="text1"> To: @InvoiceSummary.Client.FullName </h1>
+                <PersonDetails Person="InvoiceSummary.Client" />
+            </div>
+        </div>
 
-			<hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
+        @* activities *@
+        <div style="margin-top: 25px">
+            <SectionHeader Title="Activities">
+                <h1> Date </h1>
+                <h1> Description </h1>
+                <h1>  Quantity </h1>
+                <h1>  Unitary Cost </h1>
+                <h1>  Total </h1>
+            </SectionHeader>
 
-			<div>
-				<div class="flex-row" style="justify-content: space-evenly">
-					<h1> #1 </h1>
-					<h1> Dickactivity </h1>
-					<h1> 69 </h1>
-					<h1> 87$ / qt </h1>
-					<h1> Total: ta mere </h1>
-				</div>
-				<hr />
-			</div>
-			<div>
-				<div class="flex-row" style="justify-content: space-evenly">
-					<h1> #2 </h1>
-					<h1> Dickactivity </h1>
-					<h1> 69 </h1>
-					<h1> 87$ / qt </h1>
-					<h1> Total: ta mere </h1>
-				</div>
-				<hr />
-			</div>
-		</div>
+            <hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
 
-		@* Disburses *@
-		<div style="margin-top: 25px">
-			<h1> Disburses </h1>
+            @* Render all activities  *@
+            @for (int i = 0; i < this.InvoiceSummary.HourlyActivities.Count; i++)
+            {
+                <HourlyActivity Activity="this.InvoiceSummary.HourlyActivities[i]" />
+            }
+        </div>
 
-			<div class="flex-row" style="justify-content: space-evenly">
-				<h1> # </h1>
-				<h1> Disburse </h1>
-				<h1>  Quantity </h1>
-				<h1>  Unitary Cost </h1>
-				<h1>  Total </h1>
-			</div>
-			<hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
+        @* Disburses *@
+        <div style="margin-top: 25px">
+            <SectionHeader Title="Taxable Disburses">
+                <h1> Date </h1>
+                <h1> Disburse </h1>
+                <h1>  Quantity </h1>
+                <h1>  Unitary Cost </h1>
+                <h1>  Total </h1>
+            </SectionHeader>
+        </div>
+        <hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
 
-			<div class="flex-row" style="justify-content: space-evenly">
-				<h1> #2 </h1>
-				<h1> DisburseName </h1>
-				<h1> 69 </h1>
-				<h1> 87$ / qt </h1>
-				<h1> Total: ta mere </h1>
-			</div>
-		</div>
 
-		@* Non-taxable Disburses *@
-		<div style="margin-top: 25px">
-			<h1> Non-taxable disburses </h1>
+        @foreach (var taxableDisburse in this.InvoiceSummary.TaxableDisburses)
+        {
+            <Disburse ActivityAsDisburse="taxableDisburse" />
+        }
+    </div>
 
-			<div class="flex-row" style="justify-content: space-evenly">
-				<h1> # </h1>
-				<h1> Disburse </h1>
-				<h1>  Quantity </h1>
-				<h1>  Unitary Cost </h1>
-				<h1>  Total </h1>
-			</div>
-			<hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
+    @* Non-taxable Disburses *@
+    <div style="margin-top: 25px">
+        <SectionHeader Title="Non-taxable Disburses">
+            <h1> # </h1>
+            <h1> Disburse </h1>
+            <h1>  Quantity </h1>
+            <h1>  Unitary Cost </h1>
+            <h1>  Total </h1>
+        </SectionHeader>
 
-			<div class="flex-row" style="justify-content: space-evenly">
-				<h1> #2 </h1>
-				<h1> DisburseName </h1>
-				<h1> 69 </h1>
-				<h1> 87$ / qt </h1>
-				<h1> Total: ta mere </h1>
-			</div>
-		</div>
+        <hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
 
-		@* Payments *@
-		<div>
-			<div style="margin-top: 25px">
-				<h1> Payments </h1>
-				<div class="flex-row" style="justify-content: space-evenly">
-					<h1> # </h1>
-					<h1> Payment type </h1>
-					<h1>  Amount </h1>
-				</div>
-				<hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
+        <div class="flex-row" style="justify-content: space-evenly">
+            @foreach (var nonTaxableDisburse in this.InvoiceSummary.NonTaxableDisburses)
+            {
+                <h1> @nonTaxableDisburse.CreatedAt.ToShortDateString() </h1>
+                <h1> @nonTaxableDisburse.Description </h1>
+                <h1> @nonTaxableDisburse.CostInDollars </h1>
+                <h1> @nonTaxableDisburse.Quantity </h1>
+                <h1> Total: @nonTaxableDisburse.GetTotalCost()</h1>
+            }
+        </div>
+    </div>
 
-				<div class="flex-row" style="justify-content: space-evenly">
-					<h1> #2 </h1>
-					<h1> paymentType </h1>
-					<h1> Amount </h1>
-				</div>
-			</div>
-			<h1 style="text-align-last: right; padding-right: 15vw"> Total: </h1>
-		</div>
+    @* Total cost of current invoice *@
+    <h1 style="text-align-last: right; padding-right: 15vw"> Invoice total @this.InvoiceSummary.InvoiceTotal </h1>
 
-		@* Balance *@
-		<div id="balance-section">
-			<h1> Taxable activities : @InvoiceSummary.HourlyRatesCostTotal</h1>
-			<h1> Taxable disburses : @InvoiceSummary.DisbursesTaxableTotal</h1>
-			<h1> TPS @InvoiceSummary.TPSTax </h1>
-			<h1> TVQ @InvoiceSummary.TVQTax </h1>
-			<h1> Taxable total @InvoiceSummary.TaxableFeesCost </h1>
-			<h1> non-taxable disburses @InvoiceSummary.DisbursesNonTaxableTotal </h1>
-			<h1> Total @InvoiceSummary.Total</h1>
-			<h1> Payments : @InvoiceSummary.PaymentsTotal</h1>
-			<h1> Balance : @InvoiceSummary.Balance</h1>
+    @* Payments *@
+    <div>
+        <div style="margin-top: 25px">
+            <h1> Payments </h1>
+            <div class="flex-row" style="justify-content: space-evenly">
+                <h1> # </h1>
+                <h1> Payment type </h1>
+                <h1>  Amount </h1>
+            </div>
+            <hr style="border-top: 3px double; margin-left: 3vw; margin-right: 3vw;" />
 
-		</div>
-	</div>
+
+            @foreach (var payment in this.InvoiceSummary.Invoice.Payments)
+            {
+                <div class="flex-row" style="justify-content: space-evenly">
+                    <h1> @payment.AmoundPaidDate?.ToShortDateString() </h1>
+                    <h1> @payment.Method </h1>
+                    <h1> @payment.AmountPaid </h1>
+                </div>
+            }
+        </div>
+        <h1 style="text-align-last: right; padding-right: 15vw"> Balance: @this.InvoiceSummary.Balance </h1>
+    </div>
+
+
+
+    @* Balance *@
+    <div id="balance-section">
+        <h1> Taxable activities : @InvoiceSummary.HourlyRatesCostTotal</h1>
+        <h1> Taxable disburses : @InvoiceSummary.DisbursesTaxableTotal</h1>
+        <h1> TPS @InvoiceSummary.TPSTax </h1>
+        <h1> TVQ @InvoiceSummary.TVQTax </h1>
+        <h1> Taxable subtotal @InvoiceSummary.TaxableSubtotal </h1>
+        <h1> non-taxable disburses @InvoiceSummary.DisbursesNonTaxableTotal </h1>
+        <h1> Total of current invoice:  @InvoiceSummary.InvoiceTotal</h1>
+        <h1> Payments : @InvoiceSummary.PaymentsTotal</h1>
+        <h1> Balance : @InvoiceSummary.Balance</h1>
+    </div>
 </div>
 
 @code {
-	[Parameter]
-	public InvoiceSummary InvoiceSummary { get; set; }
+    [Parameter]
+    public InvoiceSummary InvoiceSummary { get; set; }
 
-	// <link href="@Url.Content("~/Styles/main.css")" rel="stylesheet" type="text/css" />
-	protected override void OnInitialized()
-	{
+    // <link href="@Url.Content("~/Styles/main.css")" rel="stylesheet" type="text/css" />
+    protected override void OnInitialized()
+    {
 
-	}
+    }
 
-	// 	@page {
-	//   size: A4;
-	//   margin: 0;
-	// }
-	// @media print {
-	//   html, body {
-	//     width: 210mm;
-	//     height: 297mm;
-	//   }
-	//   /* ... the rest of the rules ... */
-		// }
+    // 	@page {
+    //   size: A4;
+    //   margin: 0;
+    // }
+    // @media print {
+    //   html, body {
+    //     width: 210mm;
+    //     height: 297mm;
+    //   }
+    //   /* ... the rest of the rules ... */
+    // }
 }
 

@@ -79,6 +79,7 @@ namespace ProcedureMakerServer.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     InvoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CostInDollars = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -188,6 +189,7 @@ namespace ProcedureMakerServer.Migrations
                     InvoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AmountPaid = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AmountPaidDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPaymentComingFromTrust = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>

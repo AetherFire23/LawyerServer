@@ -1,4 +1,5 @@
-﻿using ProcedureMakerServer.Billing.StatementDtos;
+﻿using ProcedureMakerServer.Billing.InvoiceDtos;
+using ProcedureMakerServer.Billing.StatementDtos;
 using ProcedureShared.Dtos;
 namespace ProcedureMakerServer.Billing;
 
@@ -7,7 +8,12 @@ public class InvoiceSummary
 	public CaseDto Case { get; set; }
 	public InvoiceDto Invoice { get; set; }
 
-	public DateTime? Created { get; set; }
+	public List<ActivityDto> TaxableDisburses => this.Invoice.GetDisbursesTaxable();
+	public List<ActivityDto> NonTaxableDisburses => this.Invoice.GetDisbursesNonTaxable();
+	public List<ActivityDto> HourlyActivities => this.Invoice.GetHourlyRateActivities();
+
+
+    public DateTime? Created { get; set; }
 	public int BillNumber { get; set; }
 
 
@@ -20,7 +26,8 @@ public class InvoiceSummary
 	public decimal TPSTax { get; set; }
 	public decimal TVQTax { get; set; }
 	public decimal TaxableFeesCost { get; set; } // HourlyRate + disburses taxable
-	public decimal Total { get; set; } = decimal.Zero; // HourlyRate + disburses taxable + disbursesnonTaxable
+	public decimal InvoiceTotal { get; set; } = decimal.Zero; // HourlyRate + disburses taxable + disbursesnonTaxable
 	public decimal PaymentsTotal { get; set; }
 	public decimal Balance { get; set; } // with payments
+    public decimal TaxableSubtotal { get; set; }
 }

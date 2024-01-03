@@ -1,0 +1,23 @@
+﻿@using ProcedureMakerServer.Billing.InvoiceDtos
+
+<style>
+    .flex-row {
+        display: flex;
+        flex-direction: row;
+    }
+</style>
+
+<div class="flex-row" style="justify-content: space-evenly">
+    <h1> @this.ActivityAsDisburse.CreatedAt.ToShortDateString(); </h1>
+    <h1> @this.ActivityAsDisburse.Description </h1>
+    <h1> @this.ActivityAsDisburse.CostInDollars </h1>
+    <h1> @this.ActivityAsDisburse.Quantity </h1>
+    <h1> Total: @this.ActivityAsDisburse.GetTotalCost() </h1>
+</div>
+
+@code {
+
+    [Parameter]
+    public ActivityDto ActivityAsDisburse { get; set; }
+
+}

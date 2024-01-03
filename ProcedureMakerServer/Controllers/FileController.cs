@@ -29,11 +29,7 @@ public class FileController : ControllerBase
 
 		await file.CreateFileTo($"{"models"}{file.FileName}");
 
-
-
 		Console.WriteLine("upkloaded");
 		return Ok("File uploaded successfully!");
 	}
-
-
 }
