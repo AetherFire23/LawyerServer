@@ -29,7 +29,7 @@ public class ClientRepository : ProcedureCrudBase<Client>
         _lawyerRepository = lawyerRepository;
     }
 
-    public async Task CreateClient(Guid lawyerId)
+    public async Task<Guid> CreateClient(Guid lawyerId)
     {
         var lawyer = await Context.Lawyers.FirstByIdAsync(lawyerId);
 
@@ -49,14 +49,15 @@ public class ClientRepository : ProcedureCrudBase<Client>
 
 
         var regottenClient = await Context.Clients.FirstAsync(x => x.Id == client.Id);
+        return client.Id;
     }
 
-    public async Task UpdateClientInfo(ClientDto client)
+    public async Task UpdateClientInfo(ClientDto clientDto)
     {
-        Client entity = await GetEntityById(client.Id);
-
-        entity.CopyFromCourtMember(client);
-
+        var clientEntity = await GetEntityById(clientDto.Id);
+        clientEntity.CopyFromCourtMember(clientDto);
+        // the client should not update the court role since it is determined by the case...
+        clientEntity.CourtRole = Enums.CourtRoles.DeterminedByCase;
         await Context.SaveChangesAsync();
     }
 

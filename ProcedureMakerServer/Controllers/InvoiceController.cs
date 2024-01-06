@@ -27,14 +27,14 @@ public class InvoiceController : Controller
     [HttpGet("account/clientId={clientId}")]
     public async Task<ActionResult<AccountStatementDto>> GetAccountStatementDto(Guid clientId)
     {
-        AccountStatementDto accountStatementDto = await _accountStatementRepository.ConstructAccountStatementDtoByCaseId(clientId);
+        var accountStatementDto = await _accountStatementRepository.ConstructAccountStatementDtoByCaseId(clientId);
         return Ok(accountStatementDto);
     }
 
     [HttpGet("GetTrustClientCardDto/clientid={clientId}")]
     public async Task<ActionResult<TrustClientCardDto>> GetTrustClientCardDto(Guid clientId)
     {
-        TrustClientCardDto trustDto = await _trustRepository.ConstrustTrustClientCard(clientId);
+        var trustDto = await _trustRepository.ConstrustTrustClientCard(clientId);
         return Ok(trustDto);
     }
 
@@ -48,7 +48,7 @@ public class InvoiceController : Controller
     }
 
     [HttpPut("UpdateInvoice")]
-    public async Task<ActionResult> UpdateInvoiceProperties(InvoiceDto invoiceDto)
+    public async Task<ActionResult> UpdateInvoiceProperties([FromBody] InvoiceDto invoiceDto)
     {
         await _invoiceRepository.UpdateInvoiceProperties(invoiceDto);
         return Ok();
@@ -63,6 +63,7 @@ public class InvoiceController : Controller
 
     // ACTIVITIES OF INVOICES
     [HttpPost("CreateActivity")]
+    [ProducesResponseType(200, Type = typeof(Guid))]
     public async Task<ActionResult<Guid>> CreateActivity([FromQuery] Guid invoiceId)
     {
         var createdId = await _invoiceRepository.AddActivity(invoiceId);
@@ -105,9 +106,9 @@ public class InvoiceController : Controller
 
     // TRUST ONLY
     [HttpPost("AddFundsToTrust")]
-    public async Task<ActionResult> AddFundsToTrust([FromQuery] Guid clientId, [FromBody] TrustPaymentDto trustPayment)
+    public async Task<ActionResult> AddFundsToTrust([FromQuery] Guid clientId)
     {
-        await _trustRepository.AddFundsToTrust(clientId, trustPayment);
+        await _trustRepository.AddFundsToTrust(clientId);
         return Ok();
     }
 
@@ -134,7 +135,7 @@ public class InvoiceController : Controller
     }
 
     [HttpPut("UpdateInvoicePayment")]
-    public async Task<ActionResult> UpdateInvoicePayment(InvoicePaymentDto invoicePayment)
+    public async Task<ActionResult> UpdateInvoicePayment([FromBody] InvoicePaymentDto invoicePayment)
     {
         await _invoiceRepository.UpdateInvoicePayment(invoicePayment);
         return Ok();

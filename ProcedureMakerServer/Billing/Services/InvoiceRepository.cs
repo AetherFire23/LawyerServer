@@ -58,12 +58,11 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
             AccountStatement = accountStatement,
             DefaultBillingElement = currentBillingElementCopy,
             InvoiceStatus = InvoiceStatuses.InPreparation,
+            InvoiceNumber = accountStatement.Lawyer.BillsEmittedCount,
         };
 
         Context.Invoices.Add(newInvoice);
         await Context.SaveChangesAsync();
-
-        var accountStatement2 = await _accountStatementRepository.GetAccountStatementByCaseId(caseId);
 
         return newInvoice.Id;
     }
@@ -227,7 +226,7 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
             Case = caseDto,
             Invoice = invoice,
             Created = DateTime.Now,
-            BillNumber = lcase.ManagerLawyer.BillsEmittedCount,
+            BillNumber = invoice.InvoiceNumber,
             HourlyRatesCostTotal = invoice.GetHourlyRatesTotal(),
             DisbursesTaxableTotal = invoice.GetDisbursesTaxableTotal(),
             DisbursesNonTaxableTotal = nonTaxableActivitiesCost,

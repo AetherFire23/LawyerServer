@@ -1,14 +1,26 @@
-﻿using RequestTester;
-// https://next-auth.js.org/providers/google
-// https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-8.0
+using Microsoft.AspNetCore.Mvc.Testing;
+using ProcedureMakerServer;
+using Xunit.Abstractions;
 
-// THis is emulating a client.
-// So no project references please.
-public class Program
+namespace IntegrationTest;
+
+public class BasicTests
+    : IClassFixture<WebApplicationFactory<Program>>
 {
-    private static HttpClient _client = new HttpClient();
-    private static NSwagCaller _caller = new NSwagCaller("http://localhost:5099/", _client);
-    public static async Task Main(string[] args)
+    private readonly WebApplicationFactory<Program> _factory;
+    private readonly HttpClient _client;
+    private readonly ITestOutputHelper _output;
+    private readonly Swagpoints _caller;
+
+    public BasicTests(WebApplicationFactory<Program> factory)
+    {
+        _factory = factory;
+        _client = _factory.CreateClient();
+        _caller = new Swagpoints("/", _client);
+    }
+
+    [Fact]
+    public async Task TestApplication()
     {
         // REGISTER & LOGIN 
         await Task.Delay(3500);
@@ -30,10 +42,10 @@ public class Program
 
         await invoiceTester.TestCreateActivities();
         await invoiceTester.UpdateActivity();
-        //await invoiceTester.RemoveActivity();
+        await invoiceTester.RemoveActivity();
 
         await invoiceTester.AddInvoicePayments();
-        await invoiceTester.ModifyInvoicePayment();
+        await invoiceTester.ModifyInvoicePayments();
         await invoiceTester.RemoveInvoicePayment();
 
         // TRUST 
@@ -46,8 +58,7 @@ public class Program
 
         var lastState = await _caller.GetcasescontextAsync();
     }
-
-    private static async Task CaseManagement()
+    private async Task CaseManagement()
     {
         await UpdateLawyer();
         await CreateInitialClient();
@@ -57,7 +68,7 @@ public class Program
         await RemoveCaseParticipant();
         await UpdateCaseParticipant();
     }
-    private static async Task<RegisterRequest> RegisterTest()
+    private async Task<RegisterRequest> RegisterTest()
     {
         var registerRequest = new RegisterRequest()
         {
@@ -70,7 +81,7 @@ public class Program
 
         return registerRequest;
     }
-    private static async Task<LoginResult> LoginTest(RegisterRequest requested)
+    private async Task<LoginResult> LoginTest(RegisterRequest requested)
     {
         var loginRequest = new LoginRequest
         {
@@ -80,13 +91,13 @@ public class Program
         var loginResult = await _caller.CredentialsloginAsync(loginRequest);
         return loginResult;
     }
-    private static async Task PrepareAndTestAuthenticationHeaders(string token)
+    private async Task PrepareAndTestAuthenticationHeaders(string token)
     {
         _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
         await _caller.AuthorizedrequestblablaAsync();
     }
-    private static async Task UpdateLawyer()
+    private async Task UpdateLawyer()
     {
         var caseContext = await _caller.GetcasescontextAsync();
 
@@ -96,7 +107,7 @@ public class Program
 
         await _caller.UpdatelawyerAsync(caseContext.Lawyer);
     }
-    private static async Task CreateInitialClient()
+    private async Task CreateInitialClient()
     {
         var clientDto = new ClientDto()
         {
@@ -109,20 +120,14 @@ public class Program
         };
         await _caller.AddclientAsync();
     }
-    private static async Task CreateInitialCase()
+    private async Task CreateInitialCase()
     {
         var caseContext = await _caller.GetcasescontextAsync();
         var firstclient = caseContext.Clients.First();
 
-        var caseCreation = new CaseCreationInfo()
-        {
-            CaseNumber = "20 001",
-            ClientId = firstclient.Id,
-        };
-
-        await _caller.CreatenewcaseAsync(caseCreation);
+        await _caller.CreatenewcaseAsync(firstclient.Id);
     }
-    private static async Task UpdateCase()
+    private async Task UpdateCase()
     {
         var caseContext = await _caller.GetcasescontextAsync();
 
@@ -131,18 +136,17 @@ public class Program
 
         await _caller.SavecaseAsync(modifiedCase);
     }
-    private static async Task AddCaseParticipants()
+    private async Task AddCaseParticipants()
     {
         var caseContext = await _caller.GetcasescontextAsync();
         var lcase = caseContext.GetFirstCase();
-
 
         await _caller.CreatecaseparticipantAsync(lcase.Id);
         await _caller.CreatecaseparticipantAsync(lcase.Id);
         await _caller.CreatecaseparticipantAsync(lcase.Id);
     }
 
-    private static async Task UpdateCaseParticipant()
+    private async Task UpdateCaseParticipant()
     {
         var caseContext = await _caller.GetcasescontextAsync();
         var participants = caseContext.GetFirstCase().Participants;
@@ -189,16 +193,16 @@ public class Program
         }
     }
 
-    private static async Task RemoveCaseParticipant()
+    private async Task RemoveCaseParticipant()
     {
         var caseContext = await _caller.GetcasescontextAsync();
 
-        Guid participantId = caseContext.GetFirstCase().Participants.First(x => x.CourtRole == CourtRoles.Intimated).Id;
+        Guid participantId = caseContext.GetFirstCase().Participants.First().Id;
 
         await _caller.RemovecaseparticipantAsync(participantId);
     }
 
-    private static async Task SendNotificationPdfOnlyAndGetProofOfNotificationBack()
+    private async Task SendNotificationPdfOnlyAndGetProofOfNotificationBack()
     {
         if (true) return;
 
@@ -209,7 +213,7 @@ public class Program
 
         var fileBytes = File.ReadAllBytes(path);
         using var fileStream = File.Open(path, FileMode.Open);
-        var fileParameter = new RequestTester.FileParameter(fileStream);
+        var fileParameter = new FileParameter(fileStream);
         var f = await _caller.NotifypdfAsync(lcase.Id, "Ville et Prison", fileParameter);
 
         var t = f.Stream.ReadToEnd();
@@ -218,7 +222,7 @@ public class Program
     }
 
     // TEST INVOICE
-    private static async Task DownloadInvoice()
+    private async Task DownloadInvoice()
     {
         var ctx = await _caller.GetcasescontextAsync();
         var res = await _caller.GetinvoiceAsync(ctx.Clients.First().Cases.First().Invoices.First().Id);

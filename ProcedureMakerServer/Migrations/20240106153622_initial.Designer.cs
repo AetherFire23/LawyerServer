@@ -12,7 +12,7 @@ using ProcedureMakerServer;
 namespace ProcedureMakerServer.Migrations
 {
     [DbContext(typeof(ProcedureContext))]
-    [Migration("20231231023106_initial")]
+    [Migration("20240106153622_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -216,6 +216,9 @@ namespace ProcedureMakerServer.Migrations
 
                     b.Property<Guid>("DefaultBillingElementId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("InvoiceNumber")
+                        .HasColumnType("int");
 
                     b.Property<int>("InvoiceStatus")
                         .HasColumnType("int");

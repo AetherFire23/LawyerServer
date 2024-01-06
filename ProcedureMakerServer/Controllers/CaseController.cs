@@ -45,28 +45,26 @@ public class CaseController : Controller
     // Create Case (many cases for 1 client)
     // Edit client, edit case
     // I wanna create 
-
     [HttpGet("GetCasesContext")]
     [Authorize(Roles = nameof(RoleTypes.Normal))]
     public async Task<ActionResult<CaseContextDto>> GetCaseContext()
     {
-        Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        Guid lawyerId = _procedureContext.Lawyers.First(x => x.UserId == userId).Id;
+        var userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var lawyerId = _procedureContext.Lawyers.First(x => x.UserId == userId).Id;
 
         if (lawyerId.Equals(Guid.Empty)) throw new ArgumentInvalidException("lawyer id null");
-        CaseContextDto caseContext = await _caseContextService.GetCaseContext(lawyerId);
+        var caseContext = await _caseContextService.GetCaseContext(lawyerId);
         Console.WriteLine("case hit");
         return Ok(caseContext);
     }
 
     [HttpPost("CreateNewCase")]
     [Authorize(Roles = nameof(RoleTypes.Normal))]
-    public async Task<ActionResult<GetCaseResponse>> CreateNewCase([FromBody] CaseCreationInfo caseInfo)
+    public async Task<ActionResult<GetCaseResponse>> CreateNewCase([FromQuery] Guid clientId)
     {
-        Guid userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        Guid lawyerId = _procedureContext.Lawyers.First(x => x.UserId == userId).Id;
-        GetCaseResponse createdId = await _caseContextService.CreateNewCase(lawyerId, caseInfo);
-
+        var userId = new Guid(HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var lawyerId = _procedureContext.Lawyers.First(x => x.UserId == userId).Id;
+        var createdId = await _caseContextService.CreateNewCase(lawyerId, clientId);
         return Ok(createdId);
     }
 
@@ -86,9 +84,17 @@ public class CaseController : Controller
 
     [HttpPut("addclient")]
     [Authorize(Roles = nameof(RoleTypes.Normal))]
-    public async Task<ActionResult> AddClient()
+    public async Task<ActionResult<Guid>> AddClient()
     {
-        await _clientRepository.CreateClient(this.InferLawyerId());
+        var id = await _clientRepository.CreateClient(this.InferLawyerId());
+        return Ok(id);
+    }
+
+    [HttpPut("updateclient")]
+    [Authorize(Roles = nameof(RoleTypes.Normal))]
+    public async Task<ActionResult> UpdateClient([FromBody] ClientDto clientDto)
+    {
+        await _clientRepository.UpdateClientInfo(clientDto);
         return Ok();
     }
 

@@ -1,6 +1,7 @@
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Diagnostics;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using ProcedureMakerServer.Authentication;
 using ProcedureMakerServer.Exceptions;
 using ProcedureMakerServer.Initialization;
@@ -23,128 +24,121 @@ namespace ProcedureMakerServer;
 
 public class Program
 {
-	public static async Task Main(string[] args)
-	{
-		// //// 1. DOC GEN
-		//
+    public static async Task Main(string[] args)
+    {
+        // //// 1. DOC GEN
+        //
 
 
-		//    // 2. NOTIFY
-		//// document part
-		//var presentationNoticePath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
-		//var backingPdfPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.Backing, new BackingFillerParams() { DocumentName = DocumentTypes.PresentationNotice.ToString()});
-		//string mergedNotificationPath = PdfMerger.MergePdfs(new() { presentationNoticePath, backingPdfPath });
+        //    // 2. NOTIFY
+        //// document part
+        //var presentationNoticePath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
+        //var backingPdfPath = await DocumentMaker.GenerateDocumentAsPdf(DocumentDummies.CreateCaseDto(), DocumentTypes.Backing, new BackingFillerParams() { DocumentName = DocumentTypes.PresentationNotice.ToString()});
+        //string mergedNotificationPath = PdfMerger.MergePdfs(new() { presentationNoticePath, backingPdfPath });
 
 
-		// Send email part
-		// EmailCredentials credentials = new EmailCredentials()
-		// {
-		//     Email = "richerf3212@gmail.com",
-		//     AppPassword = MyPassword.Pass,
-		// };
+        // Send email part
+        // EmailCredentials credentials = new EmailCredentials()
+        // {
+        //     Email = "richerf3212@gmail.com",
+        //     AppPassword = MyPassword.Pass,
+        // };
 
-		//SendEmailInfo sendingInfo = new SendEmailInfo();
-		//sendingInfo.Subject = await DocumentMaker.GenerateEmailSubject(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
-		//string htmlPath = await DocumentMaker.GenerateNotificationBorderAsHtml(DocumentDummies.CreateCaseDto(), mergedNotificationPath, DocumentTypes.PresentationNotice.ToString());
-		//sendingInfo.EmailHtmlBody = File.ReadAllText(htmlPath);
-		//sendingInfo.To = "richerf3212@gmail.com";
-		//sendingInfo.PdfAttachmentPath = mergedNotificationPath;
-		//await EmailSender.NotifyDocument(credentials, sendingInfo);
-
-
-		//// 3. ARCHIVE NOTIFICATION
-
-		//string ProofOfNotificationPath = await DocumentMaker.GenerateProofOfNotificationAsPdf(DocumentDummies.CreateCaseDto(),
-		//    sendingInfo.Subject,
-		//    credentials);
-
-		//string mergedWithProof = PdfMerger.MergePdfs(new() { presentationNoticePath, ProofOfNotificationPath, backingPdfPath });
-
-		//int ixyz = 0;
+        //SendEmailInfo sendingInfo = new SendEmailInfo();
+        //sendingInfo.Subject = await DocumentMaker.GenerateEmailSubject(DocumentDummies.CreateCaseDto(), DocumentTypes.PresentationNotice);
+        //string htmlPath = await DocumentMaker.GenerateNotificationBorderAsHtml(DocumentDummies.CreateCaseDto(), mergedNotificationPath, DocumentTypes.PresentationNotice.ToString());
+        //sendingInfo.EmailHtmlBody = File.ReadAllText(htmlPath);
+        //sendingInfo.To = "richerf3212@gmail.com";
+        //sendingInfo.PdfAttachmentPath = mergedNotificationPath;
+        //await EmailSender.NotifyDocument(credentials, sendingInfo);
 
 
-		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        //// 3. ARCHIVE NOTIFICATION
+
+        //string ProofOfNotificationPath = await DocumentMaker.GenerateProofOfNotificationAsPdf(DocumentDummies.CreateCaseDto(),
+        //    sendingInfo.Subject,
+        //    credentials);
+
+        //string mergedWithProof = PdfMerger.MergePdfs(new() { presentationNoticePath, ProofOfNotificationPath, backingPdfPath });
+
+        //int ixyz = 0;
 
 
-		_ = builder.Services.AddControllers()
-			.AddNewtonsoftJson(options =>
-			{
-				options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-
-			});
-
-		_ = builder.Services.AddEndpointsApiExplorer();
-		_ = builder.Services.AddSwaggerGen(c =>
-		{
-			c.SchemaFilter<XEnumNamesSchemaFilter>();
-			c.UseAllOfToExtendReferenceSchemas();
-			//c.UseInlineDefinitionsForEnums();
-			//    c.DescribeAllEnumsAsStrings(); // this will do the trick
-		});
-
-		builder.Services.InitializeAndRegisterDocumentFillers();
-
-		builder.ConfigureJwt();
-
-		// removes errors where aspnet sends bad request if a nonnullable is sent 
-		_ = builder.Services.AddControllers(
-				options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
-
-		_ = builder.Services.AddRouting(options =>
-		{
-			options.LowercaseUrls = true;
-		}); // omgf
-
-		AppBuilderHelper.Configure(builder);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 
-		WebApplication app = builder.Build();
+        _ = builder.Services.AddControllers()
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
-		_ = app.UseExceptionHandler(exceptionHandler =>
-		{
-			exceptionHandler.Run(async context =>
-			{
-				IExceptionHandlerPathFeature? exceptionHandlerFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                // to convert enum to string and vice-versa to that the codegen can happen correctly 
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                
+            });
+        builder.Services.AddSwaggerGenNewtonsoftSupport(); // required for swagger codegen
 
-				if (exceptionHandlerFeature?.Error is HttpExceptionBase exBase)
-				{
-					context.Response.StatusCode = (int)exBase.StatusCode;
+        _ = builder.Services.AddEndpointsApiExplorer();
+        _ = builder.Services.AddSwaggerGen(c =>
+        {
+            c.SchemaFilter<XEnumNamesSchemaFilter>();
+            c.UseAllOfToExtendReferenceSchemas();
+        });
 
-					ExceptionResponseData responseData = new()
-					{
-						Data = exBase.ExceptionData,
-						Message = exBase.HttpMessage,
-					};
+        builder.Services.InitializeAndRegisterDocumentFillers();
 
-					await context.Response.WriteAsJsonAsync(responseData);
-				}
-			});
-		});
+        builder.ConfigureJwt();
 
-		await AppConfigHelper.ConfigureApp(app);
+        // removes errors where aspnet sends bad request if a nonnullable is sent 
+        _ = builder.Services.AddControllers(
+                options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
-		if (app.Environment.IsDevelopment())
-		{
-			_ = app.UseSwagger();
-			_ = app.UseSwaggerUI();
-		}
+        _ = builder.Services.AddRouting(options =>
+        {
+            options.LowercaseUrls = true;
+        }); // omgf
 
-		_ = app.UseHttpsRedirection();
+        AppBuilderHelper.Configure(builder);
 
-		_ = app.UseAuthorization();
 
-		_ = app.MapControllers();
+        WebApplication app = builder.Build();
 
-		app.Run();
-	}
+        // to use exceptions as http request code returner
+        _ = app.UseExceptionHandler(exceptionHandler =>
+        {
+            exceptionHandler.Run(async context =>
+            {
+                IExceptionHandlerPathFeature? exceptionHandlerFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 
-	// only in var is cannot be  implicitly changed
-	public async Task SendEmailAsync()
-	{
-		_ = new ClientSecrets
-		{
-			ClientId = Environment.GetEnvironmentVariable("GMailClientId"),
-			ClientSecret = Environment.GetEnvironmentVariable("GMailClientSecret")
-		};
-	}
+                if (exceptionHandlerFeature?.Error is HttpExceptionBase exBase)
+                {
+                    context.Response.StatusCode = (int)exBase.StatusCode;
+
+                    ExceptionResponseData responseData = new()
+                    {
+                        Data = exBase.ExceptionData,
+                        Message = exBase.HttpMessage,
+                    };
+
+                    await context.Response.WriteAsJsonAsync(responseData);
+                }
+            });
+        });
+
+        await AppConfigHelper.ConfigureApp(app);
+
+        if (app.Environment.IsDevelopment())
+        {
+            _ = app.UseSwagger();
+            _ = app.UseSwaggerUI();
+        }
+
+        _ = app.UseHttpsRedirection();
+
+        _ = app.UseAuthorization();
+
+        _ = app.MapControllers();
+
+        app.Run();
+    }
 }

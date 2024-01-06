@@ -9,9 +9,9 @@ public class InvoiceDto : EntityBase
 	public List<ActivityDto> Activities { get; set; } = [];
 	public List<InvoicePaymentDto> Payments { get; set; } = [];
 	public List<BillingElementDto> AvailableBillingElementsForInvoice { get; set; } = [];
+    public int InvoiceNumber { get; set; }
 
-
-	public List<ActivityDto> GetDisbursesTaxable()
+    public List<ActivityDto> GetDisbursesTaxable()
 	{
 		var disburses = this.Activities.Where(x => x.IsDisburse && x.IsTaxable).ToList();
 		return disburses;

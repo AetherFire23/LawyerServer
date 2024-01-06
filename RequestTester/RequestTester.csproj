@@ -16,4 +16,4 @@
     <ProjectReference Include="..\EFCoreBase\EFCoreBase.csproj" />
     <ProjectReference Include="..\ProcedureMakerServer\ProcedureMakerServer.csproj" />
   </ItemGroup>
-</Project>
+</Project>_

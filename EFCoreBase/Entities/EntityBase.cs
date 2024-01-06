@@ -1,8 +1,10 @@
 ﻿using EFCoreBase.Interfaces;
+using System.ComponentModel.DataAnnotations;
 namespace EFCoreBase.Entities;
 
 public abstract class EntityBase : IEntity, IEquatable<IEntity>
 {
+    [Required]
     public Guid Id { get; set; } = Guid.NewGuid();
 
     public override bool Equals(object? obj)

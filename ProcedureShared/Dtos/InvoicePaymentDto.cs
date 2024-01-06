@@ -8,5 +8,8 @@ public class InvoicePaymentDto : EntityBase
 	public DateTime? AmoundPaidDate { get; set; }
 	public bool IsPaymentComingFromTrust { get; set; }
 	public string Method { get; set; }
+
+
+	// for rendering the razor page 
 	
 }

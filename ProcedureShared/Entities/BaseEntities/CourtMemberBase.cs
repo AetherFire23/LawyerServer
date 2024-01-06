@@ -12,7 +12,7 @@ public abstract class CourtMemberBase : PersonBase
 
 	[NotMapped]
 	public string FullName => $"{FirstName} {LastName}";
-	public CourtRoles CourtRole { get; set; } = CourtRoles.Intimated;
+	public CourtRoles CourtRole { get; set; } = CourtRoles.Defender;
 
 	[NotMapped]
 	public bool IsNotifiable => NotificationEmail != string.Empty && MustNotify;

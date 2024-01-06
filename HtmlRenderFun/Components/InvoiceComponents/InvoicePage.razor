@@ -132,7 +132,8 @@
                 <div class="flex-row" style="justify-content: space-evenly">
                     <h1> @payment.AmoundPaidDate?.ToShortDateString() </h1>
                     <h1> @payment.Method </h1>
-                    <h1> @payment.AmountPaid </h1>
+                    <h1> @payment.AmountPaid.ToString() </h1>
+                    <h1> lolzida</h1>
                 </div>
             }
         </div>
@@ -156,6 +157,7 @@
 </div>
 
 @code {
+
     [Parameter]
     public InvoiceSummary InvoiceSummary { get; set; }
 

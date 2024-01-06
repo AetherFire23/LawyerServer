@@ -116,7 +116,8 @@ namespace ProcedureMakerServer.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AccountStatementId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     InvoiceStatus = table.Column<int>(type: "int", nullable: false),
-                    DefaultBillingElementId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    DefaultBillingElementId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InvoiceNumber = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

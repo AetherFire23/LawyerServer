@@ -13,8 +13,7 @@ public class CaseDto : EntityBase
 	public CourtMemberBase Defender { get; set; }
 	public CourtMemberBase Plaintiff { get; set; }
 	public List<InvoiceDto> Invoices { get; set; } = new List<InvoiceDto>();
-
-
+	public CourtRoles ClientRoleInCase { get; set; } = CourtRoles.Defender;
 	public string DistrictName { get; set; } = string.Empty;
 	public string CourtAffairNumber { get; set; } = string.Empty;
 	public string CaseNumber { get; set; } = string.Empty; // cases can have different filenumbers if it comes again many times 
@@ -51,7 +50,7 @@ public class CaseDto : EntityBase
 	// va devenir complique de toute demele et faut jpose des questions
 	public (CourtMemberBase? p, CourtMemberBase? d) GetPlaintiffAndDefender()
 	{
-		if (Client.CourtRole is CourtRoles.Plaintiff)
+		if (this.ClientRoleInCase is CourtRoles.Plaintiff)
 		{
 			CaseParticipantDto? defender = Participants.FirstOrDefault(x => x.CourtRole == CourtRoles.Defender);
 			return (Client, defender);

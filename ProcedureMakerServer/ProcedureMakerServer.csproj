@@ -6,6 +6,12 @@
   </PropertyGroup>
   <Target Name="CompileTypeScript" />
   <ItemGroup>
+    <Compile Remove="Notifications\**" />
+    <Content Remove="Notifications\**" />
+    <EmbeddedResource Remove="Notifications\**" />
+    <None Remove="Notifications\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Azure.Identity" Version="1.10.4" />
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
@@ -25,6 +31,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EFCoreBase\EFCoreBase.csproj" />
@@ -37,6 +44,8 @@
   <ItemGroup>
     <Folder Include="Billing\StatementDtos\" />
     <Folder Include="DocsTemplates\Temporary\" />
-    <Folder Include="Notifications\" />
   </ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="IntegrationTest" />
+	</ItemGroup>
 </Project>

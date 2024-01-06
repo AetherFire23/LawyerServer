@@ -214,6 +214,9 @@ namespace ProcedureMakerServer.Migrations
                     b.Property<Guid>("DefaultBillingElementId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("InvoiceNumber")
+                        .HasColumnType("int");
+
                     b.Property<int>("InvoiceStatus")
                         .HasColumnType("int");
 

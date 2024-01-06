@@ -11,7 +11,7 @@ public partial class TrustRepository : ProcedureRepositoryContextBase
 	{
 	}
 
-	public async Task AddFundsToTrust(Guid clientId, TrustPaymentDto trustPayment)
+	public async Task AddFundsToTrust(Guid clientId)
 	{
 		var client = await Context.Clients
 			.Include(x => x.TrustClientCard)
@@ -20,9 +20,6 @@ public partial class TrustRepository : ProcedureRepositoryContextBase
 
 		var payment = new TrustPayment()
 		{
-			Id = trustPayment.GenerateIdIfNull(),
-			Amount = trustPayment.Amount,
-			Date = trustPayment.Date,
 			Trust = client.TrustClientCard,
 		};
 
