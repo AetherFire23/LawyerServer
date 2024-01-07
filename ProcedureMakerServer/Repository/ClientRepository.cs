@@ -154,6 +154,7 @@ public class ClientRepository : ProcedureCrudBase<Client>
     {
         var activityDtos = await MapActivityDtos(invoice.Id);
         var paymentDtos = await MapInvoicePaymentDtos(invoice.Id);
+
         var invoiceDto = new InvoiceDto()
         {
             Id = invoice.Id,
@@ -161,6 +162,7 @@ public class ClientRepository : ProcedureCrudBase<Client>
             Activities = activityDtos,
             Payments = paymentDtos,
         };
+        invoiceDto.InvoiceSummation = invoiceDto.GetInvoiceSummation();
         return invoiceDto;
     }
 
@@ -182,6 +184,7 @@ public class ClientRepository : ProcedureCrudBase<Client>
                 IsDisburse = activity.IsDisburse,
                 IsTaxable = activity.IsTaxable,
                 CreatedAt = activity.CreatedAt,
+                TotalCost = activity.Quantity * activity.CostInDollars,
             };
 
             activityDtos.Add(activityDto);

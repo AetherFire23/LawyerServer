@@ -107,13 +107,13 @@
                 <h1> @nonTaxableDisburse.Description </h1>
                 <h1> @nonTaxableDisburse.CostInDollars </h1>
                 <h1> @nonTaxableDisburse.Quantity </h1>
-                <h1> Total: @nonTaxableDisburse.GetTotalCost()</h1>
+                <h1> Total: @nonTaxableDisburse.TotalCost</h1>
             }
         </div>
     </div>
 
     @* Total cost of current invoice *@
-    <h1 style="text-align-last: right; padding-right: 15vw"> Invoice total @this.InvoiceSummary.InvoiceTotal </h1>
+    <h1 style="text-align-last: right; padding-right: 15vw"> Invoice total @this.InvoiceSummary.InvoiceSummation.InvoiceTotal </h1>
 
     @* Payments *@
     <div>
@@ -137,22 +137,22 @@
                 </div>
             }
         </div>
-        <h1 style="text-align-last: right; padding-right: 15vw"> Balance: @this.InvoiceSummary.Balance </h1>
+        <h1 style="text-align-last: right; padding-right: 15vw"> Balance: @this.InvoiceSummary.Invoice.InvoiceSummation.Balance </h1>
     </div>
 
 
 
     @* Balance *@
     <div id="balance-section">
-        <h1> Taxable activities : @InvoiceSummary.HourlyRatesCostTotal</h1>
-        <h1> Taxable disburses : @InvoiceSummary.DisbursesTaxableTotal</h1>
-        <h1> TPS @InvoiceSummary.TPSTax </h1>
-        <h1> TVQ @InvoiceSummary.TVQTax </h1>
-        <h1> Taxable subtotal @InvoiceSummary.TaxableSubtotal </h1>
-        <h1> non-taxable disburses @InvoiceSummary.DisbursesNonTaxableTotal </h1>
-        <h1> Total of current invoice:  @InvoiceSummary.InvoiceTotal</h1>
-        <h1> Payments : @InvoiceSummary.PaymentsTotal</h1>
-        <h1> Balance : @InvoiceSummary.Balance</h1>
+        <h1> Taxable activities : @InvoiceSummary.InvoiceSummation.HourlyRatesCostTotal</h1>
+        <h1> Taxable disburses : @InvoiceSummary.InvoiceSummation.DisbursesTaxableTotal</h1>
+        <h1> TPS @InvoiceSummary.Invoice.InvoiceSummation.TPSTax </h1>
+        <h1> TVQ @InvoiceSummary.InvoiceSummation.TVQTax </h1>
+        <h1> Taxable subtotal @InvoiceSummary.InvoiceSummation.TaxableSubtotal </h1>
+        <h1> non-taxable disburses @InvoiceSummary.InvoiceSummation.DisbursesNonTaxableTotal </h1>
+        <h1> Total of current invoice:  @InvoiceSummary.InvoiceSummation.InvoiceTotal</h1>
+        <h1> Payments : @InvoiceSummary.InvoiceSummation.PaymentsTotal</h1>
+        <h1> Balance : @InvoiceSummary.InvoiceSummation.Balance</h1>
     </div>
 </div>
 

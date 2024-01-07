@@ -3227,6 +3227,9 @@ namespace IntegrationTest
         [Newtonsoft.Json.JsonProperty("availableBillingElementsForInvoice", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<BillingElementDto> AvailableBillingElementsForInvoice { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("invoiceSummation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public InvoiceSummation InvoiceSummation { get; set; }
+
         [Newtonsoft.Json.JsonProperty("invoiceNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int InvoiceNumber { get; set; }
 
@@ -3275,6 +3278,41 @@ namespace IntegrationTest
 
         [System.Runtime.Serialization.EnumMember(Value = @"Cancelled")]
         Cancelled = 4,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.20.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v11.0.0.0))")]
+    public partial class InvoiceSummation
+    {
+        [Newtonsoft.Json.JsonProperty("hourlyRatesCostTotal", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double HourlyRatesCostTotal { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("disbursesTaxableTotal", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double DisbursesTaxableTotal { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("disbursesNonTaxableTotal", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double DisbursesNonTaxableTotal { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("tpsTax", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double TpsTax { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("tvqTax", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double TvqTax { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("taxableFeesCost", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double TaxableFeesCost { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("invoiceTotal", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double InvoiceTotal { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("paymentsTotal", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double PaymentsTotal { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("balance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Balance { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("taxableSubtotal", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double TaxableSubtotal { get; set; }
 
     }
 

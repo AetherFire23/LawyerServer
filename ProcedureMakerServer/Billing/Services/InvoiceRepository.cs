@@ -197,6 +197,48 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
         return fileBytes;
     }
 
+
+
+    public async Task<InvoiceSummary> GetInvoiceSummary2(CaseContextDto caseContextDto, Guid invoiceId)
+    {
+        // lil query just to infer the caseId from the invoiceId
+        var lcase = (await Context.Invoices
+            .Include(x => x.AccountStatement)
+                .ThenInclude(x => x.Case)
+                    .ThenInclude(x => x.ManagerLawyer)
+            .FirstAsync(x => x.Id == invoiceId)
+            ).AccountStatement.Case;
+
+        var invoice = caseContextDto.GetInvoice(invoiceId);
+        var caseDto = caseContextDto.Clients
+            .SelectMany(x => x.Cases)
+            .First(x => x.Id == lcase.Id);
+
+        var taxableActivitiesCost = invoice.GetDisbursesTaxableTotal() + invoice.GetHourlyRatesTotal();
+        var tps = taxableActivitiesCost * Taxes.TPSInPercentage;
+        var tvq = taxableActivitiesCost * Taxes.TVQInPercentage;
+        var taxableSubtotal = taxableActivitiesCost + tps + tvq;
+        var nonTaxableActivitiesCost = invoice.GetDisbursesNonTaxableTotal();
+        var total = nonTaxableActivitiesCost + taxableSubtotal;
+        var paymentsTotal = invoice.GetPaymentsTotal();
+        var balance = total - paymentsTotal;
+
+        // Get the bill number
+        var invoiceSummary = new InvoiceSummary
+        {
+            Case = caseDto,
+            Invoice = invoice,
+            Created = DateTime.Now,
+            BillNumber = invoice.InvoiceNumber,
+            Lawyer = caseDto.ManagerLawyer,
+            Client = caseDto.Client,
+            
+        };
+
+        return invoiceSummary;
+    }
+
+    // here I should be injecting the casesContext I guess
     public async Task<InvoiceSummary> GetInvoiceSummary(Guid invoiceId)
     {
         // lil query just to infer the caseId from the invoiceId
@@ -211,24 +253,47 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
         var caseDto = ctx.Cases.First(x => x.Id == lcase.Id);
         var invoice = caseDto.Invoices.First(x => x.Id == invoiceId);
 
-        decimal taxableActivitiesCost = invoice.GetDisbursesTaxableTotal() + invoice.GetHourlyRatesTotal();
-        decimal tps = taxableActivitiesCost * Taxes.TPSInPercentage;
-        decimal tvq = taxableActivitiesCost * Taxes.TVQInPercentage;
-        decimal taxableSubtotal = taxableActivitiesCost + tps + tvq;
-        decimal nonTaxableActivitiesCost = invoice.GetDisbursesNonTaxableTotal();
-        decimal total = nonTaxableActivitiesCost + taxableSubtotal;
-        decimal paymentsTotal = invoice.GetPaymentsTotal();
-        decimal balance = total - paymentsTotal;
+        var taxableActivitiesCost = invoice.GetDisbursesTaxableTotal() + invoice.GetHourlyRatesTotal();
+        var tps = taxableActivitiesCost * Taxes.TPSInPercentage;
+        var tvq = taxableActivitiesCost * Taxes.TVQInPercentage;
+        var taxableSubtotal = taxableActivitiesCost + tps + tvq;
+        var nonTaxableActivitiesCost = invoice.GetDisbursesNonTaxableTotal();
+        var total = nonTaxableActivitiesCost + taxableSubtotal;
+        var paymentsTotal = invoice.GetPaymentsTotal();
+        var balance = total - paymentsTotal;
 
+        var invoiceSummations = await GetInvoiceSummations(invoice);
         // Get the bill number
         var invoiceSummary = new InvoiceSummary
         {
+            Lawyer = caseDto.ManagerLawyer,
             Case = caseDto,
             Invoice = invoice,
             Created = DateTime.Now,
             BillNumber = invoice.InvoiceNumber,
-            HourlyRatesCostTotal = invoice.GetHourlyRatesTotal(),
-            DisbursesTaxableTotal = invoice.GetDisbursesTaxableTotal(),
+            Client = caseDto.Client,
+            InvoiceSummation = invoiceSummations,
+        };
+
+        return invoiceSummary;
+
+    }
+
+    public async Task<InvoiceSummation> GetInvoiceSummations(InvoiceDto invoiceDto)
+    {
+        var taxableActivitiesCost = invoiceDto.GetDisbursesTaxableTotal() + invoiceDto.GetHourlyRatesTotal();
+        var tps = taxableActivitiesCost * Taxes.TPSInPercentage;
+        var tvq = taxableActivitiesCost * Taxes.TVQInPercentage;
+        var taxableSubtotal = taxableActivitiesCost + tps + tvq;
+        var nonTaxableActivitiesCost = invoiceDto.GetDisbursesNonTaxableTotal();
+        var total = nonTaxableActivitiesCost + taxableSubtotal;
+        var paymentsTotal = invoiceDto.GetPaymentsTotal();
+        var balance = total - paymentsTotal;
+
+        var invoiceSummation = new InvoiceSummation
+        {
+            HourlyRatesCostTotal = invoiceDto.GetHourlyRatesTotal(),
+            DisbursesTaxableTotal = invoiceDto.GetDisbursesTaxableTotal(),
             DisbursesNonTaxableTotal = nonTaxableActivitiesCost,
             TaxableFeesCost = taxableActivitiesCost,
             TaxableSubtotal = taxableSubtotal,
@@ -237,10 +302,7 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
             InvoiceTotal = total,
             PaymentsTotal = paymentsTotal,
             Balance = balance,
-            Lawyer = caseDto.ManagerLawyer,
-            Client = caseDto.Client,
         };
-
-        return invoiceSummary;
+        return invoiceSummation;
     }
 }
