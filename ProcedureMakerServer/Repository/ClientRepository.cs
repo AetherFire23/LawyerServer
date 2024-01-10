@@ -95,6 +95,7 @@ public class ClientRepository : ProcedureCrudBase<Client>
         }
         return clientDtos;
     }
+
     public async Task<ClientDto> MapClientAndCaseDto(Guid clientId)
     {
         var client = await Context.Clients
@@ -106,7 +107,7 @@ public class ClientRepository : ProcedureCrudBase<Client>
         {
             TrustClientCard = trustClientCardDto,
         };
-        var caseDtos = await this.MapCaseDtos(client.Cases.Select(x => x.Id), clientDto);
+        var caseDtos = await MapCaseDtos(client.Cases.Select(x => x.Id), clientDto);
 
         // map cases after because there is a circular dependency
         clientDto.Cases = caseDtos;
@@ -153,14 +154,21 @@ public class ClientRepository : ProcedureCrudBase<Client>
     public async Task<InvoiceDto> MapInvoiceDto(Invoice? invoice)
     {
         var activityDtos = await MapActivityDtos(invoice.Id);
+        var hourlyActivities = activityDtos.Where(x => !x.IsDisburse).ToList();
+        var taxableDisburses = activityDtos.Where(x => x.IsDisburse && x.IsTaxable).ToList();
+        var nonTaxableDisburses = activityDtos.Where(x => x.IsDisburse && !x.IsTaxable).ToList();
         var paymentDtos = await MapInvoicePaymentDtos(invoice.Id);
 
-        var invoiceDto = new InvoiceDto()
+        var invoiceDto = new InvoiceDto
         {
             Id = invoice.Id,
             InvoiceStatus = invoice.InvoiceStatus,
-            Activities = activityDtos,
             Payments = paymentDtos,
+            InvoiceNumber = invoice.InvoiceNumber,
+            HourlyActivities = hourlyActivities,
+            TaxableDisburses = taxableDisburses,
+            NonTaxableDisburses = nonTaxableDisburses,
+            Activities = activityDtos,
         };
         invoiceDto.InvoiceSummation = invoiceDto.GetInvoiceSummation();
         return invoiceDto;

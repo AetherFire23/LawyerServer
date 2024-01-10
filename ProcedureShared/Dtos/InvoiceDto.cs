@@ -2,18 +2,21 @@
 using ProcedureMakerServer.Billing.InvoiceDtos;
 using ProcedureMakerServer.Constants;
 using ProcedureShared.Dtos;
-using System.Text.Json.Serialization;
 namespace ProcedureMakerServer.Billing.StatementDtos;
 
 public class InvoiceDto : EntityBase
 {
     public InvoiceStatuses InvoiceStatus { get; set; } = InvoiceStatuses.InPreparation;
-    public List<ActivityDto> Activities { get; set; } = [];
+    //public List<ActivityDto> Activities { get; set; } = [];
     public List<InvoicePaymentDto> Payments { get; set; } = [];
     public List<BillingElementDto> AvailableBillingElementsForInvoice { get; set; } = [];
-
-
     public InvoiceSummation InvoiceSummation { get; set; }
+
+    public required List<ActivityDto> Activities { get; set; }
+    public List<ActivityDto> HourlyActivities { get; set; }
+    public List<ActivityDto> TaxableDisburses { get; set; }
+    public List<ActivityDto> NonTaxableDisburses { get; set; }
+
     public int InvoiceNumber { get; set; }
 
     public List<ActivityDto> GetDisbursesTaxable()

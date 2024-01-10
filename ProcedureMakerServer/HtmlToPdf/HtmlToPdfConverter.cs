@@ -121,6 +121,5 @@ public class HtmlToPdfConverter
 
 		Console.WriteLine(sb.ToString());
 
-		Process.Start("explorer.exe", outPath);
 	}
 }

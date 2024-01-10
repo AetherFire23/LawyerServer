@@ -69,12 +69,12 @@ public partial class AccountStatementRepository : ProcedureRepositoryContextBase
 
         var invoiceDto = new InvoiceDto()
         {
-            Activities = activitiesDto.ToList(),
             InvoiceStatus = invoice.InvoiceStatus,
             Payments = payments.ToList(),
             Id = invoice.Id,
             AvailableBillingElementsForInvoice = availableBillingElements,
             InvoiceNumber = invoice.InvoiceNumber,
+            Activities = activitiesDto,
         };
         invoiceDto.InvoiceSummation = invoiceDto.GetInvoiceSummation();
 

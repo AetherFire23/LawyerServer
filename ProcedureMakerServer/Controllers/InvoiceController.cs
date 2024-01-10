@@ -64,9 +64,9 @@ public class InvoiceController : Controller
     // ACTIVITIES OF INVOICES
     [HttpPost("CreateActivity")]
     [ProducesResponseType(200, Type = typeof(Guid))]
-    public async Task<ActionResult<Guid>> CreateActivity([FromQuery] Guid invoiceId)
+    public async Task<ActionResult<Guid>> CreateActivity([FromQuery] Guid invoiceId, [FromQuery] bool isDisburse, [FromQuery] bool isTaxable)
     {
-        var createdId = await _invoiceRepository.AddActivity(invoiceId);
+        var createdId = await _invoiceRepository.AddActivity(invoiceId, isDisburse, isTaxable);
         return Ok(createdId);
     }
 
@@ -152,8 +152,19 @@ public class InvoiceController : Controller
     [ProducesResponseType(typeof(FileContentResult), 200)]
     public async Task<ActionResult> DownloadInvoice(Guid invoiceId)
     {
-        var fileBytes = await _invoiceRepository.GetInvoicePdf(invoiceId);
+        var fileBytes = await _invoiceRepository.GetInvoicePdfAsBytes(invoiceId);
+
         var virtualFile = File(fileBytes, "application/pdf");
+
+        Response.ContentType = "application/pdf";
+        return Ok(virtualFile);
+    }
+    [HttpGet("GetInvoice2")]
+    public async Task<IActionResult> DownloadInvoice2(Guid invoiceId)
+    {
+        var fileBytes = await _invoiceRepository.GetInvoicePdfAsBytes(invoiceId);
+        var virtualFile = File(fileBytes, "application/pdf");
+
         return Ok(virtualFile);
     }
 }

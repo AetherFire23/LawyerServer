@@ -117,12 +117,15 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
         await Context.SaveChangesAsync();
     }
 
-    public async Task<Guid> AddActivity(Guid invoiceId) // requires a billing element I guess
+    // should not be able to modify or create afterwards for UI reasons.
+    public async Task<Guid> AddActivity(Guid invoiceId, bool isDisburse, bool isTaxable) // requires a billing element I guess
     {
         var invoice = await Context.Invoices.FirstByIdAsync(invoiceId);
         var newActivity = new Activity()
         {
             Invoice = invoice,
+            IsDisburse = isDisburse,
+            IsTaxable = isTaxable
         };
 
         Context.Activities.Add(newActivity);
@@ -188,16 +191,28 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
     }
 
     /// <returns> Path to the pdf files :) </returns>
-    public async Task<byte[]> GetInvoicePdf(Guid invoiceId)
+    public async Task<byte[]> GetInvoicePdfAsBytes(Guid invoiceId)
     {
-        var invoiceSummary = await GetInvoiceSummary(invoiceId);
-        var html = await _procedureHtmlRenderer.RenderInvoiceToHtml(invoiceSummary);
-        string path = await _htmlToPdfConverter.ConvertHtmlToPdf(html);
+        string path = await GenerateInvoicePdf(invoiceId);
+
         var fileBytes = File.ReadAllBytes(path);
         return fileBytes;
     }
 
 
+
+    public async Task<string> GetInvoicePdf(Guid invoiceId)
+    {
+        var path = await GenerateInvoicePdf(invoiceId);
+        return path;
+    }
+    private async Task<string> GenerateInvoicePdf(Guid invoiceId)
+    {
+        var invoiceSummary = await GetInvoiceSummary(invoiceId);
+        var html = await _procedureHtmlRenderer.RenderInvoiceToHtml(invoiceSummary);
+        string path = await _htmlToPdfConverter.ConvertHtmlToPdf(html);
+        return path;
+    }
 
     public async Task<InvoiceSummary> GetInvoiceSummary2(CaseContextDto caseContextDto, Guid invoiceId)
     {
@@ -232,7 +247,7 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
             BillNumber = invoice.InvoiceNumber,
             Lawyer = caseDto.ManagerLawyer,
             Client = caseDto.Client,
-            
+
         };
 
         return invoiceSummary;

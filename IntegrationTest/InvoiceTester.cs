@@ -54,10 +54,10 @@ public class InvoiceTester
         var lcase = lcaseCtx.GetFirstCase();
         var invoice = lcase.Invoices.First();
 
-        await _caller.CreateactivityAsync(invoice.Id);
-        await _caller.CreateactivityAsync(invoice.Id);
-        await _caller.CreateactivityAsync(invoice.Id);
-        await _caller.CreateactivityAsync(invoice.Id);
+        await _caller.CreateactivityAsync(invoice.Id, false, true);
+        await _caller.CreateactivityAsync(invoice.Id, false, true);
+        await _caller.CreateactivityAsync(invoice.Id, true, true);
+        await _caller.CreateactivityAsync(invoice.Id, true, false);
     }
 
     public async Task UpdateActivity()

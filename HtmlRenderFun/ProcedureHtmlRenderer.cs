@@ -50,7 +50,6 @@ public class ProcedureHtmlRenderer // technically teh renderer could be in anoth
 		};
 
 		var html = await RendererServices.RenderView<InvoicePage>(parameters);
-		html.SaveAndLaunch();
 		return html;
 	}
 }

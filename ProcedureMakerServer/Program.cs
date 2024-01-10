@@ -74,6 +74,7 @@ public class Program
 
                 // to convert enum to string and vice-versa to that the codegen can happen correctly 
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
+
                 
             });
         builder.Services.AddSwaggerGenNewtonsoftSupport(); // required for swagger codegen
