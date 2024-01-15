@@ -103,6 +103,7 @@ public class HtmlToPdfConverter
 
 	public async Task WrappedHtmlToPdf(string fromPath, string outPath)
 	{
+		// For any cliwrap program, I need to executable path.
 		string chromeExecutablePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Google", "Chrome", "Application", "chrome.exe");
 
 		var sb = new StringBuilder();
@@ -110,9 +111,9 @@ public class HtmlToPdfConverter
 			.WithArguments(args =>
 			{
 				args
-				.Add("--headless")
-				.Add($"--print-to-pdf={outPath}")
-				.Add("--no-pdf-header-footer")
+				.Add("--headless") // chrome doesnt show up
+				.Add($"--print-to-pdf={outPath}") // I found this parameter inside chromium documentation about the outpath
+				.Add("--no-pdf-header-footer")  // removes stamps, kinda sucks because it removes the amount of pages. Will consider using puppeteer one day I guess
 				.Add(fromPath);
 			})
 			.WithStandardOutputPipe(PipeTarget.ToStringBuilder(sb))
@@ -120,6 +121,5 @@ public class HtmlToPdfConverter
 			.ExecuteAsync();
 
 		Console.WriteLine(sb.ToString());
-
 	}
 }

@@ -10,7 +10,6 @@ namespace ProcedureMakerServer.Controllers;
 public class FileController : ControllerBase
 {
 	private readonly LawyerRepository _lawyerRepository;
-	private readonly IClientRepository _clientRepository;
 	public FileController(ILogger<FileController> logger,
 		LawyerRepository lawyerRepository)
 	{

@@ -22,7 +22,6 @@
     }
 
     .bg-color {
-        background-color: whitesmoke;
         width: 100vw;
         height: 100vh;
     }
@@ -41,7 +40,7 @@
         <h1 id="bill-number" class="text1"> Bill# @InvoiceSummary.BillNumber </h1>
         <div class="flex-row header-content">
             <div>
-                <h1 class="text1"> From:</h1>
+                <h1 class="text1"> From: @InvoiceSummary.Lawyer.FullName</h1>
                 <PersonDetails Person="InvoiceSummary.Lawyer" />
             </div>
             <div>

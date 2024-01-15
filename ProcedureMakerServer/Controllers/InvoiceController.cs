@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using Microsoft.AspNetCore.Mvc;
 using ProcedureMakerServer.Billing;
 using ProcedureMakerServer.Billing.InvoiceDtos;
 using ProcedureMakerServer.Billing.Services;
@@ -159,11 +160,16 @@ public class InvoiceController : Controller
         Response.ContentType = "application/pdf";
         return Ok(virtualFile);
     }
+
+    // so this seems to work ? 
     [HttpGet("GetInvoice2")]
+    [ProducesResponseType(typeof(FileContentResult), 200)]
     public async Task<IActionResult> DownloadInvoice2(Guid invoiceId)
     {
         var fileBytes = await _invoiceRepository.GetInvoicePdfAsBytes(invoiceId);
         var virtualFile = File(fileBytes, "application/pdf");
+
+
 
         return Ok(virtualFile);
     }

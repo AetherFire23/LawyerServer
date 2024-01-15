@@ -44,7 +44,7 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
         var currentBillingElementCopy = new BillingElement
         {
             ManagerLawyer = accountStatement.Case.ManagerLawyer,
-            ActivityName = currentLawyerBillingElement.ActivityName,
+            ActivityName = currentLawyerBillingElement!.ActivityName,
             Amount = currentLawyerBillingElement.Amount,
             IsDisburse = currentLawyerBillingElement.IsDisburse,
             IsHourlyRate = currentLawyerBillingElement.IsHourlyRate,
@@ -135,7 +135,7 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
 
     public async Task UpdateActivity(ActivityDto activityDto)
     {
-        var activity = await Context.Activities.FirstByIdAsync(activityDto.Id);
+        Activity activity = await Context.Activities.FirstByIdAsync(activityDto.Id);
         activity.Description = activityDto.Description;
         activity.Quantity = activityDto.Quantity;
         activity.CostInDollars = activityDto.CostInDollars;
@@ -149,7 +149,7 @@ public class InvoiceRepository : ProcedureRepositoryContextBase
     public async Task RemoveActivity(Guid activityId)
     {
         var activity = await Context.Activities
-            .FirstAsync(x => x.Id == activityId);
+            .FirstAsync(a => a.Id == activityId);
 
         Context.Activities.Remove(activity);
         await Context.SaveChangesAsync();

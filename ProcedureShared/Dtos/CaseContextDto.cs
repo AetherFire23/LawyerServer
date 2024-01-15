@@ -1,10 +1,7 @@
-﻿
-using ProcedureMakerServer.Billing.StatementDtos;
+﻿using ProcedureMakerServer.Billing.StatementDtos;
 using ProcedureShared.Authentication;
 using System.Text.Json.Serialization;
-
 namespace ProcedureShared.Dtos;
-
 public class CaseContextDto
 {
     public UserDto User { get; set; }

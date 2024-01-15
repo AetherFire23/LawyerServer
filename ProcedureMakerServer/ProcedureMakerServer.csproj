@@ -44,6 +44,7 @@
   <ItemGroup>
     <Folder Include="Billing\StatementDtos\" />
     <Folder Include="DocsTemplates\Temporary\" />
+    <Folder Include="test\" />
   </ItemGroup>
 	<ItemGroup>
 		<InternalsVisibleTo Include="IntegrationTest" />

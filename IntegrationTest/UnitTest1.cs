@@ -22,8 +22,6 @@ public class BasicTests
     [Fact]
     public async Task TestApplication()
     {
-        // REGISTER & LOGIN 
-        await Task.Delay(3500);
         var registerResult = await RegisterTest();
         var logResult = await LoginTest(registerResult);
 
@@ -225,7 +223,8 @@ public class BasicTests
     private async Task DownloadInvoice()
     {
         var ctx = await _caller.GetcasescontextAsync();
-        var res = await _caller.GetinvoiceAsync(ctx.Clients.First().Cases.First().Invoices.First().Id);
+        var invoice = ctx.Clients.First().Cases.First().Invoices.First();
+        var res = await _caller.Getinvoice2Async(invoice.Id);
     }
 }
 
